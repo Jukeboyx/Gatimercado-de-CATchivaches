@@ -1,11 +1,20 @@
 import * as PIXI from './pixi.js';
 
 import { catálogoObjetos } from './datos.js';
-import { Jugador } from './Jugador';
-import { GatiNPC } from './GatiNPC';
+import { Jugador } from './Jugador/index.js';
+import { GatiNPC } from './GatiNPC/index.js';
 import { Inventario } from './inventario.js'
 
 const app = new PIXI.Application();
+
+async function cargarRecursos() {
+    await PIXI.Assets.load([
+        'Recursos/Sprites/JugadorDeLado.png',
+        'Recursos/Sprites/JugadorArriba.png',
+        'Recursos/Sprites/JugadorAbajo.png',
+        'Recursos/Sprites/JugadorEspera.png'
+    ])
+}
 
 async function iniciarJuego() {
     await app.init({
@@ -15,11 +24,12 @@ async function iniciarJuego() {
         resolution: window.devicePixelRatio || 1,
         autoDensity: true
     })
+    await cargarRecursos()
 
     document.body.appendChild(app.canvas);
 
     const textura = PIXI.Texture.WHITE
-    const miJugador = new Jugador(textura, app)
+    const miJugador = new Jugador(app)
     app.stage.addChild(miJugador.container)
 
     app.stage.eventMode = 'static'

@@ -3,15 +3,43 @@ import * as PIXI from '../pixi.js';
 import { MEF } from "../MEF.js"
 import * as estado from "./estados.js"
 
+function cortarFrames(imagen, cantidadDeFrames, anchoFrame) {
+    const frames = []
+    for (let i = 0; i < cantidadDeFrames; i++) {
+        frames.push(new PIXI.Texture({
+            source: imagen.source,
+            frame: new PIXI.Rectangle(i * anchoFrame, 0, anchoFrame, anchoFrame)
+        }))
+    }
+    return frames
+}
+
+
 export class Jugador {
-    constructor(textura, app) {
+    constructor(app) {
         this.app = app
 
-        this.textura = new PIXI.Sprite(textura)
-        this.textura.anchor.set(0.5)
+        const texturaDeLado = PIXI.Texture.from('Recursos/Sprites/JugadorDeLado.png')
+        const texturaArriba = PIXI.Texture.from('Recursos/Sprites/JugadorArriba.png')
+        const texturaAbajo  = PIXI.Texture.from('Recursos/Sprites/JugadorAbajo.png')
+        const texturaEspera = PIXI.Texture.from('Recursos/Sprites/JugadorEspera.png')
+
+        this.animaciones = {
+            lado: cortarFrames(texturaDeLado, 4, 64),
+            arriba: cortarFrames(texturaArriba, 4, 64),
+            abajo: cortarFrames(texturaAbajo, 4, 64),
+            espera: cortarFrames(texturaEspera, 4, 64),
+        }
+
+        this.imagen = new PIXI.AnimatedSprite(this.animaciones.espera)
+        this.imagen.anchor.set(0.5)
+        this.imagen.animationSpeed = 0.1
+        this.imagen.play()
+
+        //this.framesCaminando = cortarFrames(frames, 4, 64)
 
         this.container = new PIXI.Container()
-        this.container.addChild(this.textura)
+        this.container.addChild(this.imagen)
 
         this.container.x = app.screen.width / 2
         this.container.y = app.screen.height / 2
