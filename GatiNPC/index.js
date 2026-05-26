@@ -16,7 +16,8 @@ export class GatiNPC {
         this.spriteTemporal = new PIXI.Text({
             text: '🐱',
             style: {
-                fontSize: 50
+                fontSize: 30,
+                padding: 6
             },
             anchor: 0.5
         });

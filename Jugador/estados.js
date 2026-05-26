@@ -17,8 +17,8 @@ export class Caminando extends Estado {
     alActualizar(datos) {
         let animaciónNueva
         const velocidad = 4
-        const dx = this.destino.x - this.dueño.container.x
-        const dy = this.destino.y - this.dueño.container.y
+        const dx = this.destino.x - this.dueño.contenedor.x
+        const dy = this.destino.y - this.dueño.contenedor.y
         const distancia = Math.sqrt(dx * dx + dy * dy)
 
         if (Math.abs(dx) > Math.abs(dy)) {
@@ -40,8 +40,8 @@ export class Caminando extends Estado {
             return
         }
 
-        this.dueño.container.x += (dx / distancia) * velocidad * datos
-        this.dueño.container.y += (dy / distancia) * velocidad * datos
+        this.dueño.contenedor.x += (dx / distancia) * velocidad * datos
+        this.dueño.contenedor.y += (dy / distancia) * velocidad * datos
     }
 }
 

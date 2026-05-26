@@ -26,29 +26,61 @@ async function iniciarJuego() {
     })
     await cargarRecursos()
 
+    window.addEventListener('resize', () => {
+        app.renderer.resize(window.innerWidth, window.innerHeight)
+        centrarCámara()
+    })
+
     document.body.appendChild(app.canvas);
 
-    const textura = PIXI.Texture.WHITE
-    const miJugador = new Jugador(app)
-    app.stage.addChild(miJugador.container)
+    const ANCHO_MUNDO = 2000
+    const ALTO_MUNDO = 2000
 
+    const mundoContenedor = new PIXI.Container()
+    app.stage.addChild(mundoContenedor)
+
+    const fondo = new PIXI.Graphics()
+    fondo.rect(0, 0, ANCHO_MUNDO, ALTO_MUNDO).fill('#4a7c3f')
+    mundoContenedor.addChild(fondo)
+
+    const miJugador = new Jugador(app)
+    mundoContenedor.addChild(miJugador.contenedor)
+    
+    const primerGato = new GatiNPC(400, 300, 'libro', 'ovilloLana');
+    mundoContenedor.addChild(primerGato.contenedor);
+    
+    const interfazContenedor = new PIXI.Container()
+    app.stage.addChild(interfazContenedor)
+
+    const miInventario = new Inventario(app)
+    interfazContenedor.addChild(miInventario.contenedor)
+
+    function centrarCámara() {
+        let cámaraX = app.screen.width / 2 - miJugador.contenedor.x
+        let cámaraY = app.screen.height / 2 - miJugador.contenedor.y
+
+        cámaraX = Math.min(0, Math.max(cámaraX, app.screen.width - ANCHO_MUNDO))
+        cámaraY = Math.min(0, Math.max(cámaraY, app.screen.height - ALTO_MUNDO))
+
+        mundoContenedor.x = cámaraX
+        mundoContenedor.y = cámaraY
+    }
+    
     app.stage.eventMode = 'static'
     app.stage.hitArea = app.screen
     app.stage.on('pointertap', (e) => {
-        miJugador.irHacia(e.global)
+        const puntoEnMundo = {
+            x: e.global.x - mundoContenedor.x,
+            y: e.global.y - mundoContenedor.y
+        }
+        miJugador.irHacia(puntoEnMundo)
     })
 
-    const miInventario = new Inventario(app)
-    const primerGato = new GatiNPC(400, 300, 'libro', 'ovilloLana');
-    app.stage.addChild(primerGato.contenedor);
     app.ticker.add((ticker) => {
-        /* if (miGato && typeof miGato.actualizar === 'function') {
-            miGato.actualizar()
-        } */
-        if (miInventario && typeof miInventario.actualizar === 'function') {
-            miInventario.actualizar();
-        }
         miJugador.actualizar(ticker.deltaTime)
+        primerGato.actualizar()
+        miInventario.actualizar()
+        centrarCámara()
         actualizarJuego(ticker.deltaTime)
     })
 }

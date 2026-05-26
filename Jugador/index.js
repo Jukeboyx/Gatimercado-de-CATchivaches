@@ -38,11 +38,11 @@ export class Jugador {
 
         //this.framesCaminando = cortarFrames(frames, 4, 64)
 
-        this.container = new PIXI.Container()
-        this.container.addChild(this.imagen)
+        this.contenedor = new PIXI.Container()
+        this.contenedor.addChild(this.imagen)
 
-        this.container.x = app.screen.width / 2
-        this.container.y = app.screen.height / 2
+        this.contenedor.x = app.screen.width / 2
+        this.contenedor.y = app.screen.height / 2
 
         this.mef = new MEF(this, {
             espera: new estado.Espera(this),

@@ -24,6 +24,8 @@ export function realizarTrueque(npc, inventarioInstancia) {
 export class Inventario {
     constructor(app) {
         this.app = app
+        this.contenedor = new PIXI.Container()
+
         this.anchoRanura = 60
         this.altoRanura = 60
         this.margen = 10
@@ -54,7 +56,7 @@ export class Inventario {
 
         this.burbuja.addChild(this.fondoBurbuja)
         this.burbuja.addChild(this.textoBurbuja)
-        this.app.stage.addChild(this.burbuja)
+        this.contenedor.addChild(this.burbuja)
 
         this.objetosActuales = [
             catálogoObjetos['manzanaRoja'],
@@ -69,6 +71,7 @@ export class Inventario {
 
     inicializar() {
         this.posYInventarioInicial = (this.app.screen.height - this.margen - this.altoRanura)
+        this.ranuras = []
 
         for (let i = 0; i < 3; i++) {
             let posX = this.posXInventarioInicial + (this.anchoRanura + this.margen) * i
@@ -113,22 +116,36 @@ export class Inventario {
                 this.burbuja.visible = false
             })
             
-            const icono = new PIXI.Text ({ text: this.objetosActuales[i].emoji, style: { fontSize: 30 } })
+            const icono = new PIXI.Text ({
+                text: this.objetosActuales[i].emoji,
+                style: {
+                    fontSize: 30,
+                    padding: 6
+                }
+            })
+            icono.anchor.set(0.5)
             icono.objetoReferencia = objetoActual
             this.iconos.push(icono)
 
-            icono.x = (this.anchoRanura / 2) - (icono.width / 2)
-            icono.y = (this.altoRanura / 2) - (icono.height / 2)
+            icono.x = this.anchoRanura / 2
+            icono.y = this.altoRanura / 2
             
             ranura.addChild(fondoRanura)
             ranura.addChild(icono)
             
-            this.app.stage.addChild(ranura)
+            this.contenedor.addChild(ranura)
+            this.ranuras.push(ranura)
         }
     }
 
     actualizar() {
+        const posX = (this.app.screen.width - ((this.anchoRanura * 3) + (this.margen * 2))) / 2
+        const posY = this.app.screen.height - this.margen - this.altoRanura
 
+        for (let i = 0; i < 3; i++) {
+            this.ranuras[i].x = posX + (this.anchoRanura + this.margen) * i
+            this.ranuras[i].y = posY
+        }
     }
 
     actualizarRanura(indice, nuevoObjeto) {
