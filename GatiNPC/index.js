@@ -3,11 +3,13 @@ import * as PIXI from '../pixi.js';
 import { MEF } from "../MEF.js"
 import { Estado } from "../MEF.js"
 import * as estado from "./estados.js"
+import { Jugador } from '../Jugador/index.js';
 
 export class GatiNPC {
-    constructor(posX, posY, idObjetoQueTiene, idObjetoQuePide) {
+    constructor(posX, posY, idObjetoQueTiene, idObjetoQuePide, jugador) {
         this.idObjetoQueTiene = idObjetoQueTiene
         this.idObjetoQuePide = idObjetoQuePide
+        this.jugador = jugador
 
         this.contenedor = new PIXI.Container();
         this.contenedor.x = posX;
@@ -24,7 +26,6 @@ export class GatiNPC {
 
         this.contenedor.addChild(this.spriteTemporal);
 
-        //this.jugador = jugador
         
         this.contenedor.eventMode = 'static'
         this.contenedor.cursor = 'pointer'
@@ -36,6 +37,12 @@ export class GatiNPC {
                 this.mef.cambiarEstado('intercambio')
             } */
             console.log(`¡Miau! Te doy el ítem ${this.idObjetoQueTiene} si me traés ${this.idObjetoQuePide}`);
+            if (this.jugador) {
+                this.jugador.irHacia(
+                    { x: this.contenedor.x, y: this.contenedor.y },
+                    60
+                );
+            }
 
         })
 
@@ -51,9 +58,9 @@ export class GatiNPC {
         //this.mef.cambiarEstado('intercambio')
     }
 
-    actualizar() {
+    actualizar(datos) {
         if (this.mef) {
-            this.mef.actualizar()
+            this.mef.actualizar(datos)
         }
     }
 }

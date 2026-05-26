@@ -46,7 +46,7 @@ async function iniciarJuego() {
     const miJugador = new Jugador(app)
     mundoContenedor.addChild(miJugador.contenedor)
     
-    const primerGato = new GatiNPC(400, 300, 'libro', 'ovilloLana');
+    const primerGato = new GatiNPC(400, 300, 'libro', 'ovilloLana', miJugador);
     mundoContenedor.addChild(primerGato.contenedor);
     
     const interfazContenedor = new PIXI.Container()

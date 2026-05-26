@@ -53,8 +53,12 @@ export class Jugador {
         this.mef.cambiarEstado('espera')
     }
 
-    irHacia(punto) {
-        this.mef.cambiarEstado('caminando', { x: punto.x, y: punto.y})
+    irHacia(punto, distanciaFreno) {
+        this.mef.cambiarEstado('caminando', {
+            x: punto.x,
+            y: punto.y,
+            distanciaFreno: distanciaFreno
+        })
     }
 
     actualizar(datos) {

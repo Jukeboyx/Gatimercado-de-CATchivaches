@@ -35,7 +35,9 @@ export class Caminando extends Estado {
             this.dueño.imagen.play()
         }
 
-        if (distancia < 5) {
+        const distanciaFreno = this.destino.distanciaFreno || 5;
+
+        if (distancia <= distanciaFreno) {
             this.dueño.mef.cambiarEstado('espera')
             return
         }
