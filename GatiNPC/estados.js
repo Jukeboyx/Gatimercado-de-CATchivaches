@@ -15,7 +15,6 @@ export class Espera extends Estado {
 export class Intercambio extends Estado {
     alEntrar() {
         //Activar menú de intercambio
-        console.log("¡Hora del trueque! El gato pide: " + this.owner.idObjetoQuePide)
         //Cambiar animación a hablando
     }
 

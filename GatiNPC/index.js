@@ -5,20 +5,37 @@ import { Estado } from "../MEF.js"
 import * as estado from "./estados.js"
 
 export class GatiNPC {
-    constructor(idObjetoQueTiene, idObjetoQuePide, texturaGato, jugador) {
+    constructor(posX, posY, idObjetoQueTiene, idObjetoQuePide) {
         this.idObjetoQueTiene = idObjetoQueTiene
         this.idObjetoQuePide = idObjetoQuePide
-        this.jugador = jugador
-        this.textura = new PIXI.Sprite(texturaGato)
-        this.container = new PIXI.Container();
-        this.container.eventMode = 'static'
-        this.container.addChild(this.textura)
-        this.container.hitArea = new PIXI.Rectangle(-10, -10, 80, 80)
 
-        this.container.on('pointertap', () => {
-            if (this.mef.estadoActual instanceof GatiEstadoEspera) {
+        this.contenedor = new PIXI.Container();
+        this.contenedor.x = posX;
+        this.contenedor.y = posY;
+
+        this.spriteTemporal = new PIXI.Text({
+            text: '🐱',
+            style: {
+                fontSize: 50
+            },
+            anchor: 0.5
+        });
+
+        this.contenedor.addChild(this.spriteTemporal);
+
+        //this.jugador = jugador
+        
+        this.contenedor.eventMode = 'static'
+        this.contenedor.cursor = 'pointer'
+
+        //this.container.hitArea = new PIXI.Rectangle(-10, -10, 80, 80)
+
+        this.contenedor.on('pointertap', () => {
+            /* if (this.mef.estadoActual instanceof estado.Espera) {
                 this.mef.cambiarEstado('intercambio')
-            }
+            } */
+            console.log(`¡Miau! Te doy el ítem ${this.idObjetoQueTiene} si me traés ${this.idObjetoQuePide}`);
+
         })
 
         this.mef = new MEF(this, {
@@ -27,6 +44,10 @@ export class GatiNPC {
         })
 
         this.mef.cambiarEstado('espera')
+    }
+
+    alHacerClic() {
+        //this.mef.cambiarEstado('intercambio')
     }
 
     actualizar() {

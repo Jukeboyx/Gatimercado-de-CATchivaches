@@ -10,8 +10,8 @@ export class Objeto {
 }
 
 export const catálogoObjetos = {
-    manzanaRoja: new Objeto('manzanaRoja', 'Manzana', '🍎'),
+    manzanaRoja: new Objeto('manzanaRoja', 'Manzana roja', '🍎'),
     pezFresco: new Objeto('pezFresco', 'Pescado', '🐟'),
-    ovilloLana: new Objeto('ovilloLana', 'Ovillo', '🧶'),
+    ovilloLana: new Objeto('ovilloLana', 'Ovillo de lana', '🧶'),
     libro: new Objeto('libro', 'Libro', '📕')
 }

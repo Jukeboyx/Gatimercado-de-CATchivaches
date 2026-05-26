@@ -39,7 +39,8 @@ async function iniciarJuego() {
     })
 
     const miInventario = new Inventario(app)
-    //const miGato = new GatiNPC
+    const primerGato = new GatiNPC(400, 300, 'libro', 'ovilloLana');
+    app.stage.addChild(primerGato.contenedor);
     app.ticker.add((ticker) => {
         /* if (miGato && typeof miGato.actualizar === 'function') {
             miGato.actualizar()
