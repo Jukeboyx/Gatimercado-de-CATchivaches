@@ -44,6 +44,7 @@ async function iniciarJuego() {
     mundoContenedor.addChild(fondo)
 
     const miJugador = new Jugador(mundoContenedor, ANCHO_MUNDO, ALTO_MUNDO)
+    mundoContenedor.addChild(miJugador.contenedorEstela)
     mundoContenedor.addChild(miJugador.contenedor)
     
     const primerGato = new GatiNPC(400, 300, 'libro', 'ovilloLana', miJugador);
@@ -94,13 +95,14 @@ async function iniciarJuego() {
         banderita.x = puntoEnMundo.x
         banderita.y = puntoEnMundo.y
         mundoContenedor.addChild(banderita)
-        // Poner banderita encima de la estela (índice 2: después del fondo y la estela)
-        mundoContenedor.setChildIndex(banderita, 2)
+        // Poner banderita encima de las estelas (índice 3: después del fondo, estelaJugador y contenedorEstela)
+        mundoContenedor.setChildIndex(banderita, 3)
         banderitas.push(banderita)
     })
 
     app.ticker.add((ticker) => {
         miJugador.actualizar(ticker.deltaTime)
+        miJugador.actualizarEstela(ticker.deltaTime)
         primerGato.actualizar()
         miInventario.actualizar()
         centrarCámara()

@@ -116,6 +116,12 @@ export class Caminando extends Estado {
             }
         }
 
+        this.dueño.contadorEstela++
+        if (this.dueño.contadorEstela >= this.dueño.intervaloEstela) {
+            this.dueño.crearPartículaEstela()
+            this.dueño.contadorEstela = 0
+        }
+
         this.dueño.contenedor.x += (dx / distancia) * this.VELOCIDAD * datos
         this.dueño.contenedor.y += (dy / distancia) * this.VELOCIDAD * datos
 

@@ -56,6 +56,10 @@ export class Jugador {
         this.contenedor.x = window.innerWidth / 2
         this.contenedor.y = window.innerHeight / 2
 
+        this.contenedorEstela = new PIXI.Container()
+        this.intervaloEstela = 5
+        this.contadorEstela = 0
+
         this.mef = new MEF(this, {
             espera: new estado.Espera(this),
             caminando: new estado.Caminando(this),
@@ -71,6 +75,27 @@ export class Jugador {
             y: punto.y,
             distanciaFreno: distanciaFreno
         })
+    }
+
+    crearPartículaEstela() {
+        const partícula = new PIXI.Sprite(this.imagen.texture)
+        partícula.anchor.set(0.5)
+        partícula.x = this.contenedor.x
+        partícula.y = this.contenedor.y
+        partícula.scale.x = this.imagen.scale.x
+        partícula.alpha = 0.4
+        this.contenedorEstela.addChild(partícula)
+    }
+
+    actualizarEstela(dt) {
+        for (let i = this.contenedorEstela.children.length - 1; i >= 0; i--) {
+            const partícula = this.contenedorEstela.children[i]
+            partícula.alpha -= 0.02 * dt
+            if (partícula.alpha <= 0) {
+                this.contenedorEstela.removeChild(partícula)
+                partícula.destroy()
+            }
+        }
     }
 
     actualizar(datos) {
