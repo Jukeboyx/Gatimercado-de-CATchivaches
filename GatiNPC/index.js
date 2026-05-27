@@ -15,11 +15,15 @@ export class GatiNPC {
         this.contenedor.x = posX;
         this.contenedor.y = posY;
 
+        this.TAMAÑO_FUENTE = 30
+        this.PADDING = 6
+        this.DISTANCIA_FRENO = 60
+
         this.spriteTemporal = new PIXI.Text({
             text: '🐱',
             style: {
-                fontSize: 30,
-                padding: 6
+                fontSize: this.TAMAÑO_FUENTE,
+                padding: this.PADDING
             },
             anchor: 0.5
         });
@@ -40,7 +44,7 @@ export class GatiNPC {
             if (this.jugador) {
                 this.jugador.irHacia(
                     { x: this.contenedor.x, y: this.contenedor.y },
-                    60
+                    this.DISTANCIA_FRENO
                 );
             }
 

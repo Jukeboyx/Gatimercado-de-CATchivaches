@@ -1,0 +1,38 @@
+# Contexto del proyecto
+
+Juego Point and Click en navegador web llamado "Gatimercado de CATchivaches". El jugador (Gurrfield, un gatito) recorre una feria intercambiando objetos con GatiNPCs ambulantes para conseguir un ítem objetivo antes de que se acabe el tiempo. Género: puzzle + exploración + gestión de tiempo. Top-down 2D, mundo de 2000x2000px.
+
+## Stack
+
+- JavaScript vanilla con ES Modules nativos (`import`/`export`)
+- PixiJS para todo el renderizado 2D (importar siempre desde `'./pixi.js'` o `'../pixi.js'`)
+- HTML/CSS para estructura base
+- Sin bundler, corre en navegador con servidor local
+- No usar TypeScript, JSX, CommonJS (`require`), ni nada que requiera compilación
+
+## REGLA PRINCIPAL — Idioma del código
+
+**Todo el código va en español.** Variables, funciones, clases, parámetros, comentarios: español siempre. Decisión intencional del equipo, no cambiarla ni sugerir inglés.
+
+✅ Correcto: `jugador`, `inventario`, `intercambiar()`, `tiempoRestante`, `estaMoviendose`, `alEntrar()`  
+❌ Incorrecto: `player`, `inventory`, `trade()`, `remainingTime`, `isMoving`, `onEnter()`
+
+## Arquitectura — leer antes de modificar
+
+- `MEF.js` — Máquina de estados finitos genérica. Los estados heredan de `Estado` e implementan `alEntrar()`, `alActualizar()`, `alSalir()`. Consultar antes de agregar estados.
+- `datos.js` — Catálogo de objetos (`catálogoObjetos`). Agregar objetos nuevos acá, no hardcodearlos en otros archivos.
+- `inventario.js` — Clase `Inventario` (UI de 3 ranuras) + función `realizarTrueque()`. El inventario siempre tiene exactamente 3 ranuras.
+- `principal.js` — Loop principal, cámara, inicialización de la escena.
+- `GatiNPC/index.js` — Clase `GatiNPC(posX, posY, idObjetoQueTiene, idObjetoQuePide, jugador)`.
+- `GatiNPC/estados.js` — Estados: `Espera`, `Intercambio`, `Agradecido`, `Enojado`.
+- `Jugador/index.js` — Clase `Jugador`, animaciones por dirección, método `irHacia(punto, distanciaFreno)`.
+- `Jugador/estados.js` — Estados: `Espera`, `Caminando`, `Intercambio`.
+
+## Reglas al generar código
+
+1. Antes de crear un archivo nuevo, verificar si la lógica corresponde a uno existente.
+2. Toda lógica visual pasa por PixiJS.
+3. Los estados nuevos deben heredar de `Estado` (de `MEF.js`) e integrarse con la MEF existente.
+4. Los spritesheets del jugador son 4 frames de 64x64px en fila horizontal.
+5. Mantener consistencia con el estilo del código existente.
+6. Preferir soluciones simples y legibles sobre abstracciones innecesarias.

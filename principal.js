@@ -43,7 +43,7 @@ async function iniciarJuego() {
     fondo.rect(0, 0, ANCHO_MUNDO, ALTO_MUNDO).fill('#4a7c3f')
     mundoContenedor.addChild(fondo)
 
-    const miJugador = new Jugador(app)
+    const miJugador = new Jugador(app, ANCHO_MUNDO, ALTO_MUNDO)
     mundoContenedor.addChild(miJugador.contenedor)
     
     const primerGato = new GatiNPC(400, 300, 'libro', 'ovilloLana', miJugador);
@@ -69,6 +69,8 @@ async function iniciarJuego() {
     app.stage.eventMode = 'static'
     app.stage.hitArea = app.screen
     app.stage.on('pointertap', (e) => {
+        if (e.target !== app.stage) return
+        
         const puntoEnMundo = {
             x: e.global.x - mundoContenedor.x,
             y: e.global.y - mundoContenedor.y

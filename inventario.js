@@ -26,18 +26,26 @@ export class Inventario {
         this.app = app
         this.contenedor = new PIXI.Container()
 
-        this.anchoRanura = 60
-        this.altoRanura = 60
-        this.margen = 10
+        this.ANCHO_RANURA = 60
+        this.ALTO_RANURA = 60
+        this.MARGEN = 10
+        this.ANCHO_BURBUJA = 120
+        this.ALTO_BURBUJA = 35
+        this.RADIO_BORDE = 8
+        this.TAMAÑO_FUENTE_BURBUJA = 14
+        this.TAMAÑO_FUENTE_ICONO = 30
+        this.PADDING_ICONO = 6
+        this.OFFSET_BURBUJA = 45
+        this.CANTIDAD_RANURAS = 3
 
-        this.posXInventarioInicial = (this.app.screen.width - ((this.anchoRanura * 3) + (this.margen * 2))) / 2
+        this.posXInventarioInicial = (this.app.screen.width - ((this.ANCHO_RANURA * this.CANTIDAD_RANURAS) + (this.MARGEN * 2))) / 2
 
             //Burbuja
         this.burbuja = new PIXI.Container()
         this.burbuja.visible = false
 
         this. fondoBurbuja = new PIXI.Graphics()
-        this.fondoBurbuja.roundRect(0, 0, 120, 35, 8)
+        this.fondoBurbuja.roundRect(0, 0, this.ANCHO_BURBUJA, this.ALTO_BURBUJA, this.RADIO_BORDE)
         this.fondoBurbuja.fill({
             color: 0x000000,
             alpha: 0.8
@@ -46,13 +54,13 @@ export class Inventario {
         this.textoBurbuja = new PIXI.Text ({ 
             text: '',
             style: {
-                fontSize: 14,
+                fontSize: this.TAMAÑO_FUENTE_BURBUJA,
                 fill: '#ffffff'
             },
             anchor: 0.5
         })
-        this.textoBurbuja.x = 120 / 2
-        this.textoBurbuja.y = 35 / 2
+        this.textoBurbuja.x = this.ANCHO_BURBUJA / 2
+        this.textoBurbuja.y = this.ALTO_BURBUJA / 2
 
         this.burbuja.addChild(this.fondoBurbuja)
         this.burbuja.addChild(this.textoBurbuja)
@@ -70,11 +78,11 @@ export class Inventario {
     }
 
     inicializar() {
-        this.posYInventarioInicial = (this.app.screen.height - this.margen - this.altoRanura)
+        this.posYInventarioInicial = (this.app.screen.height - this.MARGEN - this.ALTO_RANURA)
         this.ranuras = []
 
-        for (let i = 0; i < 3; i++) {
-            let posX = this.posXInventarioInicial + (this.anchoRanura + this.margen) * i
+        for (let i = 0; i < this.CANTIDAD_RANURAS; i++) {
+            let posX = this.posXInventarioInicial + (this.ANCHO_RANURA + this.MARGEN) * i
             
             const objetoActual = this.objetosActuales[i]
 
@@ -83,7 +91,7 @@ export class Inventario {
             ranura.y = this.posYInventarioInicial
 
             const fondoRanura = new PIXI.Graphics()
-            fondoRanura.roundRect(0, 0, this.anchoRanura, this.altoRanura, 8)
+            fondoRanura.roundRect(0, 0, this.ANCHO_RANURA, this.ALTO_RANURA, this.RADIO_BORDE)
             fondoRanura.fill({
                 color: 0x333333,
                 alpha: 0.8
@@ -93,12 +101,12 @@ export class Inventario {
             ranura.on('pointerover', () => {
                 this.textoBurbuja.text = this.iconos[i].objetoReferencia.nombre
 
-                const nuevoAncho = this.textoBurbuja.width + this.margen * 2
-                const nuevoAlto = this.textoBurbuja.height + this.margen * 2
+                const nuevoAncho = this.textoBurbuja.width + this.MARGEN * 2
+                const nuevoAlto = this.textoBurbuja.height + this.MARGEN * 2
 
                 
                 this.fondoBurbuja.clear()
-                this.fondoBurbuja.roundRect(0, 0, nuevoAncho, nuevoAlto, 8)
+                this.fondoBurbuja.roundRect(0, 0, nuevoAncho, nuevoAlto, this.RADIO_BORDE)
                 this.fondoBurbuja.fill({
                     color: 0x000000,
                     alpha: 0.7
@@ -107,8 +115,8 @@ export class Inventario {
                 this.textoBurbuja.x = nuevoAncho / 2
                 this.textoBurbuja.y = nuevoAlto / 2
                 
-                this.burbuja.x = Math.round(ranura.x + ((this.anchoRanura - this.burbuja.width) / 2))
-                this.burbuja.y = ranura.y - 45
+                this.burbuja.x = Math.round(ranura.x + ((this.ANCHO_RANURA - this.burbuja.width) / 2))
+                this.burbuja.y = ranura.y - this.OFFSET_BURBUJA
                 
                 this.burbuja.visible = true
             })
@@ -119,16 +127,16 @@ export class Inventario {
             const icono = new PIXI.Text ({
                 text: this.objetosActuales[i].emoji,
                 style: {
-                    fontSize: 30,
-                    padding: 6
+                    fontSize: this.TAMAÑO_FUENTE_ICONO,
+                    padding: this.PADDING_ICONO
                 }
             })
             icono.anchor.set(0.5)
             icono.objetoReferencia = objetoActual
             this.iconos.push(icono)
 
-            icono.x = this.anchoRanura / 2
-            icono.y = this.altoRanura / 2
+            icono.x = this.ANCHO_RANURA / 2
+            icono.y = this.ALTO_RANURA / 2
             
             ranura.addChild(fondoRanura)
             ranura.addChild(icono)
@@ -139,11 +147,11 @@ export class Inventario {
     }
 
     actualizar() {
-        const posX = (this.app.screen.width - ((this.anchoRanura * 3) + (this.margen * 2))) / 2
-        const posY = this.app.screen.height - this.margen - this.altoRanura
+        const posX = (this.app.screen.width - ((this.ANCHO_RANURA * this.CANTIDAD_RANURAS) + (this.MARGEN * 2))) / 2
+        const posY = this.app.screen.height - this.MARGEN - this.ALTO_RANURA
 
-        for (let i = 0; i < 3; i++) {
-            this.ranuras[i].x = posX + (this.anchoRanura + this.margen) * i
+        for (let i = 0; i < this.CANTIDAD_RANURAS; i++) {
+            this.ranuras[i].x = posX + (this.ANCHO_RANURA + this.MARGEN) * i
             this.ranuras[i].y = posY
         }
     }

@@ -15,3 +15,5 @@ export const catálogoObjetos = {
     ovilloLana: new Objeto('ovilloLana', 'Ovillo de lana', '🧶'),
     libro: new Objeto('libro', 'Libro', '📕')
 }
+
+export const obstáculos = []

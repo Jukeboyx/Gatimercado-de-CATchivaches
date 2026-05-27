@@ -16,24 +16,30 @@ function cortarFrames(imagen, cantidadDeFrames, anchoFrame) {
 
 
 export class Jugador {
-    constructor(app) {
+    constructor(app, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000) {
         this.app = app
+        this.ANCHO_MUNDO = ANCHO_MUNDO
+        this.ALTO_MUNDO = ALTO_MUNDO
 
         const texturaDeLado = PIXI.Texture.from('Recursos/Sprites/JugadorDeLado.png')
         const texturaArriba = PIXI.Texture.from('Recursos/Sprites/JugadorArriba.png')
         const texturaAbajo  = PIXI.Texture.from('Recursos/Sprites/JugadorAbajo.png')
         const texturaEspera = PIXI.Texture.from('Recursos/Sprites/JugadorEspera.png')
 
+        this.CANTIDAD_FRAMES = 4
+        this.ANCHO_FRAME = 64
+        this.VELOCIDAD_ANIMACION = 0.1
+
         this.animaciones = {
-            lado: cortarFrames(texturaDeLado, 4, 64),
-            arriba: cortarFrames(texturaArriba, 4, 64),
-            abajo: cortarFrames(texturaAbajo, 4, 64),
-            espera: cortarFrames(texturaEspera, 4, 64),
+            lado: cortarFrames(texturaDeLado, this.CANTIDAD_FRAMES, this.ANCHO_FRAME),
+            arriba: cortarFrames(texturaArriba, this.CANTIDAD_FRAMES, this.ANCHO_FRAME),
+            abajo: cortarFrames(texturaAbajo, this.CANTIDAD_FRAMES, this.ANCHO_FRAME),
+            espera: cortarFrames(texturaEspera, this.CANTIDAD_FRAMES, this.ANCHO_FRAME),
         }
 
         this.imagen = new PIXI.AnimatedSprite(this.animaciones.espera)
         this.imagen.anchor.set(0.5)
-        this.imagen.animationSpeed = 0.1
+        this.imagen.animationSpeed = this.VELOCIDAD_ANIMACION
         this.imagen.play()
 
         //this.framesCaminando = cortarFrames(frames, 4, 64)
