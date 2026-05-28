@@ -16,10 +16,14 @@ function cortarFrames(imagen, cantidadDeFrames, anchoFrame) {
 
 
 export class Jugador {
-    constructor(app, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000) {
-        this.app = app
+    constructor(mundoContenedor, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000) {
+        this.mundoContenedor = mundoContenedor
         this.ANCHO_MUNDO = ANCHO_MUNDO
         this.ALTO_MUNDO = ALTO_MUNDO
+
+        this.estelaJugador = new PIXI.Graphics()
+        this.mundoContenedor.addChild(this.estelaJugador)
+        this.mundoContenedor.setChildIndex(this.estelaJugador, 1)
 
         const texturaDeLado = PIXI.Texture.from('Recursos/Sprites/JugadorDeLado.png')
         const texturaArriba = PIXI.Texture.from('Recursos/Sprites/JugadorArriba.png')
@@ -29,6 +33,8 @@ export class Jugador {
         this.CANTIDAD_FRAMES = 4
         this.ANCHO_FRAME = 64
         this.VELOCIDAD_ANIMACION = 0.1
+
+        this.historialPosiciones = []
 
         this.animaciones = {
             lado: cortarFrames(texturaDeLado, this.CANTIDAD_FRAMES, this.ANCHO_FRAME),
@@ -47,8 +53,8 @@ export class Jugador {
         this.contenedor = new PIXI.Container()
         this.contenedor.addChild(this.imagen)
 
-        this.contenedor.x = app.screen.width / 2
-        this.contenedor.y = app.screen.height / 2
+        this.contenedor.x = window.innerWidth / 2
+        this.contenedor.y = window.innerHeight / 2
 
         this.mef = new MEF(this, {
             espera: new estado.Espera(this),
@@ -68,6 +74,14 @@ export class Jugador {
     }
 
     actualizar(datos) {
+        this.historialPosiciones.push({
+            x: this.contenedor.x,
+            y: this.contenedor.y
+        })
+
+        if (this.historialPosiciones.length > 15) {
+            this.historialPosiciones.shift()
+        }
         this.mef.actualizar(datos)
     }
 }
