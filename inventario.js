@@ -31,9 +31,9 @@ export class Inventario {
         this.MARGEN = 10
         this.ANCHO_BURBUJA = 120
         this.ALTO_BURBUJA = 35
-        this.RADIO_BORDE = 8
+        this.RADIO_BORDE = 15
         this.TAMAÑO_FUENTE_BURBUJA = 14
-        this.TAMAÑO_FUENTE_ICONO = 30
+        this.TAMAÑO_FUENTE_ICONO = 35
         this.PADDING_ICONO = 6
         this.OFFSET_BURBUJA = 45
         this.CANTIDAD_RANURAS = 3
@@ -131,12 +131,11 @@ export class Inventario {
                     padding: this.PADDING_ICONO
                 }
             })
-            icono.anchor.set(0.5)
             icono.objetoReferencia = objetoActual
             this.iconos.push(icono)
 
-            icono.x = this.ANCHO_RANURA / 2
-            icono.y = this.ALTO_RANURA / 2
+            icono.x = (this.ANCHO_RANURA - icono.width) / 2
+            icono.y = (this.ALTO_RANURA  - icono.height) / 2
             
             ranura.addChild(fondoRanura)
             ranura.addChild(icono)
