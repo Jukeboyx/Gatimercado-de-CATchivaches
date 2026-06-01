@@ -3,7 +3,8 @@ import * as PIXI from './pixi.js';
 import { catálogoObjetos } from './datos.js';
 import { Jugador } from './Jugador/index.js';
 import { GatiNPC } from './GatiNPC/index.js';
-import { Inventario } from './inventario.js'
+import { Inventario } from './inventario.js';
+import { MenuIntercambio } from './menu-intercambio.js';
 
 const app = new PIXI.Application();
 
@@ -46,15 +47,18 @@ async function iniciarJuego() {
     const miJugador = new Jugador(mundoContenedor, ANCHO_MUNDO, ALTO_MUNDO)
     mundoContenedor.addChild(miJugador.contenedor)
     
-    const primerGato = new GatiNPC(400, 300, 'libro', 'ovilloLana', miJugador, ANCHO_MUNDO, ALTO_MUNDO);
-    mundoContenedor.addChild(primerGato.contenedor);
-    
     const interfazContenedor = new PIXI.Container()
     app.stage.addChild(interfazContenedor)
-
+    
     const miInventario = new Inventario(app)
     interfazContenedor.addChild(miInventario.contenedor)
-
+    
+    const miMenuIntercambio = new MenuIntercambio(app, miInventario)
+    interfazContenedor.addChild(miMenuIntercambio.contenedor)
+    
+    const primerGato = new GatiNPC(400, 300, 'libro', 'ovilloLana', miJugador, ANCHO_MUNDO, ALTO_MUNDO, miMenuIntercambio);
+    mundoContenedor.addChild(primerGato.contenedor);
+    
     function centrarCámara() {
         let cámaraX = app.screen.width / 2 - miJugador.contenedor.x
         let cámaraY = app.screen.height / 2 - miJugador.contenedor.y
@@ -71,6 +75,11 @@ async function iniciarJuego() {
     app.stage.on('pointertap', (e) => {
         if (e.target !== app.stage) return
 
+        if (miMenuIntercambio.visible) {
+            miMenuIntercambio.cerrar()
+            return
+        }
+
         const puntoEnMundo = {
             x: e.global.x - mundoContenedor.x,
             y: e.global.y - mundoContenedor.y
@@ -79,16 +88,16 @@ async function iniciarJuego() {
     })
 
     app.ticker.add((ticker) => {
-        miJugador.actualizar(ticker.deltaTime)
-        primerGato.actualizar(ticker.deltaTime)
-        miInventario.actualizar(ticker.deltaTime)
-        centrarCámara()
         actualizarJuego(ticker.deltaTime)
     })
-}
 
-function actualizarJuego(dt) {
-    
+    function actualizarJuego(dt) {
+        miJugador.actualizar(dt)
+        primerGato.actualizar(dt)
+        miInventario.actualizar(dt)
+        miMenuIntercambio.actualizar()
+        centrarCámara()
+    }
 }
 
 iniciarJuego();

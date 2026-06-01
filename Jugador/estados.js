@@ -42,7 +42,6 @@ export class Caminando extends Estado {
         const distancia = Math.sqrt(dx * dx + dy * dy)
 
         if (distancia <= this.destino.distanciaFreno) {
-            this.dueño.entidadObjetivo = null
             this.dueño.estelaJugador.clear()
             this.dueño.mef.cambiarEstado('espera')
             return
@@ -50,7 +49,7 @@ export class Caminando extends Estado {
 
         this.framesSinRecalcular++
 
-        if (this.framesSinRecalcular < 30) return
+        if (this.framesSinRecalcular < 10) return
         console.log('recalculando hacia', this.dueño.entidadObjetivo.contenedor.x)
 
         this.framesSinRecalcular = 0
@@ -100,7 +99,6 @@ export class Caminando extends Estado {
         if (!resultado.llegó) return
 
         if (resultado.esUltimoPunto) {
-            this.dueño.entidadObjetivo = null
             this.dueño.estelaJugador.clear()
             this.dueño.mef.cambiarEstado('espera')
         } else {
@@ -145,6 +143,9 @@ export class Caminando extends Estado {
 
         this.actualizarAnimación(resultado.dx, resultado.dy)
         this.procesarResultado(resultado)
+
+        if (resultado.llegó && resultado.esUltimoPunto) return
+
         this.dibujarRuta()
     }
 }

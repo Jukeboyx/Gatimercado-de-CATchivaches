@@ -83,8 +83,7 @@ export class Merodeo extends Estado {
 
 export class Intercambio extends Estado {
     alEntrar() {
-        //Activar menú de intercambio
-        //Cambiar animación a hablando
+        this.dueño.menu.abrir(this.dueño)
     }
 
     alActualizar() {

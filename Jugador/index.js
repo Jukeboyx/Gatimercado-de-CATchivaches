@@ -3,7 +3,7 @@ import * as PIXI from '../pixi.js';
 import { MEF } from "../MEF.js"
 import * as estado from "./estados.js"
 
-function cortarFrames(imagen, cantidadDeFrames, anchoFrame) {
+export function cortarFrames(imagen, cantidadDeFrames, anchoFrame) {
     const frames = []
     for (let i = 0; i < cantidadDeFrames; i++) {
         frames.push(new PIXI.Texture({
@@ -50,8 +50,6 @@ export class Jugador {
         this.imagen.animationSpeed = this.VELOCIDAD_ANIMACION
         this.imagen.play()
 
-        //this.framesCaminando = cortarFrames(frames, 4, 64)
-
         this.contenedor = new PIXI.Container()
         this.contenedor.addChild(this.imagen)
 
@@ -70,7 +68,7 @@ export class Jugador {
     irHacia(punto, distanciaFreno, entidad = null) {
         this.entidadObjetivo = entidad
         this.limpiarBanderitas()
-        
+
         if (!entidad) {
             this.colocarBanderita(punto)
         }
