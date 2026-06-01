@@ -1,7 +1,7 @@
 import * as PIXI from '../pixi.js';
 
 import { Estado } from "../MEF.js";
-import { calcularRuta } from "../pathfinding.js";
+import * as mover from "../movimiento.js"
 
 export class Espera extends Estado {
     alEntrar() {
@@ -15,29 +15,97 @@ export class Caminando extends Estado {
         this.destino = destino
         this.indicePunto = 0
         this.VELOCIDAD = 4
-        
-        // Calcular ruta usando A*
-        const ruta = calcularRuta(
+        this.últimaAnimación = null
+        this.framesSinRecalcular = 0
+
+        this.recalcularCamino()
+    }
+
+    recalcularCamino() {
+        this.camino = mover.calcularCamino(
             this.dueño.contenedor.x,
             this.dueño.contenedor.y,
-            destino.x,
-            destino.y,
+            this.destino.x,
+            this.destino.y,
             this.dueño.ANCHO_MUNDO,
             this.dueño.ALTO_MUNDO
         )
-        
-        if (ruta && ruta.length > 0) {
-            this.camino = ruta
+        this.indicePunto = this.camino.length > 1 ? 1 : 0
+    }
 
-            if (this.camino.length > 1) {
-                this.indicePunto = 1
-            }
+    actualizarDestinoSiSeMovió() {
+        if (!this.dueño.entidadObjetivo) return
 
-        } else {
-            // Si no hay ruta, ir en línea recta (fallback)
-            this.camino = [{ x: destino.x, y: destino.y }]
+        const entidad = this.dueño.entidadObjetivo
+        const dx = entidad.contenedor.x - this.dueño.contenedor.x
+        const dy = entidad.contenedor.y - this.dueño.contenedor.y
+        const distancia = Math.sqrt(dx * dx + dy * dy)
+
+        if (distancia <= this.destino.distanciaFreno) {
+            this.dueño.entidadObjetivo = null
+            this.dueño.estelaJugador.clear()
+            this.dueño.mef.cambiarEstado('espera')
+            return
         }
-        this.últimaAnimación = null
+
+        this.framesSinRecalcular++
+
+        if (this.framesSinRecalcular < 30) return
+        console.log('recalculando hacia', this.dueño.entidadObjetivo.contenedor.x)
+
+        this.framesSinRecalcular = 0
+        this.destino = {
+            x: entidad.contenedor.x,
+            y: entidad.contenedor.y,
+            distanciaFreno: this.destino.distanciaFreno
+        }
+        console.log(this.destino.distanciaFreno)
+        this.recalcularCamino()
+    }
+
+    actualizarAnimación(dx, dy) {
+        const imagen = this.dueño.imagen
+        const animaciones = this.dueño.animaciones
+        const UMBRAL_DIAGONAL = 0.3
+        const proporción = Math.abs(dx) / (Math.abs(dx) + Math.abs(dy) + 0.001)
+        const movimientoSignificativo = Math.abs(dx) > 1;
+
+        let animaciónNueva
+        let escalaX = imagen.scale.x
+
+        if (proporción > 0.5 + UMBRAL_DIAGONAL) {
+            animaciónNueva = animaciones.lado
+            if (movimientoSignificativo) escalaX = dx < 0 ? -1 : 1
+        } else if (proporción < 0.5 - UMBRAL_DIAGONAL) {
+            animaciónNueva = dy < 0
+                ? animaciones.arriba
+                : animaciones.abajo
+        } else {
+            animaciónNueva = animaciones.lado
+            if (movimientoSignificativo) escalaX = dx < 0 ? -1 : 1
+        }
+
+        if (animaciónNueva !== this.últimaAnimación) {
+            imagen.textures = animaciónNueva
+            imagen.play()
+            this.últimaAnimación = animaciónNueva
+        }
+        
+        if (animaciónNueva === animaciones.lado && escalaX !== imagen.scale.x) {
+            imagen.scale.x = escalaX
+        }
+    }
+
+    procesarResultado(resultado) {
+        if (!resultado.llegó) return
+
+        if (resultado.esUltimoPunto) {
+            this.dueño.entidadObjetivo = null
+            this.dueño.estelaJugador.clear()
+            this.dueño.mef.cambiarEstado('espera')
+        } else {
+            this.indicePunto++
+        }
     }
 
     dibujarRuta() {
@@ -46,79 +114,37 @@ export class Caminando extends Estado {
 
         if (!this.camino || this.indicePunto >= this.camino.length) return
 
-        // Empezar a dibujar desde el punto 1 para que no esté tan cerca del jugador
         const puntoInicio = Math.min(this.indicePunto + 1, this.camino.length - 1)
         if (puntoInicio >= this.camino.length) return
 
         gráfico.moveTo(this.camino[puntoInicio].x, this.camino[puntoInicio].y)
-
         for (let i = puntoInicio; i < this.camino.length; i++) {
             gráfico.lineTo(this.camino[i].x, this.camino[i].y)
         }
 
         gráfico.stroke({ width: 2, color: 0xffffff, alpha: 0.2})
     }
+
     
     alActualizar(datos) {
+        this.actualizarDestinoSiSeMovió()
+
         if (!this.camino || this.indicePunto >= this.camino.length) {
             this.dueño.mef.cambiarEstado('espera')
             return
         }
-        
-        const puntoActual = this.camino[this.indicePunto]
-        const esUltimoPunto = this.indicePunto === this.camino.length - 1
-        
-        const dx = puntoActual.x - this.dueño.contenedor.x
-        const dy = puntoActual.y - this.dueño.contenedor.y
-        
-        let animaciónNueva
-        let escalaX = this.dueño.imagen.scale.x
-        const UMBRAL_DIAGONAL = 0.3
-        const proporción = Math.abs(dx) / (Math.abs(dx) + Math.abs(dy) + 0.001)
 
-        const distancia = Math.sqrt(dx * dx + dy * dy)
+        const resultado = mover.avanzarEnCamino(
+            this.dueño.contenedor,
+            this.camino,
+            this.indicePunto,
+            this.VELOCIDAD,
+            this.destino.distanciaFreno || 5,
+            datos
+        )
 
-        const movimientoSignificativo = Math.abs(dx) > 1;
-
-        if (proporción > 0.5 + UMBRAL_DIAGONAL) {
-            animaciónNueva = this.dueño.animaciones.lado
-            if (movimientoSignificativo) escalaX = dx < 0 ? -1 : 1
-        } else if (proporción < 0.5 - UMBRAL_DIAGONAL) {
-            animaciónNueva = dy < 0
-                ? this.dueño.animaciones.arriba
-                : this.dueño.animaciones.abajo
-            // Para animaciones verticales, mantener el scale.x actual
-        } else {
-            animaciónNueva = this.dueño.animaciones.lado
-            if (movimientoSignificativo) escalaX = dx < 0 ? -1 : 1
-        }
-
-        if (animaciónNueva !== this.últimaAnimación) {
-            this.dueño.imagen.textures = animaciónNueva
-            this.dueño.imagen.play()
-            this.últimaAnimación = animaciónNueva
-        }
-        
-        // Solo actualizar scale.x si estamos usando animación lateral
-        if (animaciónNueva === this.dueño.animaciones.lado && escalaX !== this.dueño.imagen.scale.x) {
-            this.dueño.imagen.scale.x = escalaX
-        }
-
-        const distanciaFreno = esUltimoPunto ? (this.destino.distanciaFreno || 5) : (this.VELOCIDAD * datos)
-
-        if (distancia <= distanciaFreno) {
-            if (esUltimoPunto) {
-                this.dueño.mef.cambiarEstado('espera')
-                return
-            } else {
-                this.indicePunto++
-                return
-            }
-        }
-
-        this.dueño.contenedor.x += (dx / distancia) * this.VELOCIDAD * datos
-        this.dueño.contenedor.y += (dy / distancia) * this.VELOCIDAD * datos
-
+        this.actualizarAnimación(resultado.dx, resultado.dy)
+        this.procesarResultado(resultado)
         this.dibujarRuta()
     }
 }

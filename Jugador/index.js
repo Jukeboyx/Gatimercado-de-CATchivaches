@@ -25,6 +25,8 @@ export class Jugador {
         this.mundoContenedor.addChild(this.estelaJugador)
         this.mundoContenedor.setChildIndex(this.estelaJugador, 1)
 
+        this.banderitas = []
+
         const texturaDeLado = PIXI.Texture.from('Recursos/Sprites/JugadorDeLado.png')
         const texturaArriba = PIXI.Texture.from('Recursos/Sprites/JugadorArriba.png')
         const texturaAbajo  = PIXI.Texture.from('Recursos/Sprites/JugadorAbajo.png')
@@ -65,12 +67,42 @@ export class Jugador {
         this.mef.cambiarEstado('espera')
     }
 
-    irHacia(punto, distanciaFreno) {
+    irHacia(punto, distanciaFreno, entidad = null) {
+        this.entidadObjetivo = entidad
+        this.limpiarBanderitas()
+        
+        if (!entidad) {
+            this.colocarBanderita(punto)
+        }
+
         this.mef.cambiarEstado('caminando', {
             x: punto.x,
             y: punto.y,
             distanciaFreno: distanciaFreno
         })
+    }
+
+    colocarBanderita(punto) {
+        const banderita = new PIXI.Text({
+            text: '🚩',
+            style: {
+                fontSize: 24,
+                fontFamily: 'Arial'
+                }
+        })
+        banderita.anchor.set(0.5)
+        banderita.x = punto.x
+        banderita.y = punto.y
+        this.mundoContenedor.addChild(banderita)
+        this.mundoContenedor.setChildIndex(banderita, 2)
+        this.banderitas.push(banderita)
+    }
+
+    limpiarBanderitas() {
+        for (const banderita of this.banderitas) {
+            this.mundoContenedor.removeChild(banderita)
+        }
+        this.banderitas.length = 0
     }
 
     actualizar(datos) {
@@ -82,6 +114,21 @@ export class Jugador {
         if (this.historialPosiciones.length > 15) {
             this.historialPosiciones.shift()
         }
+        this.verificarBanderitas()
         this.mef.actualizar(datos)
+    }
+
+    verificarBanderitas() {
+        for (let i = this.banderitas.length - 1; i >= 0; i--) {
+            const banderita = this.banderitas[i]
+            const dx = banderita.x - this.contenedor.x
+            const dy = banderita.y - this.contenedor.y
+            const distancia = Math.sqrt(dx * dx + dy * dy)
+
+            if (distancia < 30) {
+                this.mundoContenedor.removeChild(banderita)
+                this.banderitas.splice(i, 1)
+            }
+        }
     }
 }
