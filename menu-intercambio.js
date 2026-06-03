@@ -48,6 +48,10 @@ export class MenuIntercambio {
 
         this.contenedor = new PIXI.Container()
         this.contenedor.visible = false
+        this.contenedor.eventMode = 'static'
+        this.contenedor.on('pointertap', (e) => {
+            e.stopPropagation()
+        })
         
         this.burbuja.addChild(this.fondoBurbuja)
         this.burbuja.addChild(this.textoBurbuja)

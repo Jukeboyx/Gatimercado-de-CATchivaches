@@ -37,10 +37,16 @@ async function iniciarJuego() {
 
     window.addEventListener('resize', () => {
         app.renderer.resize(window.innerWidth, window.innerHeight)
+        const escala = window.innerWidth / ANCHO_DISEÑO
+        mundoContenedor.scale.set(escala)
+        interfazContenedor.scale.set(escala)
         centrarCámara()
     })
 
     document.body.appendChild(app.canvas);
+
+    const ANCHO_DISEÑO = 1280
+    const escala = window.innerWidth / ANCHO_DISEÑO
 
     const ANCHO_MUNDO = 2000
     const ALTO_MUNDO = 2000
@@ -67,12 +73,15 @@ async function iniciarJuego() {
     const primerGato = new GatiNPC(400, 300, 'libro', 'ovilloLana', miJugador, ANCHO_MUNDO, ALTO_MUNDO, miMenuIntercambio);
     mundoContenedor.addChild(primerGato.contenedor);
     
+    mundoContenedor.scale.set(escala)
+    interfazContenedor.scale.set(escala)
+    
     function centrarCámara() {
-        let cámaraX = app.screen.width / 2 - miJugador.contenedor.x
-        let cámaraY = app.screen.height / 2 - miJugador.contenedor.y
+        let cámaraX = app.screen.width / 2 - miJugador.contenedor.x * escala
+        let cámaraY = app.screen.height / 2 - miJugador.contenedor.y * escala
 
-        cámaraX = Math.min(0, Math.max(cámaraX, app.screen.width - ANCHO_MUNDO))
-        cámaraY = Math.min(0, Math.max(cámaraY, app.screen.height - ALTO_MUNDO))
+        cámaraX = Math.min(0, Math.max(cámaraX, app.screen.width - ANCHO_MUNDO * escala))
+        cámaraY = Math.min(0, Math.max(cámaraY, app.screen.height - ALTO_MUNDO * escala))
 
         mundoContenedor.x = cámaraX
         mundoContenedor.y = cámaraY
@@ -89,8 +98,8 @@ async function iniciarJuego() {
         }
 
         const puntoEnMundo = {
-            x: e.global.x - mundoContenedor.x,
-            y: e.global.y - mundoContenedor.y
+            x: (e.global.x - mundoContenedor.x) / escala,
+            y: (e.global.y - mundoContenedor.y) / escala
         }
         miJugador.irHacia(puntoEnMundo)
     })
