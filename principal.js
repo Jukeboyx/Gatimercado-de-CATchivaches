@@ -13,7 +13,15 @@ async function cargarRecursos() {
         'Recursos/Sprites/JugadorDeLado.png',
         'Recursos/Sprites/JugadorArriba.png',
         'Recursos/Sprites/JugadorAbajo.png',
-        'Recursos/Sprites/JugadorEspera.png'
+        'Recursos/Sprites/JugadorEspera.png',
+        'Recursos/Sprites/GatoGrisDeLado.png',
+        'Recursos/Sprites/GatoGrisArriba.png',
+        'Recursos/Sprites/GatoGrisAbajo.png',
+        'Recursos/Sprites/GatoGrisEspera.png',
+        'Recursos/Sprites/GatoNegroDeLado.png',
+        'Recursos/Sprites/GatoNegroArriba.png',
+        'Recursos/Sprites/GatoNegroAbajo.png',
+        'Recursos/Sprites/GatoNegroEspera.png'
     ])
 }
 
@@ -98,6 +106,11 @@ async function iniciarJuego() {
         miMenuIntercambio.actualizar()
         centrarCámara()
     }
+
+    window.app = app
+    window.jugador = miJugador
+    window.npc = primerGato
+    window.PIXI = PIXI
 }
 
 iniciarJuego();

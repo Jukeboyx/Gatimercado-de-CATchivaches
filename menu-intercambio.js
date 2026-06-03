@@ -14,10 +14,9 @@ export class MenuIntercambio {
         this.ALTO = 220
         this.RADIO_BORDE = 50
 
-        this.TAMAÑO_SPRITE = 60
+        this.TAMAÑO_SPRITE = 70
 
         this.TAMAÑO_EMOJI_OBJETO = 60
-        this.TAMAÑO_EMOJI_NPC = 36
         this.MARGEN_EMOJI = 6
 
         this.TAMAÑO_BOTON = 40
@@ -30,29 +29,7 @@ export class MenuIntercambio {
         this.fondo.roundRect(0, 0, this.ANCHO, this.ALTO, this.RADIO_BORDE)
         this.fondo.fill({ color: this.COLOR_FONDO, alpha: 0.8 })
         this.contenedor.addChild(this.fondo)
-
-        //Sprite jugador
-        const texturaEspera = PIXI.Texture.from('Recursos/Sprites/JugadorEspera.png')
-        const frames = cortarFrames(texturaEspera, 4, 64)
-        this.spriteJugador = new PIXI.Sprite(frames[0])
-        this.spriteJugador.anchor.set(0.5)
-        this.spriteJugador.width = this.TAMAÑO_SPRITE
-        this.spriteJugador.height = this.TAMAÑO_SPRITE
-        this.spriteJugador.x = this.ANCHO * 0.25
-        this.spriteJugador.y = 60
-        this.contenedor.addChild(this.spriteJugador)
-
-        //Sprite NPC
-        //Reemplazar por sprite del NPC de turno
-        this.emojiNPC = new PIXI.Text({
-            text: '😺',
-            style: { fontSize: this.TAMAÑO_EMOJI_NPC }
-        })
-        this.emojiNPC.anchor.set(0.5)
-        this.emojiNPC.x = this.ANCHO * 0.75
-        this.emojiNPC.y = 60
-        this.contenedor.addChild(this.emojiNPC)
-
+        
         //Objeto que el NPC quiere
         this.objetoJugador = new PIXI.Text({
             text: '',
@@ -73,6 +50,30 @@ export class MenuIntercambio {
         this.objetoNPC.y = 150
         this.contenedor.addChild(this.objetoNPC)
 
+        //Sprite jugador
+        const texturaEsperaJugador = PIXI.Assets.get('Recursos/Sprites/JugadorEspera.png')
+        const framesJugador = cortarFrames(texturaEsperaJugador, 4, 64)
+        this.spriteJugador = new PIXI.Sprite(framesJugador[0])
+        this.spriteJugador.anchor.set(0.5)
+        this.spriteJugador.width = this.TAMAÑO_SPRITE
+        this.spriteJugador.height = this.TAMAÑO_SPRITE
+        this.spriteJugador.position.set(
+            this.objetoJugador.x,
+            this.objetoJugador.y - (this.TAMAÑO_EMOJI_OBJETO + this.TAMAÑO_EMOJI_OBJETO / 2)
+        )
+        this.contenedor.addChild(this.spriteJugador)
+
+        //Sprite NPC
+        this.spriteGatiNPC = new PIXI.Sprite()
+        this.spriteGatiNPC.anchor.set(0.5)
+        this.spriteGatiNPC.width = this.TAMAÑO_SPRITE
+        this.spriteGatiNPC.height = this.TAMAÑO_SPRITE
+        this.spriteGatiNPC.position.set(
+            this.objetoNPC.x,
+            this.objetoNPC.y - (this.TAMAÑO_EMOJI_OBJETO + this.TAMAÑO_EMOJI_OBJETO / 2)
+        )
+        this.contenedor.addChild(this.spriteGatiNPC)
+        
         //Botón de intercambio
         this.boton = new PIXI.Text({
             text: '🔄',
@@ -106,15 +107,29 @@ export class MenuIntercambio {
 
         this.boton.on('pointertap', (e) => {
             e.stopPropagation()
-            realizarTrueque(this.npc, this.inventario)
-            this.cerrar()
+
+            if (this.npc) {
+                realizarTrueque(this.npc, this.inventario)
+                this.cerrar()
+            } else {
+                console.warn("Ojo q no hay npc con el cual interactuar")
+            }
         })
     }
 
     abrir(npc) {
         this.npc = npc
+
+        console.log(this.npc.texturaEspera)
+
+        const texturaEsperaGatiNPC = this.npc.texturaEspera
+        const framesGatiNPC = cortarFrames(texturaEsperaGatiNPC, 4, 64)
+        this.spriteGatiNPC.texture = framesGatiNPC[0]
+
         this.objetoJugador.text = catálogoObjetos[npc.idObjetoQuePide].emoji
         this.objetoNPC.text = catálogoObjetos[npc.idObjetoQueTiene].emoji
+
+        npc.jugador.mef.cambiarEstado('intercambio')
 
         this.contenedor.x = (this.app.screen.width - this.ANCHO) / 2
         this.contenedor.y = (this.app.screen.height - this.ALTO) / 2

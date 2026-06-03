@@ -3,11 +3,11 @@ import * as PIXI from '../pixi.js';
 import { MEF } from "../MEF.js"
 import * as estado from "./estados.js"
 
-export function cortarFrames(imagen, cantidadDeFrames, anchoFrame) {
+export function cortarFrames(rutaImagen, cantidadDeFrames, anchoFrame) {
     const frames = []
     for (let i = 0; i < cantidadDeFrames; i++) {
         frames.push(new PIXI.Texture({
-            source: imagen.source,
+            source: rutaImagen,
             frame: new PIXI.Rectangle(i * anchoFrame, 0, anchoFrame, anchoFrame)
         }))
     }
@@ -27,10 +27,10 @@ export class Jugador {
 
         this.banderitas = []
 
-        const texturaDeLado = PIXI.Texture.from('Recursos/Sprites/JugadorDeLado.png')
-        const texturaArriba = PIXI.Texture.from('Recursos/Sprites/JugadorArriba.png')
-        const texturaAbajo  = PIXI.Texture.from('Recursos/Sprites/JugadorAbajo.png')
-        const texturaEspera = PIXI.Texture.from('Recursos/Sprites/JugadorEspera.png')
+        const texturaDeLado = PIXI.Assets.get('Recursos/Sprites/JugadorDeLado.png')
+        const texturaArriba = PIXI.Assets.get('Recursos/Sprites/JugadorArriba.png')
+        const texturaAbajo  = PIXI.Assets.get('Recursos/Sprites/JugadorAbajo.png')
+        const texturaEspera = PIXI.Assets.get('Recursos/Sprites/JugadorEspera.png')
 
         this.CANTIDAD_FRAMES = 4
         this.ANCHO_FRAME = 64

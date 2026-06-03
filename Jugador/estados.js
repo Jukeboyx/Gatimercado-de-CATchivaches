@@ -50,7 +50,6 @@ export class Caminando extends Estado {
         this.framesSinRecalcular++
 
         if (this.framesSinRecalcular < 10) return
-        console.log('recalculando hacia', this.dueño.entidadObjetivo.contenedor.x)
 
         this.framesSinRecalcular = 0
         this.destino = {
@@ -58,7 +57,6 @@ export class Caminando extends Estado {
             y: entidad.contenedor.y,
             distanciaFreno: this.destino.distanciaFreno
         }
-        console.log(this.destino.distanciaFreno)
         this.recalcularCamino()
     }
 
@@ -151,5 +149,9 @@ export class Caminando extends Estado {
 }
 
 export class Intercambio extends Estado {
-    //bloquear movimiento
+    alEntrar() {
+        this.dueño.estelaJugador.clear()
+        this.dueño.imagen.textures = this.dueño.animaciones.espera
+        this.dueño.imagen.play()
+    }
 }

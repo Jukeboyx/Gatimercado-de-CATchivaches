@@ -3,7 +3,7 @@ import * as PIXI from '../pixi.js';
 import { MEF } from "../MEF.js"
 import { Estado } from "../MEF.js"
 import * as estado from "./estados.js"
-import { Jugador } from '../Jugador/index.js';
+import { Jugador, cortarFrames } from '../Jugador/index.js';
 
 export class GatiNPC {
     constructor(posX, posY, idObjetoQueTiene, idObjetoQuePide, jugador, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000, menu) {
@@ -22,16 +22,36 @@ export class GatiNPC {
         this.PADDING = 6
         this.DISTANCIA_FRENO = 60
 
-        this.spriteTemporal = new PIXI.Text({
-            text: '🐱',
-            style: {
-                fontSize: this.TAMAÑO_FUENTE,
-                padding: this.PADDING
-            },
-            anchor: 0.5
-        });
+        const tiposDeGatos = [
+            'GatoGris',
+            'GatoNegro'
+        ]
 
-        this.contenedor.addChild(this.spriteTemporal);
+        this.gatoActual = tiposDeGatos[Math.floor(Math.random() * tiposDeGatos.length)]
+
+        const texturaDeLado = PIXI.Assets.get(`Recursos/Sprites/${this.gatoActual}DeLado.png`)
+        const texturaArriba = PIXI.Assets.get(`Recursos/Sprites/${this.gatoActual}Arriba.png`)
+        const texturaAbajo  = PIXI.Assets.get(`Recursos/Sprites/${this.gatoActual}Abajo.png`)
+        const texturaEspera = PIXI.Assets.get(`Recursos/Sprites/${this.gatoActual}Espera.png`)
+        this.texturaEspera = PIXI.Assets.get(`Recursos/Sprites/${this.gatoActual}Espera.png`)
+
+        this.CANTIDAD_FRAMES = 4
+        this.ANCHO_FRAME = 64
+        this.VELOCIDAD_ANIMACION = 0.1
+
+        this.animaciones = {
+            lado: cortarFrames(texturaDeLado, this.CANTIDAD_FRAMES, this.ANCHO_FRAME),
+            arriba: cortarFrames(texturaArriba, this.CANTIDAD_FRAMES, this.ANCHO_FRAME),
+            abajo: cortarFrames(texturaAbajo, this.CANTIDAD_FRAMES, this.ANCHO_FRAME),
+            espera: cortarFrames(texturaEspera, this.CANTIDAD_FRAMES, this.ANCHO_FRAME),
+        }
+
+        this.imagen = new PIXI.AnimatedSprite(this.animaciones.espera)
+        this.imagen.anchor.set(0.5)
+        this.imagen.animationSpeed = this.VELOCIDAD_ANIMACION
+        this.imagen.play()
+        
+        this.contenedor.addChild(this.imagen)
 
         this.contenedor.eventMode = 'static'
         this.contenedor.cursor = 'pointer'
@@ -39,11 +59,9 @@ export class GatiNPC {
         this.contenedor.hitArea = new PIXI.Circle(0, 0, 30)
 
         this.contenedor.on('pointertap', (e) => {
-            console.log('clic detectado')
             e.stopPropagation()
             if (this.mef.estadoActual instanceof estado.Enojado) return
 
-            console.log(`¡Miau! Te doy el ítem ${this.idObjetoQueTiene} si me traés ${this.idObjetoQuePide}`);
             if (this.jugador) {
                 this.jugador.irHacia(
                     { x: this.contenedor.x, y: this.contenedor.y },
@@ -63,10 +81,6 @@ export class GatiNPC {
         })
 
         this.mef.cambiarEstado('merodeo')
-    }
-
-    alHacerClic() {
-        //this.mef.cambiarEstado('intercambio')
     }
     
     jugadorVaAIntercambiar() {

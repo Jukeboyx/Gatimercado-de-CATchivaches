@@ -6,6 +6,8 @@ import * as mover from "../movimiento.js"
 
 export class Espera extends Estado {
     alEntrar() {
+        this.dueño.imagen.textures = this.dueño.animaciones.espera
+        this.dueño.imagen.play()
         this.TIEMPO_ESPERA = 2000 + Math.random() * 3000
         this.tiempoTrancurrido = 0
     }
@@ -27,6 +29,7 @@ export class Merodeo extends Estado {
     alEntrar() {
         this.indicePunto = 0
         this.VELOCIDAD = 3
+        this.últimaAnimación = null
 
         const destino = this.elegirPuntoRandom()
 
@@ -51,6 +54,39 @@ export class Merodeo extends Estado {
         }
     }
 
+    actualizarAnimación(dx, dy) {
+        const imagen = this.dueño.imagen
+        const animaciones = this.dueño.animaciones
+        const UMBRAL_DIAGONAL = 0.3
+        const proporción = Math.abs(dx) / (Math.abs(dx) + Math.abs(dy) + 0.001)
+        const movimientoSignificativo = Math.abs(dx) > 1;
+
+        let animaciónNueva
+        let escalaX = imagen.scale.x
+
+        if (proporción > 0.5 + UMBRAL_DIAGONAL) {
+            animaciónNueva = animaciones.lado
+            if (movimientoSignificativo) escalaX = dx < 0 ? -1 : 1
+        } else if (proporción < 0.5 - UMBRAL_DIAGONAL) {
+            animaciónNueva = dy < 0
+                ? animaciones.arriba
+                : animaciones.abajo
+        } else {
+            animaciónNueva = animaciones.lado
+            if (movimientoSignificativo) escalaX = dx < 0 ? -1 : 1
+        }
+
+        if (animaciónNueva !== this.últimaAnimación) {
+            imagen.textures = animaciónNueva
+            imagen.play()
+            this.últimaAnimación = animaciónNueva
+        }
+        
+        if (animaciónNueva === animaciones.lado && escalaX !== imagen.scale.x) {
+            imagen.scale.x = escalaX
+        }
+    }
+
     alActualizar(datos) {
         if (this.dueño.jugadorVaAIntercambiar()) {
             this.dueño.mef.cambiarEstado('intercambio')
@@ -71,6 +107,10 @@ export class Merodeo extends Estado {
             datos
         )
 
+        if (!resultado.llegó) {
+            this.actualizarAnimación(resultado.dx, resultado.dy)
+        }
+
         if (resultado.llegó) {
             if (resultado.esUltimoPunto) {
                 this.dueño.mef.cambiarEstado('espera')
@@ -84,6 +124,8 @@ export class Merodeo extends Estado {
 export class Intercambio extends Estado {
     alEntrar() {
         this.dueño.menu.abrir(this.dueño)
+        this.dueño.imagen.textures = this.dueño.animaciones.espera
+        this.dueño.imagen.play()
     }
 
     alActualizar() {

@@ -103,7 +103,6 @@ export class Inventario {
 
                 const nuevoAncho = this.textoBurbuja.width + this.MARGEN * 2
                 const nuevoAlto = this.textoBurbuja.height + this.MARGEN * 2
-
                 
                 this.fondoBurbuja.clear()
                 this.fondoBurbuja.roundRect(0, 0, nuevoAncho, nuevoAlto, this.RADIO_BORDE)
