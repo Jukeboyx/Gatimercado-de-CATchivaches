@@ -1,7 +1,7 @@
 import * as PIXI from '../pixi.js';
 
-import { MEF } from "../MEF.js"
-import { Estado } from "../MEF.js"
+import { MEF } from "../mef.js"
+import { Estado } from "../mef.js"
 import * as estado from "./estados.js"
 import { Jugador, cortarFrames } from '../Jugador/index.js';
 

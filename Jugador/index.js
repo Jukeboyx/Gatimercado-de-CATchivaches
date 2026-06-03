@@ -1,6 +1,6 @@
 import * as PIXI from '../pixi.js';
 
-import { MEF } from "../MEF.js"
+import { MEF } from "../mef.js"
 import * as estado from "./estados.js"
 
 export function cortarFrames(rutaImagen, cantidadDeFrames, anchoFrame) {
