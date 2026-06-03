@@ -1,6 +1,6 @@
 import * as PIXI from '../pixi.js';
 
-import { Estado } from "../MEF.js";
+import { Estado } from "../mef.js";
 import * as mover from "../movimiento.js"
 
 export class Espera extends Estado {
