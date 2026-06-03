@@ -18,12 +18,40 @@ export class MenuIntercambio {
 
         this.TAMAÑO_EMOJI_OBJETO = 60
         this.MARGEN_EMOJI = 6
+        this.ANCHO_BURBUJA_INFORMACIÓN = 120
+        this.ALTO_BURBUJA_INFORMACIÓN = 35
+        this.TAMAÑO_FUENTE_INFORMACIÓN = 14
+        this.OFFSET_BURBUJA_INFORMACIÓN = 10
 
-        this.TAMAÑO_BOTON = 40
+        this.TAMAÑO_BOTON = 50
         this.COLOR_FONDO = 0x333333
+
+        this.burbuja = new PIXI.Container()
+        this.burbuja.visible = false
+
+        this.fondoBurbuja = new PIXI.Graphics()
+        this.fondoBurbuja.roundRect(0, 0, this.ANCHO_BURBUJA_INFORMACIÓN, this.ALTO_BURBUJA_INFORMACIÓN, 10)
+        this.fondoBurbuja.fill({
+            color: this.COLOR_FONDO,
+            alpha: 0.8
+        })
+
+        this.textoBurbuja = new PIXI.Text ({ 
+            text: '',
+            style: {
+                fontSize: this.TAMAÑO_FUENTE_INFORMACIÓN,
+                fill: '#ffffff'
+            },
+        })
+        this.textoBurbuja.anchor.set(0.5)
+        this.textoBurbuja.position.set(0, 0)
 
         this.contenedor = new PIXI.Container()
         this.contenedor.visible = false
+        
+        this.burbuja.addChild(this.fondoBurbuja)
+        this.burbuja.addChild(this.textoBurbuja)
+        this.contenedor.addChild(this.burbuja)
 
         this.fondo = new PIXI.Graphics()
         this.fondo.roundRect(0, 0, this.ANCHO, this.ALTO, this.RADIO_BORDE)
@@ -38,7 +66,33 @@ export class MenuIntercambio {
         this.objetoJugador.anchor.set(0.5)
         this.objetoJugador.x = this.ANCHO * 0.25
         this.objetoJugador.y = 150
+        this.objetoJugador.eventMode = 'static'
         this.contenedor.addChild(this.objetoJugador)
+
+        this.objetoJugador.on('pointerover', () => {
+            this.textoBurbuja.text = this.infoJugador
+
+            const nuevoAncho = this.textoBurbuja.width + 10 * 2
+            const nuevoAlto = this.textoBurbuja.height + 10 * 2
+            
+            this.fondoBurbuja.clear()
+            this.fondoBurbuja.roundRect(-nuevoAncho / 2, 0, nuevoAncho, nuevoAlto, 10)
+            this.fondoBurbuja.fill({
+                color: 0x000000,
+                alpha: 0.7
+            })
+
+            this.textoBurbuja.position.set(0, nuevoAlto / 2)
+            
+            this.burbuja.x = this.objetoJugador.x
+            this.burbuja.y = this.ALTO + this.OFFSET_BURBUJA_INFORMACIÓN
+            
+            this.burbuja.visible = true
+        })
+
+        this.objetoJugador.on('pointerout', () => {
+            this.burbuja.visible = false
+        })
 
         //Objeto que el NPC tiene
         this.objetoNPC = new PIXI.Text({
@@ -48,7 +102,33 @@ export class MenuIntercambio {
         this.objetoNPC.anchor.set(0.5)
         this.objetoNPC.x = this.ANCHO * 0.75
         this.objetoNPC.y = 150
+        this.objetoNPC.eventMode = 'static'
         this.contenedor.addChild(this.objetoNPC)
+
+        this.objetoNPC.on('pointerover', () => {
+            this.textoBurbuja.text = this.infoNPC
+
+            const nuevoAncho = this.textoBurbuja.width + 10 * 2
+            const nuevoAlto = this.textoBurbuja.height + 10 * 2
+            
+            this.fondoBurbuja.clear()
+            this.fondoBurbuja.roundRect(-nuevoAncho / 2, 0, nuevoAncho, nuevoAlto, 10)
+            this.fondoBurbuja.fill({
+                color: 0x000000,
+                alpha: 0.7
+            })
+
+            this.textoBurbuja.position.set(0, nuevoAlto / 2)
+            
+            this.burbuja.x = this.objetoNPC.x
+            this.burbuja.y = this.ALTO + this.OFFSET_BURBUJA_INFORMACIÓN
+            
+            this.burbuja.visible = true
+        })
+
+        this.objetoNPC.on('pointerout', () => {
+            this.burbuja.visible = false
+        })
 
         //Sprite jugador
         const texturaEsperaJugador = PIXI.Assets.get('Recursos/Sprites/JugadorEspera.png')
@@ -85,24 +165,16 @@ export class MenuIntercambio {
         this.boton.eventMode = 'static'
         this.boton.cursor = 'pointer'
 
-        this.bordeBoton = new PIXI.Graphics()
-        this.contenedor.addChild(this.bordeBoton)
         this.contenedor.addChild(this.boton)
 
         this.boton.on('pointerover', () => {
-            this.bordeBoton.clear()
-            this.bordeBoton.roundRect(
-                this.boton.x - this.TAMAÑO_BOTON * 0.5,
-                this.boton.y - this.TAMAÑO_BOTON * 0.5,
-                this.TAMAÑO_BOTON,
-                this.TAMAÑO_BOTON,
-                6
-            )
-            this.bordeBoton.stroke({ width: 2, color: 0xffffff, alpha: 0.8 })
+            this.boton.scale.set(0.9)
+            this.boton.alpha = 0.8
         })
 
         this.boton.on('pointerout', () => {
-            this.bordeBoton.clear()
+            this.boton.scale.set(1)
+            this.boton.alpha = 1
         })
 
         this.boton.on('pointertap', (e) => {
@@ -127,7 +199,10 @@ export class MenuIntercambio {
         this.spriteGatiNPC.texture = framesGatiNPC[0]
 
         this.objetoJugador.text = catálogoObjetos[npc.idObjetoQuePide].emoji
+        this.infoJugador = catálogoObjetos[npc.idObjetoQuePide].nombre
+
         this.objetoNPC.text = catálogoObjetos[npc.idObjetoQueTiene].emoji
+        this.infoNPC = catálogoObjetos[npc.idObjetoQueTiene].nombre
 
         npc.jugador.mef.cambiarEstado('intercambio')
 

@@ -12,8 +12,9 @@ export function realizarTrueque(npc, inventarioInstancia) {
     const indice = inventarioInstancia.objetosActuales.findIndex(item => item.id === npc.idObjetoQuePide)
     
     if (indice !== -1) {
-        const nuevoObjeto = catálogoObjetos[npc.idObjetoQueTiene]
-        inventarioInstancia.actualizarRanura(indice, nuevoObjeto)
+        const nuevoObjetoDelJugador = catálogoObjetos[npc.idObjetoQueTiene]
+        inventarioInstancia.actualizarRanura(indice, nuevoObjetoDelJugador)
+        npc.actualizarObjetos()
         console.log("El trueque fue todo un éxito.")
     }
     else {
@@ -45,7 +46,7 @@ export class Inventario {
         this.burbuja.visible = false
 
         this. fondoBurbuja = new PIXI.Graphics()
-        this.fondoBurbuja.roundRect(0, 0, this.ANCHO_BURBUJA, this.ALTO_BURBUJA, this.RADIO_BORDE)
+        this.fondoBurbuja.roundRect(0, 0, this.ANCHO_BURBUJA, this.ALTO_BURBUJA, 10)
         this.fondoBurbuja.fill({
             color: 0x000000,
             alpha: 0.8
@@ -105,7 +106,7 @@ export class Inventario {
                 const nuevoAlto = this.textoBurbuja.height + this.MARGEN * 2
                 
                 this.fondoBurbuja.clear()
-                this.fondoBurbuja.roundRect(0, 0, nuevoAncho, nuevoAlto, this.RADIO_BORDE)
+                this.fondoBurbuja.roundRect(0, 0, nuevoAncho, nuevoAlto, 10)
                 this.fondoBurbuja.fill({
                     color: 0x000000,
                     alpha: 0.7

@@ -1,7 +1,6 @@
 import * as PIXI from '../pixi.js';
 
 import { MEF } from "../mef.js"
-import { Estado } from "../mef.js"
 import * as estado from "./estados.js"
 import { Jugador, cortarFrames } from '../Jugador/index.js';
 
@@ -90,6 +89,10 @@ export class GatiNPC {
         const npcEsObjetivoDelJugador = this.jugador.entidadObjetivo === this
 
         return jugadorEstáCerca && npcEsObjetivoDelJugador
+    }
+
+    actualizarObjetos() {
+        [this.idObjetoQueTiene, this.idObjetoQuePide] = [this.idObjetoQuePide, this.idObjetoQueTiene]
     }
 
     actualizar(datos) {
