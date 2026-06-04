@@ -49,13 +49,15 @@ export class GatiNPC {
         this.imagen.anchor.set(0.5)
         this.imagen.animationSpeed = this.VELOCIDAD_ANIMACION
         this.imagen.play()
+        const escalaSprite = window.innerWidth < 768 ? 2 : 1
+        this.imagen.scale.set(escalaSprite)
         
         this.contenedor.addChild(this.imagen)
 
         this.contenedor.eventMode = 'static'
         this.contenedor.cursor = 'pointer'
 
-        this.contenedor.hitArea = new PIXI.Circle(0, 0, 30)
+        this.contenedor.hitArea = new PIXI.Circle(0, 0, 50)
 
         this.contenedor.on('pointertap', (e) => {
             e.stopPropagation()

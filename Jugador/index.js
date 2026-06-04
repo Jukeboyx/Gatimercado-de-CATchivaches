@@ -49,6 +49,8 @@ export class Jugador {
         this.imagen.anchor.set(0.5)
         this.imagen.animationSpeed = this.VELOCIDAD_ANIMACION
         this.imagen.play()
+        const escalaSprite = window.innerWidth < 768 ? 2 : 1
+        this.imagen.scale.set(escalaSprite)
 
         this.contenedor = new PIXI.Container()
         this.contenedor.addChild(this.imagen)

@@ -61,6 +61,7 @@ export class Caminando extends Estado {
     }
 
     actualizarAnimación(dx, dy) {
+        const escalaBase = Math.abs(this.dueño.imagen.scale.x)
         const imagen = this.dueño.imagen
         const animaciones = this.dueño.animaciones
         const UMBRAL_DIAGONAL = 0.3
@@ -72,14 +73,14 @@ export class Caminando extends Estado {
 
         if (proporción > 0.5 + UMBRAL_DIAGONAL) {
             animaciónNueva = animaciones.lado
-            if (movimientoSignificativo) escalaX = dx < 0 ? -1 : 1
+            if (movimientoSignificativo) escalaX = dx < 0 ? -escalaBase : escalaBase
         } else if (proporción < 0.5 - UMBRAL_DIAGONAL) {
             animaciónNueva = dy < 0
                 ? animaciones.arriba
                 : animaciones.abajo
         } else {
             animaciónNueva = animaciones.lado
-            if (movimientoSignificativo) escalaX = dx < 0 ? -1 : 1
+            if (movimientoSignificativo) escalaX = dx < 0 ? -escalaBase : escalaBase
         }
 
         if (animaciónNueva !== this.últimaAnimación) {

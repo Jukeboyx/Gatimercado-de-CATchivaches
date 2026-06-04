@@ -30,23 +30,13 @@ async function iniciarJuego() {
         width: window.innerWidth,
         height: window.innerHeight,
         background: 'green',
-        resolution: window.devicePixelRatio || 1,
-        autoDensity: true
     })
     await cargarRecursos()
 
-    window.addEventListener('resize', () => {
-        app.renderer.resize(window.innerWidth, window.innerHeight)
-        const escala = window.innerWidth / ANCHO_DISEÑO
-        mundoContenedor.scale.set(escala)
-        interfazContenedor.scale.set(escala)
-        centrarCámara()
-    })
-
     document.body.appendChild(app.canvas);
 
-    const ANCHO_DISEÑO = 1280
-    const escala = window.innerWidth / ANCHO_DISEÑO
+    const ALTO_DISEÑO = 800
+    let escala = window.innerWidth > 768 ? 1 : window.innerHeight / ALTO_DISEÑO
 
     const ANCHO_MUNDO = 2000
     const ALTO_MUNDO = 2000
@@ -66,6 +56,7 @@ async function iniciarJuego() {
     
     const miInventario = new Inventario(app)
     interfazContenedor.addChild(miInventario.contenedor)
+    miInventario.actualizar(escala)
     
     const miMenuIntercambio = new MenuIntercambio(app, miInventario)
     interfazContenedor.addChild(miMenuIntercambio.contenedor)
@@ -73,15 +64,29 @@ async function iniciarJuego() {
     const primerGato = new GatiNPC(400, 300, 'libro', 'ovilloLana', miJugador, ANCHO_MUNDO, ALTO_MUNDO, miMenuIntercambio);
     mundoContenedor.addChild(primerGato.contenedor);
     
-    mundoContenedor.scale.set(escala)
     interfazContenedor.scale.set(escala)
+    let redimensionando = false
+    
+    window.addEventListener('resize', () => {
+        if (redimensionando) return
+        redimensionando = true
+
+        app.renderer.resize(window.innerWidth, window.innerHeight)
+        escala = window.innerWidth > 768 ? 1 : window.innerHeight / ALTO_DISEÑO
+        console.log(escala)
+        interfazContenedor.scale.set(escala)
+        miInventario.actualizar(escala)
+        centrarCámara()
+
+        redimensionando = false
+    })
     
     function centrarCámara() {
-        let cámaraX = app.screen.width / 2 - miJugador.contenedor.x * escala
-        let cámaraY = app.screen.height / 2 - miJugador.contenedor.y * escala
+        let cámaraX = app.screen.width / 2 - miJugador.contenedor.x
+        let cámaraY = app.screen.height / 2 - miJugador.contenedor.y
 
-        cámaraX = Math.min(0, Math.max(cámaraX, app.screen.width - ANCHO_MUNDO * escala))
-        cámaraY = Math.min(0, Math.max(cámaraY, app.screen.height - ALTO_MUNDO * escala))
+        cámaraX = Math.min(0, Math.max(cámaraX, app.screen.width - ANCHO_MUNDO))
+        cámaraY = Math.min(0, Math.max(cámaraY, app.screen.height - ALTO_MUNDO))
 
         mundoContenedor.x = cámaraX
         mundoContenedor.y = cámaraY
@@ -111,7 +116,6 @@ async function iniciarJuego() {
     function actualizarJuego(dt) {
         miJugador.actualizar(dt)
         primerGato.actualizar(dt)
-        miInventario.actualizar(dt)
         miMenuIntercambio.actualizar()
         centrarCámara()
     }

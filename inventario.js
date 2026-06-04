@@ -79,7 +79,6 @@ export class Inventario {
     }
 
     inicializar() {
-        this.posYInventarioInicial = (this.app.screen.height - this.MARGEN - this.ALTO_RANURA)
         this.ranuras = []
 
         for (let i = 0; i < this.CANTIDAD_RANURAS; i++) {
@@ -88,8 +87,6 @@ export class Inventario {
             const objetoActual = this.objetosActuales[i]
 
             const ranura = new PIXI.Container()
-            ranura.x = posX
-            ranura.y = this.posYInventarioInicial
 
             const fondoRanura = new PIXI.Graphics()
             fondoRanura.roundRect(0, 0, this.ANCHO_RANURA, this.ALTO_RANURA, this.RADIO_BORDE)
@@ -117,6 +114,8 @@ export class Inventario {
                 
                 this.burbuja.x = Math.round(ranura.x + ((this.ANCHO_RANURA - this.burbuja.width) / 2))
                 this.burbuja.y = ranura.y - this.OFFSET_BURBUJA
+
+                this.fondoRanura =
                 
                 this.burbuja.visible = true
             })
@@ -145,9 +144,12 @@ export class Inventario {
         }
     }
 
-    actualizar() {
-        const posX = (this.app.screen.width - ((this.ANCHO_RANURA * this.CANTIDAD_RANURAS) + (this.MARGEN * 2))) / 2
-        const posY = this.app.screen.height - this.MARGEN - this.ALTO_RANURA
+    actualizar(escala) {
+        const anchoEfectivo = this.app.screen.width / escala
+        const altoEfectivo = this.app.screen.height / escala
+
+        const posX = (anchoEfectivo - ((this.ANCHO_RANURA * this.CANTIDAD_RANURAS) + (this.MARGEN * 2))) / 2
+        const posY = altoEfectivo - this.MARGEN - this.ALTO_RANURA
 
         for (let i = 0; i < this.CANTIDAD_RANURAS; i++) {
             this.ranuras[i].x = posX + (this.ANCHO_RANURA + this.MARGEN) * i
