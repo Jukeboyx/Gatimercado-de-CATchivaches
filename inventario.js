@@ -23,7 +23,7 @@ export function realizarTrueque(npc, inventarioInstancia) {
 }
 
 export class Inventario {
-    constructor(app) {
+    constructor(app, esMovil) {
         this.app = app
         this.contenedor = new PIXI.Container()
 
@@ -144,9 +144,9 @@ export class Inventario {
         }
     }
 
-    actualizar(escala) {
-        const anchoEfectivo = this.app.screen.width / escala
-        const altoEfectivo = this.app.screen.height / escala
+    actualizar() {
+        const anchoEfectivo = this.app.screen.width
+        const altoEfectivo = this.app.screen.height
 
         const posX = (anchoEfectivo - ((this.ANCHO_RANURA * this.CANTIDAD_RANURAS) + (this.MARGEN * 2))) / 2
         const posY = altoEfectivo - this.MARGEN - this.ALTO_RANURA

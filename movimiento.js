@@ -1,4 +1,5 @@
-//Buena canción de Hozier
+//Movement, buena canción de Hozier
+
 import { calcularRuta } from './pathfinding.js'
 
 export function calcularCamino(origenX, origenY, destinoX, destinoY, anchoMundo, altoMundo) {
