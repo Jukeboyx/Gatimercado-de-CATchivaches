@@ -8,7 +8,7 @@ export class Espera extends Estado {
     alEntrar() {
         this.dueño.imagen.textures = this.dueño.animaciones.espera
         this.dueño.imagen.play()
-        this.TIEMPO_ESPERA = 2000 + Math.random() * 3000
+        this.TIEMPO_ESPERA = 2000 + Math.random() * 4000
         this.tiempoTrancurrido = 0
     }
 
@@ -28,7 +28,7 @@ export class Espera extends Estado {
 export class Merodeo extends Estado {
     alEntrar() {
         this.indicePunto = 0
-        this.VELOCIDAD = 3
+        this.VELOCIDAD = this.dueño.VELOCIDAD_GATINPC
         this.últimaAnimación = null
 
         const destino = this.elegirPuntoRandom()
@@ -124,7 +124,9 @@ export class Merodeo extends Estado {
 
 export class Intercambio extends Estado {
     alEntrar() {
-        this.dueño.menu.abrir(this.dueño)
+        if (this.dueño.alIniciarIntercambio) {
+            this.dueño.alIniciarIntercambio(this.dueño)
+        }
         this.dueño.imagen.textures = this.dueño.animaciones.espera
         this.dueño.imagen.play()
     }

@@ -9,6 +9,7 @@ export class Objeto {
     }
 }
 
+//¿Objetos Objeto?
 export const catálogoObjetos = {
     manzanaRoja: new Objeto('manzanaRoja', 'Manzana roja', '🍎'),
     pezFresco: new Objeto('pezFresco', 'Pez fresco', '🐟'),

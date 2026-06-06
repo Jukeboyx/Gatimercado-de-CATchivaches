@@ -5,17 +5,20 @@ import * as estado from "./estados.js"
 import { Jugador, cortarFrames } from '../Jugador/index.js';
 
 export class GatiNPC {
-    constructor(posX, posY, idObjetoQueTiene, idObjetoQuePide, jugador, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000, menu) {
+    constructor(posX, posY, idObjetoQueTiene, idObjetoQuePide, jugador, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000) {
         this.idObjetoQueTiene = idObjetoQueTiene
         this.idObjetoQuePide = idObjetoQuePide
         this.jugador = jugador
         this.ANCHO_MUNDO = ANCHO_MUNDO
         this.ALTO_MUNDO = ALTO_MUNDO
-        this.menu = menu
+        this.alIniciarIntercambio = null
+        this.alSeleccionar = null
 
         this.contenedor = new PIXI.Container();
         this.contenedor.x = posX;
         this.contenedor.y = posY;
+
+        this.VELOCIDAD_GATINPC = 2
 
         this.TAMAÑO_FUENTE = 30
         this.PADDING = 6
@@ -62,6 +65,8 @@ export class GatiNPC {
         this.contenedor.on('pointertap', (e) => {
             e.stopPropagation()
             if (this.mef.estadoActual instanceof estado.Enojado) return
+
+            if (this.alSeleccionar) this.alSeleccionar()
 
             if (this.jugador) {
                 this.jugador.irHacia(

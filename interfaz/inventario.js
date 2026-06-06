@@ -1,12 +1,5 @@
-import * as PIXI from './pixi.js';
-
-import { catálogoObjetos } from "./datos.js"
-
-export let inventarioGlobal = [
-    catálogoObjetos['manzanaRoja'],
-    catálogoObjetos['pezFresco'],
-    catálogoObjetos['ovilloLana']
-]
+import * as PIXI from '../pixi.js';
+import { catálogoObjetos } from '../datos.js';
 
 export function realizarTrueque(npc, inventarioInstancia) {
     const indice = inventarioInstancia.objetosActuales.findIndex(item => item.id === npc.idObjetoQuePide)
@@ -23,8 +16,10 @@ export function realizarTrueque(npc, inventarioInstancia) {
 }
 
 export class Inventario {
-    constructor(app, esMovil) {
+    constructor(app, objetosIniciales) {
         this.app = app
+        this.objetosActuales = objetosIniciales.map(id => catálogoObjetos[id])
+
         this.contenedor = new PIXI.Container()
 
         this.ANCHO_RANURA = 60
@@ -66,12 +61,6 @@ export class Inventario {
         this.burbuja.addChild(this.fondoBurbuja)
         this.burbuja.addChild(this.textoBurbuja)
         this.contenedor.addChild(this.burbuja)
-
-        this.objetosActuales = [
-            catálogoObjetos['manzanaRoja'],
-            catálogoObjetos['pezFresco'],
-            catálogoObjetos['ovilloLana']
-        ]
 
         this.iconos = []
 

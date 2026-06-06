@@ -1,8 +1,8 @@
-import * as PIXI from './pixi.js';
+import * as PIXI from '../pixi.js';
 
 import { realizarTrueque } from './inventario.js';
-import { cortarFrames } from './Jugador/index.js';
-import { catálogoObjetos } from './datos.js';
+import { cortarFrames } from '../Jugador/index.js';
+import { catálogoObjetos } from '../datos.js';
 
 export class MenuIntercambio {
     constructor(app, inventario) {
