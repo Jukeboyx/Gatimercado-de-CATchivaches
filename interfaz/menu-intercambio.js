@@ -1,7 +1,7 @@
 import * as PIXI from '../pixi.js';
 
 import { realizarTrueque } from './inventario.js';
-import { cortarFrames } from '../Jugador/index.js';
+import { cortarFrames } from '../jugador/index.js';
 import { catálogoObjetos } from '../datos.js';
 
 export class MenuIntercambio {
@@ -48,10 +48,6 @@ export class MenuIntercambio {
 
         this.contenedor = new PIXI.Container()
         this.contenedor.visible = false
-        this.contenedor.eventMode = 'static'
-        this.contenedor.on('pointertap', (e) => {
-            e.stopPropagation()
-        })
         
         this.burbuja.addChild(this.fondoBurbuja)
         this.burbuja.addChild(this.textoBurbuja)
@@ -208,17 +204,13 @@ export class MenuIntercambio {
         this.objetoNPC.text = catálogoObjetos[npc.idObjetoQueTiene].emoji
         this.infoNPC = catálogoObjetos[npc.idObjetoQueTiene].nombre
 
-        npc.jugador.mef.cambiarEstado('intercambio')
-
         this.contenedor.x = (this.app.screen.width - this.ANCHO) / 2
         this.contenedor.y = (this.app.screen.height - this.ALTO) / 2
         this.contenedor.visible = true
     }
 
     cerrar() {
-        this.npc.jugador.entidadObjetivo = null
-        this.npc.jugador.mef.cambiarEstado('espera')
-        this.npc.mef.cambiarEstado('espera')
+        if (this.npc.alCerrarIntercambio) this.npc.alCerrarIntercambio()
         this.npc = null
         this.contenedor.visible = false
     }
@@ -227,7 +219,7 @@ export class MenuIntercambio {
         return this.contenedor.visible
     }
 
-    actualizar() {
+    redimensionar() {
         this.contenedor.x = (this.app.screen.width - this.ANCHO) / 2
         this.contenedor.y = (this.app.screen.height - this.ALTO) / 2
     }

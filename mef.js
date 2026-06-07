@@ -20,7 +20,10 @@ export class MEF {
     }
 
     actualizar(datos) {
-        if (this.estadoActual) this.estadoActual.alActualizar(datos)
+        if (this.estadoActual) {
+            this.estadoActual.alActualizar(datos)
+            this.estadoActual.hacerChequeos()
+        }
     }
 }
 
@@ -29,4 +32,5 @@ export class Estado {
     alEntrar() {}
     alActualizar() {}
     alSalir() {}
+    hacerChequeos() {}
 }

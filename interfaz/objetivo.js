@@ -4,18 +4,19 @@ export class Objetivo {
     constructor(objetivo) {
         const ANCHO_CUADRO = 80
         const MARGEN = 10
-        const ANCHO_BURBUJA = 150
-
         
         this.contenedor = new PIXI.Container()
+        this.contenedor.eventMode = 'static'
+        this.contenedor.on('pointertap', (e) => {
+            e.stopPropagation()
+        })
         
         this.cuadro = new PIXI.Graphics()
         this.cuadro.roundRect(0, 0, ANCHO_CUADRO, ANCHO_CUADRO, 10)
         this.cuadro.fill({
-            color: '#333333',
-            alpha: 0.8
+            color: '#FFA500',
+            alpha: 0.6
         })
-        this.cuadro.eventMode = 'static'
 
         this.icono = new PIXI.Text ({ 
             text: objetivo.emoji,
@@ -24,14 +25,13 @@ export class Objetivo {
                 padding: 12
             },
         })
-        //this.icono.anchor.set(0.5)
         this.icono.x = (ANCHO_CUADRO - this.icono.width) / 2
         this.icono.y = (ANCHO_CUADRO - this.icono.height) / 2
 
         this.estrella = new PIXI.Text ({
             text: '⭐',
             style: {
-                fontSize: 15,
+                fontSize: 18,
                 padding: 6
             }
         })
@@ -49,40 +49,50 @@ export class Objetivo {
             text: objetivo.nombre,
             style: {
                 fontSize: 14,
-                fill: '#ffffff',
-                wordWrap: true,
-                wordWrapWidth: ANCHO_BURBUJA
+                fill: '#ffffff'
             }
         })
         
+        const anchoBurbuja = this.textoBurbuja.width + MARGEN * 2
+        const altoBurbuja = this.textoBurbuja.height + MARGEN * 2
+
+        this.burbuja.x = (ANCHO_CUADRO - anchoBurbuja) / 2
+        this.burbuja.y = ANCHO_CUADRO + MARGEN
+        
         this.fondoBurbuja = new PIXI.Graphics()
+        this.fondoBurbuja.roundRect(0, 0, anchoBurbuja, altoBurbuja, 10)
+        this.fondoBurbuja.fill({ color: '#333333', alpha: 0.8 })
+
         this.textoBurbuja.x = MARGEN
         this.textoBurbuja.y = MARGEN
         
-        this.cuadro.on('pointerover', () => {
+        this.contenedor.on('pointerover', () => {
             this.burbuja.visible = true
         })
 
-        this.cuadro.on('pointerout', () => {
+        this.contenedor.on('pointerout', () => {
             this.burbuja.visible = false
         })
 
         this.burbuja.addChild(this.fondoBurbuja)
         this.burbuja.addChild(this.textoBurbuja)
 
-        this.contenedor.addChild(this.cuadro)
-        this.contenedor.addChild(this.icono)
-        this.contenedor.addChild(this.estrella)
+        this.cuadroContenedor = new PIXI.Container()
+        this.cuadroContenedor.addChild(this.cuadro)
+        this.cuadroContenedor.addChild(this.icono)
+        this.cuadroContenedor.addChild(this.estrella)
+
+        this.contenedor.addChild(this.cuadroContenedor)
         this.contenedor.addChild(this.burbuja)
         
-        const anchoBurbuja = ANCHO_BURBUJA + MARGEN * 2
-        const altoBurbuja = this.textoBurbuja.height + MARGEN * 2
+    }
 
-        this.fondoBurbuja.clear()
-        this.fondoBurbuja.roundRect(0, 0, anchoBurbuja, altoBurbuja, 10)
-        this.fondoBurbuja.fill({ color: '#333333', alpha: 0.8 })
+    redimensionar() {
+        const MARGEN = 10
+        const ANCHO_CUADRO = 80
+        const ANCHO_TEMPORIZADOR = 80
 
-        this.burbuja.x = ANCHO_CUADRO - anchoBurbuja
-        this.burbuja.y = ANCHO_CUADRO + MARGEN
+        this.contenedor.x = window.innerWidth - ANCHO_TEMPORIZADOR - MARGEN - ANCHO_CUADRO - MARGEN
+        this.contenedor.y = MARGEN
     }
 }

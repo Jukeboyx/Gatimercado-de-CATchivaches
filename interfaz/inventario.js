@@ -76,6 +76,7 @@ export class Inventario {
             const objetoActual = this.objetosActuales[i]
 
             const ranura = new PIXI.Container()
+            ranura.hitArea = new PIXI.Rectangle(0, 0, this.ANCHO_RANURA, this.ALTO_RANURA)
 
             const fondoRanura = new PIXI.Graphics()
             fondoRanura.roundRect(0, 0, this.ANCHO_RANURA, this.ALTO_RANURA, this.RADIO_BORDE)
@@ -86,6 +87,10 @@ export class Inventario {
             
             ranura.eventMode = 'static'
             ranura.on('pointerover', () => {
+                fondoRanura.scale.set(0.9)
+                fondoRanura.x = this.ANCHO_RANURA * 0.05  // centrar el fondo achicado
+                fondoRanura.y = this.ALTO_RANURA * 0.05
+
                 this.textoBurbuja.text = this.iconos[i].objetoReferencia.nombre
 
                 const nuevoAncho = this.textoBurbuja.width + this.MARGEN * 2
@@ -97,7 +102,7 @@ export class Inventario {
                     color: 0x000000,
                     alpha: 0.7
                 })
-
+                
                 this.textoBurbuja.x = nuevoAncho / 2
                 this.textoBurbuja.y = nuevoAlto / 2
                 
@@ -109,6 +114,9 @@ export class Inventario {
                 this.burbuja.visible = true
             })
             ranura.on('pointerout', () => {
+                fondoRanura.scale.set(1)
+                fondoRanura.x = 0
+                fondoRanura.y = 0
                 this.burbuja.visible = false
             })
             
@@ -123,7 +131,7 @@ export class Inventario {
             this.iconos.push(icono)
 
             icono.x = (this.ANCHO_RANURA - icono.width) / 2
-            icono.y = (this.ALTO_RANURA  - icono.height) / 2
+            icono.y = (this.ALTO_RANURA - icono.height) / 2
             
             ranura.addChild(fondoRanura)
             ranura.addChild(icono)
@@ -133,7 +141,7 @@ export class Inventario {
         }
     }
 
-    actualizar() {
+    redimensionar() {
         const anchoEfectivo = this.app.screen.width
         const altoEfectivo = this.app.screen.height
 

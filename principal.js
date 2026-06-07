@@ -1,8 +1,8 @@
 import * as PIXI from './pixi.js';
 
 import { catálogoObjetos } from './datos.js';
-import { Jugador } from './Jugador/index.js';
-import { GatiNPC } from './GatiNPC/index.js';
+import { Jugador } from './jugador/index.js';
+import { GatiNPC } from './gatiNPC/index.js';
 import { HUD } from './interfaz/hud.js';
 
 export class Juego {
@@ -83,7 +83,7 @@ export class Juego {
         this.objetivo = candidatos[Math.floor(Math.random() * candidatos.length)]
     }
 
-    generarCadenaVictoria(pasos = 5) {
+    generarCadenaVictoria(pasos = 3) {
         let objetoActual = this.objetosIniciales[Math.floor(Math.random() * this.objetosIniciales.length)]
         const disponibles = Object.keys(catálogoObjetos).filter(id => !this.objetosIniciales.includes(id) && id !== this.objetivo)
 
@@ -131,6 +131,13 @@ export class Juego {
 
             gato.alIniciarIntercambio = (gato) => {
                 this.hud.menuIntercambio.abrir(gato)
+                this.jugador.mef.cambiarEstado('intercambio')
+            }
+
+            gato.alCerrarIntercambio = () => {
+                this.jugador.entidadObjetivo = null
+                gato.mef.cambiarEstado('espera')
+                this.jugador.mef.cambiarEstado('espera')
             }
 
             this.gatos.push(gato)
@@ -211,24 +218,24 @@ export class Juego {
     }
 
     clicMundo(evento) {
-        if (evento.target !== this.app.stage) return
-
         if (this.hud.menuIntercambio.visible) {
             this.hud.menuIntercambio.cerrar()
             return
         }
 
+        if (evento.target !== this.app.stage) return
+        
         const puntoEnMundo = this.mundoContenedor.toLocal(evento.global)
 
         this.jugador.irHacia(puntoEnMundo)
     }
 
-    actualizar(datos) {
-        this.jugador.actualizar(datos)
+    actualizar(delta) {
+        this.jugador.actualizar(delta)
         for (const gato of this.gatos) {
-            gato.actualizar(datos)
+            gato.actualizar(delta)
         }
-        this.hud.actualizar()
+        this.hud.actualizar(delta)
 
         this.centrarCámara()
     }
@@ -238,6 +245,7 @@ export class Juego {
             window.innerWidth,
             window.innerHeight
         )
+        this.hud.redimensionar()
     }
 }
 

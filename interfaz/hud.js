@@ -15,18 +15,24 @@ export class HUD {
 
         this.menuIntercambio = new MenuIntercambio(app, this.inventario)
 
-        this.temporizador = new Temporizador(datos.tiempoLímite)
+        this.temporizador = new Temporizador(app, datos.tiempoLímite)
 
         this.objetivo = new Objetivo(datos.objetivo)
 
         this.contenedor.addChild(this.inventario.contenedor)
         this.contenedor.addChild(this.menuIntercambio.contenedor)
-        // this.contenedor.addChild(this.temporizador.contenedor)
+        this.contenedor.addChild(this.temporizador.contenedor)
         this.contenedor.addChild(this.objetivo.contenedor)
     }
 
-    actualizar() {
-        this.inventario.actualizar()
-        this.menuIntercambio.actualizar()
+    actualizar(delta) {
+        this.temporizador.actualizar(delta)
+    }
+
+    redimensionar() {
+        this.inventario.redimensionar()
+        this.menuIntercambio.redimensionar()
+        this.temporizador.redimensionar()
+        this.objetivo.redimensionar()
     }
 }
