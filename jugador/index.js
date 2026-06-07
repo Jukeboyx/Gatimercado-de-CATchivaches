@@ -27,10 +27,10 @@ export class Jugador {
 
         this.banderitas = []
 
-        const texturaDeLado = PIXI.Assets.get('Recursos/Sprites/JugadorDeLado.png')
-        const texturaArriba = PIXI.Assets.get('Recursos/Sprites/JugadorArriba.png')
-        const texturaAbajo  = PIXI.Assets.get('Recursos/Sprites/JugadorAbajo.png')
-        const texturaEspera = PIXI.Assets.get('Recursos/Sprites/JugadorEspera.png')
+        const texturaDeLado = PIXI.Assets.get('recursos/sprites/JugadorDeLado.png')
+        const texturaArriba = PIXI.Assets.get('recursos/sprites/JugadorArriba.png')
+        const texturaAbajo  = PIXI.Assets.get('recursos/sprites/JugadorAbajo.png')
+        const texturaEspera = PIXI.Assets.get('recursos/sprites/JugadorEspera.png')
 
         this.CANTIDAD_FRAMES = 4
         this.ANCHO_FRAME = 64

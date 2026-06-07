@@ -41,18 +41,18 @@ export class Juego {
     
     async cargarRecursos() {
         await PIXI.Assets.load([
-            'Recursos/Sprites/JugadorDeLado.png',
-            'Recursos/Sprites/JugadorArriba.png',
-            'Recursos/Sprites/JugadorAbajo.png',
-            'Recursos/Sprites/JugadorEspera.png',
-            'Recursos/Sprites/GatoGrisDeLado.png',
-            'Recursos/Sprites/GatoGrisArriba.png',
-            'Recursos/Sprites/GatoGrisAbajo.png',
-            'Recursos/Sprites/GatoGrisEspera.png',
-            'Recursos/Sprites/GatoNegroDeLado.png',
-            'Recursos/Sprites/GatoNegroArriba.png',
-            'Recursos/Sprites/GatoNegroAbajo.png',
-            'Recursos/Sprites/GatoNegroEspera.png'
+            'recursos/sprites/JugadorDeLado.png',
+            'recursos/sprites/JugadorArriba.png',
+            'recursos/sprites/JugadorAbajo.png',
+            'recursos/sprites/JugadorEspera.png',
+            'recursos/sprites/GatoGrisDeLado.png',
+            'recursos/sprites/GatoGrisArriba.png',
+            'recursos/sprites/GatoGrisAbajo.png',
+            'recursos/sprites/GatoGrisEspera.png',
+            'recursos/sprites/GatoNegroDeLado.png',
+            'recursos/sprites/GatoNegroArriba.png',
+            'recursos/sprites/GatoNegroAbajo.png',
+            'recursos/sprites/GatoNegroEspera.png'
         ])
     }
 

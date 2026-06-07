@@ -33,11 +33,11 @@ export class GatiNPC {
 
         this.gatoActual = tiposDeGatos[Math.floor(Math.random() * tiposDeGatos.length)]
 
-        const texturaDeLado = PIXI.Assets.get(`Recursos/Sprites/${this.gatoActual}DeLado.png`)
-        const texturaArriba = PIXI.Assets.get(`Recursos/Sprites/${this.gatoActual}Arriba.png`)
-        const texturaAbajo  = PIXI.Assets.get(`Recursos/Sprites/${this.gatoActual}Abajo.png`)
-        const texturaEspera = PIXI.Assets.get(`Recursos/Sprites/${this.gatoActual}Espera.png`)
-        this.texturaEspera = PIXI.Assets.get(`Recursos/Sprites/${this.gatoActual}Espera.png`)
+        const texturaDeLado = PIXI.Assets.get(`recursos/sprites/${this.gatoActual}DeLado.png`)
+        const texturaArriba = PIXI.Assets.get(`recursos/sprites/${this.gatoActual}Arriba.png`)
+        const texturaAbajo  = PIXI.Assets.get(`recursos/sprites/${this.gatoActual}Abajo.png`)
+        const texturaEspera = PIXI.Assets.get(`recursos/sprites/${this.gatoActual}Espera.png`)
+        this.texturaEspera = PIXI.Assets.get(`recursos/sprites/${this.gatoActual}Espera.png`)
 
         this.CANTIDAD_FRAMES = 4
         this.ANCHO_FRAME = 64

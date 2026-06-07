@@ -131,7 +131,7 @@ export class MenuIntercambio {
         })
 
         //Sprite jugador
-        const texturaEsperaJugador = PIXI.Assets.get('Recursos/Sprites/JugadorEspera.png')
+        const texturaEsperaJugador = PIXI.Assets.get('recursos/sprites/JugadorEspera.png')
         const framesJugador = cortarFrames(texturaEsperaJugador, 4, 64)
         this.spriteJugador = new PIXI.Sprite(framesJugador[0])
         this.spriteJugador.anchor.set(0.5)
