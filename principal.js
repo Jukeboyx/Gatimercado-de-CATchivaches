@@ -2,7 +2,7 @@ import * as PIXI from './pixi.js';
 
 import { catálogoObjetos } from './datos.js';
 import { Jugador } from './jugador/index.js';
-import { GatiNPC } from './gatiNPC/index.js';
+import { GatiNPC } from './gatinpc/index.js';
 import { HUD } from './interfaz/hud.js';
 
 export class Juego {
