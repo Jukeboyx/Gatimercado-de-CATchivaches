@@ -1,7 +1,7 @@
 import * as PIXI from '../pixi.js';
 
 import { MEF } from "../mef.js"
-import * as estado from "./estados.js"
+import * as Estado from "./estados-comportamiento/indice.js"
 
 export function cortarFrames(rutaImagen, cantidadDeFrames, anchoFrame) {
     const frames = []
@@ -59,9 +59,9 @@ export class Jugador {
         this.contenedor.y = window.innerHeight / 2
 
         this.mef = new MEF(this, {
-            espera: new estado.Espera(this),
-            caminando: new estado.Caminando(this),
-            intercambio: new estado.Intercambio(this)
+            espera: new Estado.Espera(this),
+            caminando: new Estado.Caminando(this),
+            intercambio: new Estado.Intercambio(this)
         })
 
         this.mef.cambiarEstado('espera')

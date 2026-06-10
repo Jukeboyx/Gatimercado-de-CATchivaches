@@ -1,32 +1,6 @@
-import * as PIXI from '../pixi.js';
-
-import { Estado } from "../mef.js";
-import * as mover from "../movimiento.js"
-
-
-export class Espera extends Estado {
-    alEntrar() {
-        this.dueño.imagen.textures = this.dueño.animaciones.espera
-        this.dueño.imagen.play()
-        this.TIEMPO_ESPERA = 2000 + Math.random() * 4000
-        this.tiempoTrancurrido = 0
-    }
-
-    alActualizar(datos) {
-        this.tiempoTrancurrido += datos * (1000 / 60)
-    }
-    
-    hacerChequeos() {
-        if (this.dueño.jugadorVaAIntercambiar()) {
-            this.dueño.mef.cambiarEstado('intercambio')
-            return
-        }
-        
-        if (this.tiempoTrancurrido >= this.TIEMPO_ESPERA) {
-            this.dueño.mef.cambiarEstado('merodeo')
-        }
-    }
-}
+import * as PIXI from "../../pixi.js"
+import { Estado } from "../../mef.js"
+import * as mover from '../../movimiento.js'
 
 export class Merodeo extends Estado {
     alEntrar() {
@@ -124,34 +98,5 @@ export class Merodeo extends Estado {
             this.dueño.mef.cambiarEstado('espera')
             return
         }
-    }
-}
-
-export class Intercambio extends Estado {
-    alEntrar() {
-        if (this.dueño.alIniciarIntercambio) {
-            this.dueño.alIniciarIntercambio(this.dueño)
-        }
-        this.dueño.imagen.textures = this.dueño.animaciones.espera
-        this.dueño.imagen.play()
-    }
-
-    alActualizar() {
-    }
-
-    alSalir() {
-    }
-}
-
-export class Agradecido extends Estado {
-    alEntrar() {
-        //Cambiar animación a agradecimiento
-    }
-}
-
-export class Enojado extends Estado {
-    alEntrar() {
-        //Cambiar animación a enojado
-        //Escapar del jugador
     }
 }

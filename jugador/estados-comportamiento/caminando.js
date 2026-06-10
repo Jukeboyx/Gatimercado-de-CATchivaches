@@ -1,14 +1,6 @@
-import * as PIXI from '../pixi.js';
-
-import { Estado } from "../mef.js";
-import * as mover from "../movimiento.js"
-
-export class Espera extends Estado {
-    alEntrar() {
-        this.dueño.imagen.textures = this.dueño.animaciones.espera
-        this.dueño.imagen.play()
-    }
-}
+import * as PIXI from "../../pixi.js"
+import { Estado } from "../../mef.js"
+import * as mover from '../../movimiento.js'
 
 export class Caminando extends Estado {
     alEntrar(destino) {
@@ -146,13 +138,5 @@ export class Caminando extends Estado {
         if (resultado.llegó && resultado.esUltimoPunto) return
 
         this.dibujarRuta()
-    }
-}
-
-export class Intercambio extends Estado {
-    alEntrar() {
-        this.dueño.estelaJugador.clear()
-        this.dueño.imagen.textures = this.dueño.animaciones.espera
-        this.dueño.imagen.play()
     }
 }

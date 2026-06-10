@@ -1,7 +1,7 @@
 import * as PIXI from '../pixi.js';
 
 import { MEF } from "../mef.js"
-import * as estado from "./estados.js"
+import * as Estado from "./estados-comportamiento/indice.js"
 import { Jugador, cortarFrames } from '../jugador/index.js';
 
 export class GatiNPC {
@@ -66,7 +66,7 @@ export class GatiNPC {
 
         this.contenedor.on('pointertap', (e) => {
             e.stopPropagation()
-            if (this.mef.estadoActual instanceof estado.Enojado) return
+            if (this.mef.estadoActual instanceof Estado.Enojado) return
 
             if (this.alSeleccionar) this.alSeleccionar()
 
@@ -81,11 +81,9 @@ export class GatiNPC {
         })
 
         this.mef = new MEF(this, {
-            merodeo: new estado.Merodeo(this),
-            espera: new estado.Espera(this),
-            intercambio: new estado.Intercambio(this),
-            agradecido: new estado.Agradecido(this),
-            enojado: new estado.Enojado(this)
+            merodeo: new Estado.Merodeo(this),
+            espera: new Estado.Espera(this),
+            intercambio: new Estado.Intercambio(this)
         })
 
         this.mef.cambiarEstado('merodeo')
