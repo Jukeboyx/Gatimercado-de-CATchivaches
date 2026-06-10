@@ -11,6 +11,10 @@ export class Temporizador {
         this.ANCHO = 80
 
         this.contenedor = new PIXI.Container()
+        this.contenedor.eventMode = 'static'
+        this.contenedor.on('pointertap', (e) => {
+            e.stopPropagation()
+        })
 
         this.fondo = new PIXI.Graphics()
         this.fondo.roundRect(0, 0, this.ANCHO, this.ANCHO, 10)

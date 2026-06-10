@@ -9,8 +9,8 @@ export class Juego {
     constructor() {
         this.app = new PIXI.Application();
 
-        this.ANCHO_MUNDO = 1500
-        this.ALTO_MUNDO = 1500
+        this.ANCHO_MUNDO = 2000
+        this.ALTO_MUNDO = 2000
         this.ALTO_DISEÑO = 800
 
         this.init()
