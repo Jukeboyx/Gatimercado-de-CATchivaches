@@ -4,7 +4,6 @@ import { MEF } from "../mef.js"
 import * as Comportamiento from "./estados-comportamiento/indice.js"
 import * as Animacion from "./estados-animacion/indice.js"
 import { Jugador } from '../jugador/index.js';
-import { cortarFrames } from '../herramientas-funciones.js';
 
 export class GatiNPC {
     constructor(posX, posY, idObjetoQueTiene, idObjetoQuePide, jugador, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000) {
@@ -30,36 +29,56 @@ export class GatiNPC {
         this.PADDING = 6
         this.DISTANCIA_FRENO = 60
 
-        const tiposDeGatos = [
-            'GatoGris',
-            'GatoNegro'
+        const coloresDeGatos = [
+            'gris',
+            'negro'
         ]
 
-        this.gatoActual = tiposDeGatos[Math.floor(Math.random() * tiposDeGatos.length)]
+        this.colorDeGatoActual = coloresDeGatos[Math.floor(Math.random() * coloresDeGatos.length)]
 
-        const texturaDeLado = PIXI.Assets.get(`recursos/sprites/${this.gatoActual}DeLado.png`)
-        const texturaArriba = PIXI.Assets.get(`recursos/sprites/${this.gatoActual}Arriba.png`)
-        const texturaAbajo  = PIXI.Assets.get(`recursos/sprites/${this.gatoActual}Abajo.png`)
-        const texturaEspera = PIXI.Assets.get(`recursos/sprites/${this.gatoActual}Espera.png`)
-        this.texturaEspera = PIXI.Assets.get(`recursos/sprites/${this.gatoActual}Espera.png`)
+        const sheet = PIXI.Assets.get(`recursos/sprites/gato_${this.colorDeGatoActual}.json`)
+
+        const construirAnimacion = (desde, hasta) => {
+            const frames = []
+            for (let i = desde; i <= hasta; i++) {
+                frames.push(sheet.textures[`gato_${this.colorDeGatoActual}_${tag.name}_${i - desde}`])
+            }
+            return frames
+        }
+
+        const animacionesDesdeTag = {}
+        for (const tag of sheet.data.meta.frameTags) {
+            const frames = []
+            for (let i = tag.from; i <= tag.to; i++) {
+                frames.push(sheet.textures[`gato_${this.colorDeGatoActual}_${tag.name}_${i - tag.from}`])
+            }
+            animacionesDesdeTag[tag.name] = frames
+        }
+
+        this.animaciones = {
+            abajo:      animacionesDesdeTag['abajo'],
+            derecha:    animacionesDesdeTag['derecha'],
+            arriba:     animacionesDesdeTag['arriba'],
+            izquierda:  animacionesDesdeTag['izquierda'],
+            sentandose: animacionesDesdeTag['sentandose'],
+            sentado:    animacionesDesdeTag['sentado'],
+            pestañea:   animacionesDesdeTag['pestañea'],
+            baño:       animacionesDesdeTag['baño'],
+            exhausto:   animacionesDesdeTag['exhausto'],
+            dormido:    animacionesDesdeTag['dormido'],
+        }
 
         this.CANTIDAD_FRAMES = 4
         this.ANCHO_FRAME = 64
         this.VELOCIDAD_ANIMACION = 0.1
 
-        this.animaciones = {
-            lado: cortarFrames(texturaDeLado, this.CANTIDAD_FRAMES, this.ANCHO_FRAME),
-            arriba: cortarFrames(texturaArriba, this.CANTIDAD_FRAMES, this.ANCHO_FRAME),
-            abajo: cortarFrames(texturaAbajo, this.CANTIDAD_FRAMES, this.ANCHO_FRAME),
-            espera: cortarFrames(texturaEspera, this.CANTIDAD_FRAMES, this.ANCHO_FRAME),
-        }
-
-        this.imagen = new PIXI.AnimatedSprite(this.animaciones.espera)
+        this.imagen = new PIXI.AnimatedSprite(this.animaciones.sentado)
         this.imagen.anchor.set(0.5)
+        this.imagen.scale.set(3)
         this.imagen.animationSpeed = this.VELOCIDAD_ANIMACION
         this.imagen.play()
-        const escalaSprite = window.innerWidth < 768 ? 2 : 1
-        this.imagen.scale.set(escalaSprite)
+        // const escalaSprite = window.innerWidth < 768 ? 2 : 1
+        // this.imagen.scale.set(escalaSprite)
         
         this.contenedor.addChild(this.imagen)
         
@@ -99,7 +118,7 @@ export class GatiNPC {
             espera: new Comportamiento.Espera(this),
             intercambio: new Comportamiento.Intercambio(this),
             enojado: new Comportamiento.Enojado(this),
-            dormido: new Comportamiento.Dormido(this)
+            durmiendo: new Comportamiento.Durmiendo(this)
         })
 
         this.mefAnimacion = new MEF(this, {
@@ -118,7 +137,8 @@ export class GatiNPC {
     asignarAccesorio(textura) {
         this.spriteAccesorio = new PIXI.Sprite(textura)
         this.spriteAccesorio.anchor.set(0.5)
-        this.spriteAccesorio.y = -20
+        this.spriteAccesorio.scale.set(3)
+        this.spriteAccesorio.y = 10
         this.contenedor.addChild(this.spriteAccesorio)
     }
     

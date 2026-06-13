@@ -147,7 +147,7 @@
  "meta": {
   "app": "https://github.com/LibreSprite/LibreSprite/",
   "version": "1.1-dev",
-  "image": "C:\\Users\\EDUCACION UNAHUR\\Desktop\\Gatimercado de CATchivaches\\recursos\\sprites\\jugador-sheet.png",
+  "image": "jugador-sheet.png",
   "format": "RGBA8888",
   "size": { "w": 512, "h": 32 },
   "scale": "1",

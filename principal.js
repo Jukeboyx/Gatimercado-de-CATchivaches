@@ -19,10 +19,14 @@ export class Juego {
     }
 
     async init() {
+        PIXI.TextureSource.defaultOptions.scaleMode = 'nearest'
+
         await this.app.init({
             width: window.innerWidth,
             height: window.innerHeight,
             background: 'green',
+            
+            textureAntiAlias: false
         })
 
         document.body.appendChild(this.app.canvas)
@@ -47,14 +51,8 @@ export class Juego {
             'recursos/sprites/JugadorArriba.png',
             'recursos/sprites/JugadorAbajo.png',
             'recursos/sprites/JugadorEspera.png',
-            'recursos/sprites/GatoGrisDeLado.png',
-            'recursos/sprites/GatoGrisArriba.png',
-            'recursos/sprites/GatoGrisAbajo.png',
-            'recursos/sprites/GatoGrisEspera.png',
-            'recursos/sprites/GatoNegroDeLado.png',
-            'recursos/sprites/GatoNegroArriba.png',
-            'recursos/sprites/GatoNegroAbajo.png',
-            'recursos/sprites/GatoNegroEspera.png',
+            'recursos/sprites/gato_gris.json',
+            'recursos/sprites/gato_negro.json',
             'recursos/sprites/accesorios.png'
         ])
     }
@@ -126,7 +124,7 @@ export class Juego {
                 this.ALTO_MUNDO,
             )
 
-            gato.asignarAccesorio(this.accesorios.obtenerSiguiente(i))
+            //gato.asignarAccesorio(this.accesorios.obtenerSiguiente(i))
 
             gato.alSeleccionar = () => {
                 if (this.hud.menuIntercambio.visible) {
@@ -141,7 +139,7 @@ export class Juego {
 
             gato.alCerrarIntercambio = () => {
                 this.jugador.entidadObjetivo = null
-                gato.mef.cambiarEstado('espera')
+                gato.mefComportamiento.cambiarEstado('espera')
                 this.jugador.mef.cambiarEstado('espera')
             }
 
@@ -155,6 +153,7 @@ export class Juego {
 
     crearEscena() {
         this.mundoContenedor = new PIXI.Container()
+        
         this.app.stage.addChild(this.mundoContenedor)
 
         this.interfazContenedor = new PIXI.Container()

@@ -9,7 +9,7 @@ export class Caminando extends Estado {
         this.dueño.tiempoCaminando += datos
     }
 
-    actualizarDireccion(dx, dy) {
+    actualizarDirección(dx, dy) {
         const escalaBase = Math.abs(this.dueño.imagen.scale.x)
         const imagen = this.dueño.imagen
         const animaciones = this.dueño.animaciones

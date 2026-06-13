@@ -3,7 +3,7 @@ import { Estado } from "../../mef.js"
 export class Sentandose extends Estado {
     alEntrar() {
         const imagen = this.dueño.imagen
-        imagen.textures = this.dueño.animaciones['se-sienta']
+        imagen.textures = this.dueño.animaciones['sentandose']
         imagen.loop = false
         imagen.play()
 

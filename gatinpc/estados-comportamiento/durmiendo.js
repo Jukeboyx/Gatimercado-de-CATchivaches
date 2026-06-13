@@ -1,6 +1,6 @@
 import { Estado } from "../../mef.js"
 
-export class Dormido extends Estado {
+export class Durmiendo extends Estado {
     alEntrar() {
         this.dueño.dormirse()
     }
