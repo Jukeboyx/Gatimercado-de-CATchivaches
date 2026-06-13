@@ -1,7 +1,7 @@
 import * as PIXI from '../pixi.js';
 
 import { realizarTrueque } from './inventario.js';
-import { cortarFrames } from '../jugador/index.js';
+import { cortarFrames } from '../herramientas-funciones.js';
 import { catálogoObjetos } from '../datos.js';
 
 export class MenuIntercambio {

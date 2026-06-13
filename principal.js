@@ -4,6 +4,8 @@ import { catálogoObjetos } from './datos.js';
 import { Jugador } from './jugador/index.js';
 import { GatiNPC } from './gatinpc/index.js';
 import { HUD } from './interfaz/hud.js';
+import { mezclar, cortarGrilla } from './herramientas-funciones.js';
+import { Accesorios } from './accesorios.js';
 
 export class Juego {
     constructor() {
@@ -52,7 +54,8 @@ export class Juego {
             'recursos/sprites/GatoNegroDeLado.png',
             'recursos/sprites/GatoNegroArriba.png',
             'recursos/sprites/GatoNegroAbajo.png',
-            'recursos/sprites/GatoNegroEspera.png'
+            'recursos/sprites/GatoNegroEspera.png',
+            'recursos/sprites/accesorios.png'
         ])
     }
 
@@ -123,6 +126,8 @@ export class Juego {
                 this.ALTO_MUNDO,
             )
 
+            gato.asignarAccesorio(this.accesorios.obtenerSiguiente(i))
+
             gato.alSeleccionar = () => {
                 if (this.hud.menuIntercambio.visible) {
                     this.hud.menuIntercambio.cerrar()
@@ -170,6 +175,9 @@ export class Juego {
             this.ALTO_MUNDO
         )
         this.mundoContenedor.addChild(this.jugador.contenedor)
+
+        this.accesorios = new Accesorios()
+        this.accesorios.cargar()
 
         this.crearNPCs()
         

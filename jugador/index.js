@@ -2,17 +2,7 @@ import * as PIXI from '../pixi.js';
 
 import { MEF } from "../mef.js"
 import * as Estado from "./estados-comportamiento/indice.js"
-
-export function cortarFrames(rutaImagen, cantidadDeFrames, anchoFrame) {
-    const frames = []
-    for (let i = 0; i < cantidadDeFrames; i++) {
-        frames.push(new PIXI.Texture({
-            source: rutaImagen,
-            frame: new PIXI.Rectangle(i * anchoFrame, 0, anchoFrame, anchoFrame)
-        }))
-    }
-    return frames
-}
+import { cortarFrames } from '../herramientas-funciones.js';
 
 
 export class Jugador {
