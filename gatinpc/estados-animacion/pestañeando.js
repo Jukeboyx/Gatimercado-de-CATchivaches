@@ -2,7 +2,7 @@ import { Estado } from "../../mef.js"
 
 export class Pestañeando extends Estado {
     alEntrar() {
-        console.log('entrando a pestañeando')
+        //console.log('entrando a pestañeando')
         const imagen = this.dueño.imagen
         imagen.textures = this.dueño.animaciones.pestañea
         imagen.loop = false

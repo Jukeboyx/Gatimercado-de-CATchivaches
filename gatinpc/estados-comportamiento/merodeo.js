@@ -34,7 +34,7 @@ export class Merodeo extends Estado {
     }
 
     alActualizar(datos) {
-        console.log('Merodeo actualizando')
+        //console.log('Merodeo actualizando')
         const resultado = mover.avanzarEnCamino(
             this.dueño.contenedor,
             this.camino,

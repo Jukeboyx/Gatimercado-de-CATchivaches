@@ -2,7 +2,7 @@ import { Estado } from "../../mef.js"
 
 export class Sentandose extends Estado {
     alEntrar() {
-        console.log('Entro a sentandose')
+        //console.log('Entro a sentandose')
         const imagen = this.dueño.imagen
         imagen.textures = this.dueño.animaciones['sentandose']
         imagen.loop = false
@@ -10,7 +10,7 @@ export class Sentandose extends Estado {
         this.completado = false
 
         imagen.onComplete = () => {
-            console.log('Terminó animación sentándose')
+            //console.log('Terminó animación sentándose')
             this.completado = true
         }
     }

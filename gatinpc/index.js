@@ -173,7 +173,7 @@ export class GatiNPC {
 
     asegurarseDeEstarSentado() {
         const animActual = this.mefAnimacion.estadoActual
-        console.log('asegurarseDeEstarSentado, estado actual:', animActual.constructor.name)
+        
         if (animActual instanceof Animacion.Sentado || 
             animActual instanceof Animacion.Sentandose ||
             animActual instanceof Animacion.Pestañeando) {
