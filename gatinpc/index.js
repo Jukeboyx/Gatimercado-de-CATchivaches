@@ -155,8 +155,10 @@ export class GatiNPC {
         [this.idObjetoQueTiene, this.idObjetoQuePide] = [this.idObjetoQuePide, this.idObjetoQueTiene]
     }
 
-    actualizarDirección(dx, dy) {
-        this.mefAnimacion.estadoActual.actualizarDirección(dx, dy)
+    actualizarDireccion(dx, dy) {
+        if (this.mefAnimacion.estadoActual.actualizarDireccion) {
+            this.mefAnimacion.estadoActual.actualizarDireccion(dx, dy)
+        }
     }
 
     // MANEJO DE ANIMACIONES //
@@ -164,8 +166,20 @@ export class GatiNPC {
         this.mefAnimacion.cambiarEstado('caminando')
     }
 
-    detenerse() {
+    empezarADetenerse() {
+        console.trace('empezarADetenerse')
         this.mefAnimacion.cambiarEstado('sentandose')
+    }
+
+    asegurarseDeEstarSentado() {
+        const animActual = this.mefAnimacion.estadoActual
+        console.log('asegurarseDeEstarSentado, estado actual:', animActual.constructor.name)
+        if (animActual instanceof Animacion.Sentado || 
+            animActual instanceof Animacion.Sentandose ||
+            animActual instanceof Animacion.Pestañeando) {
+            return
+        }
+        this.empezarADetenerse()
     }
 
     dormirse() {

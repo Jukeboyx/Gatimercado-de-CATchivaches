@@ -3,13 +3,14 @@ import { Estado } from "../../mef.js"
 
 export class Intercambio extends Estado {
     alEntrar() {
+        this.dueño.asegurarseDeEstarSentado()
+
         if (this.dueño.alIniciarIntercambio) {
             this.dueño.alIniciarIntercambio(this.dueño)
         }
-        this.dueño.detenerse()
     }
 
-    actualizarDirección(dx, dy) {}
+    actualizarDireccion(dx, dy) {}
 
     alActualizar() {
     }

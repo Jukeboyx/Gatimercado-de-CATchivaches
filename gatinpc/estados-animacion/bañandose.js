@@ -8,7 +8,7 @@ export class Bañandose extends Estado {
         imagen.play()
 
         imagen.onComplete = () => {
-            this.dueño.mefAnimacion.cambiarEstado('sentandose')
+            this.dueño.mefAnimacion.cambiarEstado('sentado')
         }
     }
 

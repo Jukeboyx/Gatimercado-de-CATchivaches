@@ -3,7 +3,7 @@ import { Estado } from "../../mef.js"
 
 export class Espera extends Estado {
     alEntrar() {
-        this.dueño.detenerse()
+        this.dueño.asegurarseDeEstarSentado()
         this.TIEMPO_ESPERA = 2000 + Math.random() * 4000
         this.tiempoTrancurrido = 0
     }

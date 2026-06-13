@@ -48,7 +48,7 @@ export class Enojado extends Estado {
 
         if (resultado.llegó) {
             if (resultado.esUltimoPunto) {
-                this.dueño.detenerse()
+                this.dueño.empezarADetenerse()
             } else {
                 this.indicePunto++
             }

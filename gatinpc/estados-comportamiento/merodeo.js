@@ -34,6 +34,7 @@ export class Merodeo extends Estado {
     }
 
     alActualizar(datos) {
+        console.log('Merodeo actualizando')
         const resultado = mover.avanzarEnCamino(
             this.dueño.contenedor,
             this.camino,
@@ -44,15 +45,18 @@ export class Merodeo extends Estado {
         )
 
         if (!resultado.llegó) {
-            this.dueño.actualizarDirección(resultado.dx, resultado.dy)
+            this.dueño.actualizarDireccion(resultado.dx, resultado.dy)
         }
 
         if (resultado.llegó) {
             if (resultado.esUltimoPunto) {
-                this.dueño.detenerse()
-            } else {
-                this.indicePunto++
+                this.dueño.empezarADetenerse()
+
+                this.dueño.mefComportamiento.cambiarEstado('espera')
+                return
             }
+
+            this.indicePunto++
         }
     }
 

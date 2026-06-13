@@ -11,13 +11,21 @@ export class MEF {
     }
 
     cambiarEstado(nombre, datos) {
-        if (this.estadoActual) {
-            this.estadoActual.alSalir()
-        }
+    const nuevoEstado = this.estados[nombre]
 
-        this.estadoActual = this.estados[nombre]
-        this.estadoActual.alEntrar(datos)
+    //console.log('[MEF]', this.estadoActual?.constructor?.name, '->', nuevoEstado?.constructor?.name)
+
+    if (this.estadoActual === nuevoEstado) {
+        return
     }
+
+    if (this.estadoActual) {
+        this.estadoActual.alSalir()
+    }
+
+    this.estadoActual = nuevoEstado
+    this.estadoActual.alEntrar(datos)
+}
 
     actualizar(datos) {
         if (this.estadoActual) {

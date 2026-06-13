@@ -2,9 +2,10 @@ import { Estado } from "../../mef.js"
 
 export class Sentado extends Estado {
     alEntrar() {
+        console.log('entrando a sentado')
         const imagen = this.dueño.imagen
         imagen.textures = this.dueño.animaciones.sentado
-        imagen.loop = false
+        imagen.loop = true
         imagen.play()
 
         this.dueño.tiempoCaminando = Math.max(0, this.dueño.tiempoCaminando)
