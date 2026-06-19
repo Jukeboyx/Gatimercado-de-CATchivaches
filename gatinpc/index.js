@@ -161,14 +161,18 @@ export class GatiNPC {
         }
     }
 
-    // MANEJO DE ANIMACIONES //
+    // MANEJO DE ANIMACIONES Y COMPORTAMIENTOS //
     empezarACaminar() {
         this.mefAnimacion.cambiarEstado('caminando')
     }
 
     empezarADetenerse() {
-        console.trace('empezarADetenerse')
-        this.mefAnimacion.cambiarEstado('sentandose')
+        if (this.estaExhausto()) {
+            this.mefComportamiento.cambiarEstado('durmiendo')
+        } else {
+            this.mefAnimacion.cambiarEstado('sentandose')
+            this.mefComportamiento.cambiarEstado('espera')
+        }
     }
 
     asegurarseDeEstarSentado() {
@@ -182,12 +186,20 @@ export class GatiNPC {
         this.empezarADetenerse()
     }
 
+    estaExhausto() {
+        return this.tiempoCaminando > 20 * 60
+    }
+
     dormirse() {
-        if (this.tiempoCaminando > 20 * 60) {
+        if (this.estaExhausto()) {
             this.mefAnimacion.cambiarEstado('exhausto')
         } else {
             this.mefAnimacion.cambiarEstado('durmiendo')
         }
+    }
+
+    terminarCaminata() {
+
     }
 
     actualizar(datos) {

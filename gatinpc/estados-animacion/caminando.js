@@ -42,9 +42,6 @@ export class Caminando extends Estado {
     }
 
     hacerChequeos() {
-        if (this.dueño.tiempoCaminando > 20 * 60) {
-            this.dueño.mefAnimacion.cambiarEstado('exhausto')
-        }
     }
 
     alSalir() {}

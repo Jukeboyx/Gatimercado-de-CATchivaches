@@ -7,9 +7,8 @@ export class Exhausto extends Estado {
         imagen.loop = false
         imagen.play()
 
-        const tiempoSiesta = (this.dueño.tiempoCaminando / 60 + 5 + Math.random() * 5) * 60
         this.tiempoTranscurrido = 0
-        this.tiempoSiesta = tiempoSiesta
+        this.tiempoSiesta = (10 + Math.random() * 5) * 60
 
         imagen.onComplete = () => {
             imagen.gotoAndStop(imagen.totalFrames - 1)

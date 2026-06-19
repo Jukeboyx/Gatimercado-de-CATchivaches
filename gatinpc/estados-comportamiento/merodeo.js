@@ -51,8 +51,6 @@ export class Merodeo extends Estado {
         if (resultado.llegó) {
             if (resultado.esUltimoPunto) {
                 this.dueño.empezarADetenerse()
-
-                this.dueño.mefComportamiento.cambiarEstado('espera')
                 return
             }
 

@@ -57,7 +57,7 @@ export class Enojado extends Estado {
 
     hacerChequeos() {
         if (!this.camino || this.indicePunto >= this.camino.length) {
-            this.dueño.mefComportamiento.cambiarEstado('espera')
+            this.dueño.empezarADetenerse()
         }
     }
 }
