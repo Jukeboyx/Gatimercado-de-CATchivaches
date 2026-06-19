@@ -47,13 +47,11 @@ export class Juego {
     
     async cargarRecursos() {
         await PIXI.Assets.load([
-            'recursos/sprites/JugadorDeLado.png',
-            'recursos/sprites/JugadorArriba.png',
-            'recursos/sprites/JugadorAbajo.png',
-            'recursos/sprites/JugadorEspera.png',
+            'recursos/sprites/jugador.json',
             'recursos/sprites/gato_gris.json',
             'recursos/sprites/gato_negro.json',
-            'recursos/sprites/accesorios.png'
+            'recursos/sprites/accesorios.png',
+            'recursos/sprites/pastito.png'
         ])
     }
 
@@ -134,13 +132,13 @@ export class Juego {
 
             gato.alIniciarIntercambio = (gato) => {
                 this.hud.menuIntercambio.abrir(gato)
-                this.jugador.mef.cambiarEstado('intercambio')
+                this.jugador.mefComportamiento.cambiarEstado('intercambio')
             }
 
             gato.alCerrarIntercambio = () => {
                 this.jugador.entidadObjetivo = null
                 gato.mefComportamiento.cambiarEstado('espera')
-                this.jugador.mef.cambiarEstado('espera')
+                this.jugador.mefComportamiento.cambiarEstado('espera')
             }
 
             this.gatos.push(gato)
@@ -160,14 +158,13 @@ export class Juego {
         this.interfazContenedor = new PIXI.Container()
         this.app.stage.addChild(this.interfazContenedor)
         
-        this.fondo = new PIXI.Graphics()
-        this.fondo.rect(
-            0,
-            0,
-            this.ANCHO_MUNDO,
-            this.ALTO_MUNDO
-        ).fill('#4a7c3f')
-        this.mundoContenedor.addChild(this.fondo)
+        const texturaSuelo = PIXI.Assets.get('recursos/sprites/pastito.png')
+        this.suelo = new PIXI.TilingSprite({
+            texture: texturaSuelo,
+            width: this.ANCHO_MUNDO,
+            height: this.ALTO_MUNDO
+        })
+        this.mundoContenedor.addChild(this.suelo)
 
         this.jugador = new Jugador(
             this.mundoContenedor,
@@ -175,13 +172,14 @@ export class Juego {
             this.ALTO_MUNDO
         )
         this.mundoContenedor.addChild(this.jugador.contenedor)
-
+        
         this.accesorios = new Accesorios()
         this.accesorios.cargar()
-
+        
         this.crearNPCs()
         
         this.hud = new HUD(this.app, this.datos)
+        this.hud.menuIntercambio.spriteJugador.texture = this.jugador.texturaEspera
         this.interfazContenedor.addChild(this.hud.contenedor)
     }
 

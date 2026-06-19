@@ -10,11 +10,11 @@ export class MenuIntercambio {
         this.inventario = inventario
         this.npc = null
 
-        this.ANCHO = 400
-        this.ALTO = 220
+        this.ANCHO = 420
+        this.ALTO = 240
         this.RADIO_BORDE = 50
 
-        this.TAMAÑO_SPRITE = 70
+        this.ESCALA_SPRITE = 3
 
         this.TAMAÑO_EMOJI_OBJETO = 60
         this.MARGEN_EMOJI = 6
@@ -65,7 +65,7 @@ export class MenuIntercambio {
         })
         this.objetoJugador.anchor.set(0.5)
         this.objetoJugador.x = this.ANCHO * 0.25
-        this.objetoJugador.y = 150
+        this.objetoJugador.y = this.ALTO * 0.75
         this.objetoJugador.eventMode = 'static'
         this.contenedor.addChild(this.objetoJugador)
 
@@ -84,7 +84,7 @@ export class MenuIntercambio {
 
             this.textoBurbuja.position.set(0, nuevoAlto / 2)
             
-            this.burbuja.x = this.objetoJugador.x
+            this.burbuja.x = this.ANCHO * 0.25
             this.burbuja.y = this.ALTO + this.OFFSET_BURBUJA_INFORMACIÓN
             
             this.burbuja.visible = true
@@ -101,7 +101,7 @@ export class MenuIntercambio {
         })
         this.objetoNPC.anchor.set(0.5)
         this.objetoNPC.x = this.ANCHO * 0.75
-        this.objetoNPC.y = 150
+        this.objetoNPC.y = this.ALTO * 0.75
         this.objetoNPC.eventMode = 'static'
         this.contenedor.addChild(this.objetoNPC)
 
@@ -120,7 +120,7 @@ export class MenuIntercambio {
 
             this.textoBurbuja.position.set(0, nuevoAlto / 2)
             
-            this.burbuja.x = this.objetoNPC.x
+            this.burbuja.x = this.ANCHO * 0.75
             this.burbuja.y = this.ALTO + this.OFFSET_BURBUJA_INFORMACIÓN
             
             this.burbuja.visible = true
@@ -131,26 +131,22 @@ export class MenuIntercambio {
         })
 
         //Sprite jugador
-        const texturaEsperaJugador = PIXI.Assets.get('recursos/sprites/JugadorEspera.png')
-        const framesJugador = cortarFrames(texturaEsperaJugador, 4, 64)
-        this.spriteJugador = new PIXI.Sprite(framesJugador[0])
+        this.spriteJugador = new PIXI.Sprite()
         this.spriteJugador.anchor.set(0.5)
-        this.spriteJugador.width = this.TAMAÑO_SPRITE
-        this.spriteJugador.height = this.TAMAÑO_SPRITE
+        this.spriteJugador.scale.set(this.ESCALA_SPRITE)
         this.spriteJugador.position.set(
             this.objetoJugador.x,
-            this.objetoJugador.y - (this.TAMAÑO_EMOJI_OBJETO + this.TAMAÑO_EMOJI_OBJETO / 2)
+            this.ALTO * 0.25
         )
         this.contenedor.addChild(this.spriteJugador)
 
         //Sprite NPC
         this.spriteGatiNPC = new PIXI.Sprite()
         this.spriteGatiNPC.anchor.set(0.5)
-        this.spriteGatiNPC.width = this.TAMAÑO_SPRITE
-        this.spriteGatiNPC.height = this.TAMAÑO_SPRITE
+        this.spriteGatiNPC.scale.set(this.ESCALA_SPRITE)
         this.spriteGatiNPC.position.set(
             this.objetoNPC.x,
-            this.objetoNPC.y - (this.TAMAÑO_EMOJI_OBJETO + this.TAMAÑO_EMOJI_OBJETO / 2)
+            this.ALTO * 0.25
         )
         this.contenedor.addChild(this.spriteGatiNPC)
         
@@ -161,7 +157,7 @@ export class MenuIntercambio {
         })
         this.boton.anchor.set(0.5)
         this.boton.x = this.ANCHO * 0.5
-        this.boton.y = 150
+        this.boton.y = this.ALTO * 0.5
         this.boton.eventMode = 'static'
         this.boton.cursor = 'pointer'
 
@@ -192,11 +188,7 @@ export class MenuIntercambio {
     abrir(npc) {
         this.npc = npc
 
-        console.log(this.npc.texturaEspera)
-
-        const texturaEsperaGatiNPC = this.npc.texturaEspera
-        const framesGatiNPC = cortarFrames(texturaEsperaGatiNPC, 4, 64)
-        this.spriteGatiNPC.texture = framesGatiNPC[0]
+        this.spriteGatiNPC.texture = this.npc.texturaEspera
 
         this.objetoJugador.text = catálogoObjetos[npc.idObjetoQuePide].emoji
         this.infoJugador = catálogoObjetos[npc.idObjetoQuePide].nombre

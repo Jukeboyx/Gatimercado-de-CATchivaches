@@ -717,7 +717,6 @@
   },
   "meta": {
     "app": "https://github.com/LibreSprite/LibreSprite/",
-    "image": "gato_gris.png",
     "version": "1.1-dev",
     "format": "RGBA8888",
     "size": {
@@ -725,6 +724,7 @@
       "h": 32
     },
     "scale": "1",
+    "image": "gato_gris.png",
     "frameTags": [
       {
         "name": "abajo",
@@ -751,7 +751,7 @@
         "direction": "forward"
       },
       {
-        "name": "sentandose",
+      "name": "sentandose",
         "from": 16,
         "to": 18,
         "direction": "forward"

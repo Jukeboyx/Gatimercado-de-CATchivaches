@@ -68,6 +68,8 @@ export class GatiNPC {
             dormido:    animacionesDesdeTag['dormido'],
         }
 
+        this.texturaEspera = this.animaciones.sentado[0]
+        
         this.CANTIDAD_FRAMES = 4
         this.ANCHO_FRAME = 64
         this.VELOCIDAD_ANIMACION = 0.1

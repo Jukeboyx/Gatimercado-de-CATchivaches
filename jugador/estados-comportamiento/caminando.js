@@ -11,6 +11,7 @@ export class Caminando extends Estado {
         this.framesSinRecalcular = 0
 
         this.recalcularCamino()
+        this.dueño.empezarACaminar()
     }
 
     recalcularCamino() {
@@ -40,7 +41,7 @@ export class Caminando extends Estado {
 
         if (distancia <= this.destino.distanciaFreno) {
             this.dueño.estelaJugador.clear()
-            this.dueño.mef.cambiarEstado('espera')
+            this.dueño.empezarADetenerse()
             return
         }
 
@@ -57,46 +58,12 @@ export class Caminando extends Estado {
         this.recalcularCamino()
     }
 
-    actualizarAnimación(dx, dy) {
-        const escalaBase = Math.abs(this.dueño.imagen.scale.x)
-        const imagen = this.dueño.imagen
-        const animaciones = this.dueño.animaciones
-        const UMBRAL_DIAGONAL = 0.3
-        const proporción = Math.abs(dx) / (Math.abs(dx) + Math.abs(dy) + 0.001)
-        const movimientoSignificativo = Math.abs(dx) > 1;
-
-        let animaciónNueva
-        let escalaX = imagen.scale.x
-
-        if (proporción > 0.5 + UMBRAL_DIAGONAL) {
-            animaciónNueva = animaciones.lado
-            if (movimientoSignificativo) escalaX = dx < 0 ? -escalaBase : escalaBase
-        } else if (proporción < 0.5 - UMBRAL_DIAGONAL) {
-            animaciónNueva = dy < 0
-                ? animaciones.arriba
-                : animaciones.abajo
-        } else {
-            animaciónNueva = animaciones.lado
-            if (movimientoSignificativo) escalaX = dx < 0 ? -escalaBase : escalaBase
-        }
-
-        if (animaciónNueva !== this.últimaAnimación) {
-            imagen.textures = animaciónNueva
-            imagen.play()
-            this.últimaAnimación = animaciónNueva
-        }
-        
-        if (animaciónNueva === animaciones.lado && escalaX !== imagen.scale.x) {
-            imagen.scale.x = escalaX
-        }
-    }
-
     procesarResultado(resultado) {
         if (!resultado.llegó) return
 
         if (resultado.esUltimoPunto) {
             this.dueño.estelaJugador.clear()
-            this.dueño.mef.cambiarEstado('espera')
+            this.dueño.empezarADetenerse()
         } else {
             this.indicePunto++
         }
@@ -112,11 +79,11 @@ export class Caminando extends Estado {
         if (puntoInicio >= this.camino.length) return
 
         gráfico.moveTo(this.camino[puntoInicio].x, this.camino[puntoInicio].y)
-        for (let i = puntoInicio; i < this.camino.length; i++) {
+        for (let i = puntoInicio; i < this.camino.length - 1; i++) {
             gráfico.lineTo(this.camino[i].x, this.camino[i].y)
         }
 
-        gráfico.stroke({ width: 2, color: 0xffffff, alpha: 0.2})
+        gráfico.stroke({ width: 3, color: 0xffffff, alpha: 0.2})
     }
 
     
@@ -124,7 +91,7 @@ export class Caminando extends Estado {
         this.actualizarDestinoSiSeMovió()
 
         if (!this.camino || this.indicePunto >= this.camino.length) {
-            this.dueño.mef.cambiarEstado('espera')
+            this.dueño.empezarADetenerse()
             return
         }
 
@@ -137,7 +104,7 @@ export class Caminando extends Estado {
             datos
         )
 
-        this.actualizarAnimación(resultado.dx, resultado.dy)
+        this.dueño.actualizarDireccion(resultado.dx, resultado.dy)
         this.procesarResultado(resultado)
 
         if (resultado.llegó && resultado.esUltimoPunto) return

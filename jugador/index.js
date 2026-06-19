@@ -1,8 +1,8 @@
 import * as PIXI from '../pixi.js';
 
 import { MEF } from "../mef.js"
-import * as Estado from "./estados-comportamiento/indice.js"
-import { cortarFrames } from '../herramientas-funciones.js';
+import * as Comportamiento from "./estados-comportamiento/indice.js"
+import * as Animacion from "./estados-animacion/indice.js"
 
 
 export class Jugador {
@@ -17,27 +17,41 @@ export class Jugador {
 
         this.banderitas = []
 
-        const texturaDeLado = PIXI.Assets.get('recursos/sprites/JugadorDeLado.png')
-        const texturaArriba = PIXI.Assets.get('recursos/sprites/JugadorArriba.png')
-        const texturaAbajo  = PIXI.Assets.get('recursos/sprites/JugadorAbajo.png')
-        const texturaEspera = PIXI.Assets.get('recursos/sprites/JugadorEspera.png')
+        const sheet = PIXI.Assets.get('recursos/sprites/jugador.json')
 
+        const animacionesDesdeTag = {}
+        for (const tag of sheet.data.meta.frameTags) {
+            const frames = []
+            for (let i = tag.from; i <= tag.to; i++) {
+                frames.push(sheet.textures[`${tag.name}_${i - tag.from}.ase`])
+            }
+            animacionesDesdeTag[tag.name] = frames
+        }
+        
+        this.animaciones = {
+            abajo:      animacionesDesdeTag['abajo'],
+            derecha:    animacionesDesdeTag['derecha'],
+            arriba:     animacionesDesdeTag['arriba'],
+            izquierda:  animacionesDesdeTag['izquierda'],
+            sentandose: animacionesDesdeTag['sentandose'],
+            sentado:    animacionesDesdeTag['sentado'],
+            pestañea:   animacionesDesdeTag['pestañea'],
+            baño:       animacionesDesdeTag['baño'],
+            exhausto:   animacionesDesdeTag['exhausto'],
+            dormido:   animacionesDesdeTag['dormido'],
+        }
+
+        this.texturaEspera = this.animaciones.sentado[0]
+        
         this.CANTIDAD_FRAMES = 4
         this.ANCHO_FRAME = 64
         this.VELOCIDAD_ANIMACION = 0.1
 
         this.historialPosiciones = []
 
-        this.animaciones = {
-            lado: cortarFrames(texturaDeLado, this.CANTIDAD_FRAMES, this.ANCHO_FRAME),
-            arriba: cortarFrames(texturaArriba, this.CANTIDAD_FRAMES, this.ANCHO_FRAME),
-            abajo: cortarFrames(texturaAbajo, this.CANTIDAD_FRAMES, this.ANCHO_FRAME),
-            espera: cortarFrames(texturaEspera, this.CANTIDAD_FRAMES, this.ANCHO_FRAME),
-        }
-
-        this.imagen = new PIXI.AnimatedSprite(this.animaciones.espera)
+        this.imagen = new PIXI.AnimatedSprite(this.animaciones.sentado)
         this.imagen.anchor.set(0.5)
-        this.imagen.scale.set(1.5)
+        this.imagen.scale.set(3)
         this.imagen.animationSpeed = this.VELOCIDAD_ANIMACION
         this.imagen.play()
         // const escalaSprite = window.innerWidth < 768 ? 2 : 1
@@ -49,16 +63,40 @@ export class Jugador {
         this.contenedor.x = window.innerWidth / 2
         this.contenedor.y = window.innerHeight / 2
 
-        this.mef = new MEF(this, {
-            espera: new Estado.Espera(this),
-            caminando: new Estado.Caminando(this),
-            intercambio: new Estado.Intercambio(this)
+        this.mefComportamiento = new MEF(this, {
+            espera: new Comportamiento.Espera(this),
+            caminando: new Comportamiento.Caminando(this),
+            intercambio: new Comportamiento.Intercambio(this)
+        })
+        
+        this.mefAnimacion = new MEF(this, {
+            caminando:   new Animacion.Caminando(this),
+            sentandose:  new Animacion.Sentandose(this),
+            sentado:     new Animacion.Sentado(this),
+            pestañeando: new Animacion.Pestañeando(this),
+            bañandose:   new Animacion.Bañandose(this),
         })
 
-        this.mef.cambiarEstado('espera')
+        this.mefComportamiento.cambiarEstado('espera')
+        this.mefAnimacion.cambiarEstado('sentado')
     }
 
-    irHacia(punto, distanciaFreno, entidad = null) {
+    empezarACaminar() {
+        this.mefAnimacion.cambiarEstado('caminando')
+    }
+
+    empezarADetenerse() {
+        this.mefAnimacion.cambiarEstado('sentandose')
+        this.mefComportamiento.cambiarEstado('espera')
+    }
+
+    actualizarDireccion(dx, dy) {
+        if (this.mefAnimacion.estadoActual.actualizarDireccion) {
+            this.mefAnimacion.estadoActual.actualizarDireccion(dx, dy)
+        }
+    }
+
+    irHacia(punto, distanciaFreno = 5, entidad = null) {
         this.entidadObjetivo = entidad
         this.limpiarBanderitas()
 
@@ -68,10 +106,10 @@ export class Jugador {
 
         const destino = { x: punto.x, y: punto.y, distanciaFreno }
 
-        if (this.mef.estadoActual instanceof Estado.Caminando) {
-            this.mef.estadoActual.actualizarDestino(destino)
+        if (this.mefComportamiento.estadoActual instanceof Comportamiento.Caminando) {
+            this.mefComportamiento.estadoActual.actualizarDestino(destino)
         } else {
-            this.mef.cambiarEstado('caminando', destino)
+            this.mefComportamiento.cambiarEstado('caminando', destino)
         }
     }
 
@@ -79,7 +117,7 @@ export class Jugador {
         const banderita = new PIXI.Text({
             text: '🚩',
             style: {
-                fontSize: 24,
+                fontSize: 30,
                 fontFamily: 'Arial'
                 }
         })
@@ -109,7 +147,8 @@ export class Jugador {
             this.historialPosiciones.shift()
         }
         this.verificarBanderitas()
-        this.mef.actualizar(datos)
+        this.mefComportamiento.actualizar(datos)
+        this.mefAnimacion.actualizar(datos)
     }
 
     verificarBanderitas() {
@@ -119,7 +158,7 @@ export class Jugador {
             const dy = banderita.y - this.contenedor.y
             const distancia = Math.sqrt(dx * dx + dy * dy)
 
-            if (distancia < 30) {
+            if (distancia < 35) {
                 this.mundoContenedor.removeChild(banderita)
                 this.banderitas.splice(i, 1)
             }
