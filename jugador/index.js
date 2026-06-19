@@ -66,11 +66,13 @@ export class Jugador {
             this.colocarBanderita(punto)
         }
 
-        this.mef.cambiarEstado('caminando', {
-            x: punto.x,
-            y: punto.y,
-            distanciaFreno: distanciaFreno
-        })
+        const destino = { x: punto.x, y: punto.y, distanciaFreno }
+
+        if (this.mef.estadoActual instanceof Estado.Caminando) {
+            this.mef.estadoActual.actualizarDestino(destino)
+        } else {
+            this.mef.cambiarEstado('caminando', destino)
+        }
     }
 
     colocarBanderita(punto) {
@@ -84,6 +86,7 @@ export class Jugador {
         banderita.anchor.set(0.5)
         banderita.x = punto.x
         banderita.y = punto.y
+        banderita.zIndex = banderita.y
         this.mundoContenedor.addChild(banderita)
         this.mundoContenedor.setChildIndex(banderita, 2)
         this.banderitas.push(banderita)

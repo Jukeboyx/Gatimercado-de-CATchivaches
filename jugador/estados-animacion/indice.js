@@ -1,0 +1,5 @@
+export { Caminando } from './caminando.js'
+export { Sentado } from './sentado.js'
+export { Sentandose } from './sentandose.js'
+export { Pestañeando } from './pestañeando.js'
+export { Bañandose } from './bañandose.js'

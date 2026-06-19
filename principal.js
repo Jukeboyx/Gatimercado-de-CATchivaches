@@ -153,6 +153,7 @@ export class Juego {
 
     crearEscena() {
         this.mundoContenedor = new PIXI.Container()
+        this.mundoContenedor.sortableChildren = true
         
         this.app.stage.addChild(this.mundoContenedor)
 
@@ -239,7 +240,9 @@ export class Juego {
 
     actualizar(delta) {
         this.jugador.actualizar(delta)
+        this.jugador.contenedor.zIndex = this.jugador.contenedor.y
         for (const gato of this.gatos) {
+            gato.contenedor.zIndex = gato.contenedor.y
             gato.actualizar(delta)
         }
         this.hud.actualizar(delta)

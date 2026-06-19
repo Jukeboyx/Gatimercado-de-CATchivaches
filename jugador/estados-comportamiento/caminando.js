@@ -25,6 +25,11 @@ export class Caminando extends Estado {
         this.indicePunto = this.camino.length > 1 ? 1 : 0
     }
 
+    actualizarDestino(destino) {
+        this.destino = destino
+        this.recalcularCamino()
+    }
+
     actualizarDestinoSiSeMovió() {
         if (!this.dueño.entidadObjetivo) return
 
