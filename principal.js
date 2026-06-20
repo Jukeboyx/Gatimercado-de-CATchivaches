@@ -50,6 +50,9 @@ export class Juego {
             'recursos/sprites/jugador.json',
             'recursos/sprites/gato_gris.json',
             'recursos/sprites/gato_negro.json',
+            'recursos/sprites/gato_blanco.json',
+            'recursos/sprites/gato_violeta.json',
+            'recursos/sprites/gato_naranja.json',
             'recursos/sprites/accesorios.png',
             'recursos/sprites/pastito.png'
         ])

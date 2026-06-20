@@ -31,7 +31,10 @@ export class GatiNPC {
 
         const coloresDeGatos = [
             'gris',
-            'negro'
+            'negro',
+            // 'blanco',
+            // 'violeta',
+            // 'naranja'
         ]
 
         this.colorDeGatoActual = coloresDeGatos[Math.floor(Math.random() * coloresDeGatos.length)]
