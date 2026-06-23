@@ -6,14 +6,14 @@ import { GatiNPC } from './gatinpc/index.js';
 import { HUD } from './interfaz/hud.js';
 import { mezclar, cortarGrilla } from './herramientas-funciones.js';
 import { Accesorios } from './accesorios.js';
-import { catálogoObstáculos, generarPosicionRandom, verificarSuperposicion } from './obstaculos.js';
+import { catálogoObstáculos, generarPosicionRandom, verificarSuperposicion, puntoDentroDeObstáculo, calcularPuntoMásCercano } from './obstaculos.js';
 
 export class Juego {
     constructor() {
         this.app = new PIXI.Application();
 
-        this.ANCHO_MUNDO = 2000
-        this.ALTO_MUNDO = 2000
+        this.ANCHO_MUNDO = 2500
+        this.ALTO_MUNDO = 2500
         this.ALTO_DISEÑO = 800
 
         this.init()
@@ -62,7 +62,9 @@ export class Juego {
             'recursos/sprites/arbol1.png',
             'recursos/sprites/arbol2.png',
             'recursos/sprites/arbol3.png',
-            'recursos/sprites/picnic.png'
+            'recursos/sprites/arbol4.png',
+            'recursos/sprites/picnic.png',
+            'recursos/sprites/banquito1.png'
         ])
     }
 
@@ -125,7 +127,7 @@ export class Juego {
 
             const gato = new GatiNPC(
                 300 + i * 250,
-                0,
+                200,
                 intercambio.da,
                 intercambio.pide,
                 this.jugador,
@@ -175,7 +177,7 @@ export class Juego {
             const maxIntentos = 100
             
             do {
-                posicionBase = generarPosicionRandom(this.ANCHO_MUNDO, this.ALTO_MUNDO)
+                posicionBase = generarPosicionRandom(this.ANCHO_MUNDO, this.ALTO_MUNDO, 300)
                 intentos++
             } while (verificarSuperposicion(posicionBase.x, posicionBase.y, 350, this.obstaculos) && intentos < maxIntentos)
             
@@ -196,7 +198,7 @@ export class Juego {
         
         // Generar árboles alejados de los comercios
         const tiposArboles = ['arbol1', 'arbol2', 'arbol3']
-        const totalArboles = Math.floor(Math.random() * 6) + 5 // Entre 5 y 10 árboles
+        const totalArboles = Math.floor(Math.random() * 7) + 6 // Entre 6 y 12 árboles
         
         // Primero agregar árboles en las esquinas
         const esquinas = [
@@ -207,12 +209,12 @@ export class Juego {
         ]
         
         for (const esquina of esquinas) {
-            // Agregar 2-3 árboles en cada esquina con variación
-            const arbolesPorEsquina = Math.floor(Math.random() * 2) + 2 // 2 o 3 árboles
+            // Agregar 1-2 árboles en cada esquina con variación
+            const arbolesPorEsquina = Math.floor(Math.random() * 1) + 1 // 1 o 2 árboles
             for (let i = 0; i < arbolesPorEsquina; i++) {
                 const tipoArbol = tiposArboles[Math.floor(Math.random() * tiposArboles.length)]
-                const offsetX = (Math.random() - 0.5) * 100 // Variación de ±50px
-                const offsetY = (Math.random() - 0.5) * 100
+                const offsetX = (Math.random() - 0.5) * 200 // Variación de ±100px
+                const offsetY = (Math.random() - 0.5) * 200
                 this.crearObstáculoEnPosicion(tipoArbol, esquina.x + offsetX, esquina.y + offsetY)
             }
         }
@@ -242,12 +244,42 @@ export class Juego {
                     }
                 }
                 
-                if (!cercaDeComercio && !verificarSuperposicion(posicionArbol.x, posicionArbol.y, 50, this.obstaculos)) {
+                if (!cercaDeComercio && !verificarSuperposicion(posicionArbol.x, posicionArbol.y, 100, this.obstaculos)) {
                     break
                 }
             } while (intentos < maxIntentos)
             
             this.crearObstáculoEnPosicion(tipoArbol, posicionArbol.x, posicionArbol.y)
+        }
+        
+        // Generar 4 árboles arbol4
+        for (let i = 0; i < 4; i++) {
+            let posicionArbol4
+            let intentos = 0
+            const maxIntentos = 200
+            
+            do {
+                posicionArbol4 = generarPosicionRandom(this.ANCHO_MUNDO, this.ALTO_MUNDO)
+                intentos++
+            } while (verificarSuperposicion(posicionArbol4.x, posicionArbol4.y, 100, this.obstaculos) && intentos < maxIntentos)
+            
+            this.crearObstáculoEnPosicion('arbol4', posicionArbol4.x, posicionArbol4.y)
+        }
+        
+        // Generar hasta 7 banquitos (banquito1)
+        const totalBanquitos = Math.floor(Math.random() * 5) + 5 // Entre 5 y 9 banquitos
+        
+        for (let i = 0; i < totalBanquitos; i++) {
+            let posicionBanquito
+            let intentos = 0
+            const maxIntentos = 200
+            
+            do {
+                posicionBanquito = generarPosicionRandom(this.ANCHO_MUNDO, this.ALTO_MUNDO)
+                intentos++
+            } while (verificarSuperposicion(posicionBanquito.x, posicionBanquito.y, 100, this.obstaculos) && intentos < maxIntentos)
+            
+            this.crearObstáculoEnPosicion('banquito1', posicionBanquito.x, posicionBanquito.y)
         }
     }
 
@@ -400,7 +432,17 @@ export class Juego {
         
         const puntoEnMundo = this.mundoContenedor.toLocal(evento.global)
 
-        this.jugador.irHacia(puntoEnMundo)
+        // Verificar si el clic está sobre un obstáculo
+        const obstáculo = puntoDentroDeObstáculo(puntoEnMundo.x, puntoEnMundo.y, this.obstaculos)
+        
+        let destinoFinal = puntoEnMundo
+        
+        if (obstáculo) {
+            // Calcular el punto más cercano alrededor del obstáculo
+            destinoFinal = calcularPuntoMásCercano(puntoEnMundo.x, puntoEnMundo.y, obstáculo)
+        }
+
+        this.jugador.irHacia(destinoFinal)
     }
 
     actualizar(delta) {

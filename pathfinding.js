@@ -25,11 +25,20 @@ function celdaBloqueada(grillaX, grillaY) {
     const mundoY = grillaY * TAMAÑO_CELDA + TAMAÑO_CELDA / 2;
 
     for (const obstáculo of obstáculosDinámicos) {
+        if (obstáculo.radioColision === 0) continue // picnic no tiene colisión
+        
         const dx = mundoX - obstáculo.x;
         const dy = mundoY - obstáculo.y;
         const distancia = Math.sqrt(dx * dx + dy * dy);
         
-        if (distancia < obstáculo.radioColision + TAMAÑO_CELDA / 2) {
+        // Verificar si el centro de la celda está dentro del obstáculo
+        if (distancia < obstáculo.radioColision) {
+            return true;
+        }
+        
+        // Verificar si la celda está cerca del borde del obstáculo (considerando el tamaño de la celda)
+        // La distancia desde el centro de la celda al borde más cercano es aproximadamente TAMAÑO_CELDA/2
+        if (distancia < obstáculo.radioColision + TAMAÑO_CELDA) {
             return true;
         }
     }
