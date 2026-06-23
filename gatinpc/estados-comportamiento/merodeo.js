@@ -16,7 +16,8 @@ export class Merodeo extends Estado {
             destino.x,
             destino.y,
             this.dueño.ANCHO_MUNDO,
-            this.dueño.ALTO_MUNDO
+            this.dueño.ALTO_MUNDO,
+            this.dueño.obstaculos
         )
 
         if (this.camino.length > 1) {

@@ -6,6 +6,7 @@ import { GatiNPC } from './gatinpc/index.js';
 import { HUD } from './interfaz/hud.js';
 import { mezclar, cortarGrilla } from './herramientas-funciones.js';
 import { Accesorios } from './accesorios.js';
+import { catálogoObstáculos, generarPosicionRandom, verificarSuperposicion } from './obstaculos.js';
 
 export class Juego {
     constructor() {
@@ -54,7 +55,14 @@ export class Juego {
             'recursos/sprites/gato_violeta.json',
             'recursos/sprites/gato_naranja.json',
             'recursos/sprites/accesorios.png',
-            'recursos/sprites/pastito.png'
+            'recursos/sprites/pastito.png',
+            'recursos/sprites/comercio1.png',
+            'recursos/sprites/comercio2.png',
+            'recursos/sprites/comercio3.png',
+            'recursos/sprites/arbol1.png',
+            'recursos/sprites/arbol2.png',
+            'recursos/sprites/arbol3.png',
+            'recursos/sprites/picnic.png'
         ])
     }
 
@@ -85,7 +93,7 @@ export class Juego {
         this.objetivo = candidatos[Math.floor(Math.random() * candidatos.length)]
     }
 
-    generarCadenaVictoria(pasos = 3) {
+    generarCadenaVictoria(pasos = 10) {
         let objetoActual = this.objetosIniciales[Math.floor(Math.random() * this.objetosIniciales.length)]
         const disponibles = Object.keys(catálogoObjetos).filter(id => !this.objetosIniciales.includes(id) && id !== this.objetivo)
 
@@ -123,9 +131,10 @@ export class Juego {
                 this.jugador,
                 this.ANCHO_MUNDO,
                 this.ALTO_MUNDO,
+                this.obstaculos
             )
 
-            //gato.asignarAccesorio(this.accesorios.obtenerSiguiente(i))
+            gato.asignarAccesorio(intercambio.da, intercambio.pide)
 
             gato.alSeleccionar = () => {
                 if (this.hud.menuIntercambio.visible) {
@@ -152,6 +161,158 @@ export class Juego {
         }
     }
 
+    crearObstaculos() {
+        this.obstaculos = []
+
+        // Crear 2-3 grupitos de comercios
+        const cantidadGrupitos = Math.floor(Math.random() * 2) + 2 // 2 o 3 grupitos
+        const tiposComercios = ['comercio1', 'comercio2', 'comercio3']
+        
+        for (let g = 0; g < cantidadGrupitos; g++) {
+            // Posición base del grupito
+            let posicionBase
+            let intentos = 0
+            const maxIntentos = 100
+            
+            do {
+                posicionBase = generarPosicionRandom(this.ANCHO_MUNDO, this.ALTO_MUNDO)
+                intentos++
+            } while (verificarSuperposicion(posicionBase.x, posicionBase.y, 350, this.obstaculos) && intentos < maxIntentos)
+            
+            // Crear los 3 comercios uno al lado del otro horizontalmente
+            const separacionComercios = 180
+            const ordenComercios = [...tiposComercios].sort(() => Math.random() - 0.5) // Orden random
+            
+            for (let i = 0; i < ordenComercios.length; i++) {
+                const offsetX = (i - 1) * separacionComercios
+                this.crearObstáculoEnPosicion(ordenComercios[i], posicionBase.x + offsetX, posicionBase.y)
+            }
+            
+            // Colocar picnic delante del grupito (más separado)
+            const picnicX = posicionBase.x
+            const picnicY = posicionBase.y + 160
+            this.crearObstáculoEnPosicion('picnic', picnicX, picnicY)
+        }
+        
+        // Generar árboles alejados de los comercios
+        const tiposArboles = ['arbol1', 'arbol2', 'arbol3']
+        const totalArboles = Math.floor(Math.random() * 6) + 5 // Entre 5 y 10 árboles
+        
+        // Primero agregar árboles en las esquinas
+        const esquinas = [
+            { x: 100, y: 100 }, // Superior izquierda
+            { x: this.ANCHO_MUNDO - 100, y: 100 }, // Superior derecha
+            { x: 100, y: this.ALTO_MUNDO - 100 }, // Inferior izquierda
+            { x: this.ANCHO_MUNDO - 100, y: this.ALTO_MUNDO - 100 } // Inferior derecha
+        ]
+        
+        for (const esquina of esquinas) {
+            // Agregar 2-3 árboles en cada esquina con variación
+            const arbolesPorEsquina = Math.floor(Math.random() * 2) + 2 // 2 o 3 árboles
+            for (let i = 0; i < arbolesPorEsquina; i++) {
+                const tipoArbol = tiposArboles[Math.floor(Math.random() * tiposArboles.length)]
+                const offsetX = (Math.random() - 0.5) * 100 // Variación de ±50px
+                const offsetY = (Math.random() - 0.5) * 100
+                this.crearObstáculoEnPosicion(tipoArbol, esquina.x + offsetX, esquina.y + offsetY)
+            }
+        }
+        
+        // Luego generar árboles random en el resto del mapa
+        for (let i = 0; i < totalArboles; i++) {
+            const tipoArbol = tiposArboles[Math.floor(Math.random() * tiposArboles.length)]
+            let posicionArbol
+            let intentos = 0
+            const maxIntentos = 200
+            
+            do {
+                posicionArbol = generarPosicionRandom(this.ANCHO_MUNDO, this.ALTO_MUNDO)
+                intentos++
+                
+                // Verificar que esté lejos de cualquier comercio
+                let cercaDeComercio = false
+                for (const obs of this.obstaculos) {
+                    if (obs.tipo.startsWith('comercio')) {
+                        const dx = posicionArbol.x - obs.x
+                        const dy = posicionArbol.y - obs.y
+                        const distancia = Math.sqrt(dx * dx + dy * dy)
+                        if (distancia < 250) {
+                            cercaDeComercio = true
+                            break
+                        }
+                    }
+                }
+                
+                if (!cercaDeComercio && !verificarSuperposicion(posicionArbol.x, posicionArbol.y, 50, this.obstaculos)) {
+                    break
+                }
+            } while (intentos < maxIntentos)
+            
+            this.crearObstáculoEnPosicion(tipoArbol, posicionArbol.x, posicionArbol.y)
+        }
+    }
+
+    crearObstáculoEnPosicion(tipo, x, y) {
+        const datos = catálogoObstáculos[tipo]
+
+        const sprite = new PIXI.Sprite(PIXI.Assets.get(datos.imagen))
+        sprite.anchor.set(0.5)
+        sprite.scale.set(datos.escala)
+        sprite.x = x
+        sprite.y = y
+        
+        // El picnic tiene zIndex fijo bajo para que el jugador aparezca encima
+        if (tipo === 'picnic') {
+            sprite.zIndex = 0
+        } else {
+            sprite.zIndex = y
+        }
+
+        this.mundoContenedor.addChild(sprite)
+
+        this.obstaculos.push({
+            sprite,
+            x: x,
+            y: y,
+            radioColision: datos.radioColision,
+            tipo
+        })
+    }
+
+    crearObstáculo(tipo) {
+        const datos = catálogoObstáculos[tipo]
+        let posicion
+        let intentos = 0
+        const maxIntentos = 100
+
+        do {
+            posicion = generarPosicionRandom(this.ANCHO_MUNDO, this.ALTO_MUNDO)
+            intentos++
+        } while (verificarSuperposicion(posicion.x, posicion.y, datos.radioColision, this.obstaculos) && intentos < maxIntentos)
+
+        const sprite = new PIXI.Sprite(PIXI.Assets.get(datos.imagen))
+        sprite.anchor.set(0.5)
+        sprite.scale.set(datos.escala)
+        sprite.x = posicion.x
+        sprite.y = posicion.y
+        
+        // El picnic tiene zIndex fijo bajo para que el jugador aparezca encima
+        if (tipo === 'picnic') {
+            sprite.zIndex = 0
+        } else {
+            sprite.zIndex = posicion.y
+        }
+
+        this.mundoContenedor.addChild(sprite)
+
+        this.obstaculos.push({
+            sprite,
+            x: posicion.x,
+            y: posicion.y,
+            radioColision: datos.radioColision,
+            tipo
+        })
+    }
+
     crearEscena() {
         this.mundoContenedor = new PIXI.Container()
         this.mundoContenedor.sortableChildren = true
@@ -169,10 +330,13 @@ export class Juego {
         })
         this.mundoContenedor.addChild(this.suelo)
 
+        this.crearObstaculos()
+
         this.jugador = new Jugador(
             this.mundoContenedor,
             this.ANCHO_MUNDO,
-            this.ALTO_MUNDO
+            this.ALTO_MUNDO,
+            this.obstaculos
         )
         this.mundoContenedor.addChild(this.jugador.contenedor)
         

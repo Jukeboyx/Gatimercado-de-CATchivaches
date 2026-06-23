@@ -6,10 +6,11 @@ import * as Animacion from "./estados-animacion/indice.js"
 
 
 export class Jugador {
-    constructor(mundoContenedor, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000) {
+    constructor(mundoContenedor, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000, obstaculos = []) {
         this.mundoContenedor = mundoContenedor
         this.ANCHO_MUNDO = ANCHO_MUNDO
         this.ALTO_MUNDO = ALTO_MUNDO
+        this.obstaculos = obstaculos
 
         this.estelaJugador = new PIXI.Graphics()
         this.mundoContenedor.addChild(this.estelaJugador)

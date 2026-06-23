@@ -6,7 +6,7 @@ export class Caminando extends Estado {
     alEntrar(destino) {
         this.destino = destino
         this.indicePunto = 0
-        this.VELOCIDAD = 4
+        this.VELOCIDAD = 6
         this.últimaAnimación = null
         this.framesSinRecalcular = 0
 
@@ -21,7 +21,8 @@ export class Caminando extends Estado {
             this.destino.x,
             this.destino.y,
             this.dueño.ANCHO_MUNDO,
-            this.dueño.ALTO_MUNDO
+            this.dueño.ALTO_MUNDO,
+            this.dueño.obstaculos
         )
         this.indicePunto = this.camino.length > 1 ? 1 : 0
     }

@@ -1,6 +1,10 @@
-import { obstáculos } from './datos.js';
-
 const TAMAÑO_CELDA = 16;
+
+let obstáculosDinámicos = [];
+
+export function setObstáculos(obstáculos) {
+    obstáculosDinámicos = obstáculos;
+}
 
 function mundoAGrilla(x, y) {
     return {
@@ -17,14 +21,15 @@ function grillaAMundo(x, y) {
 }
 
 function celdaBloqueada(grillaX, grillaY) {
-    const mundoX = grillaX * TAMAÑO_CELDA;
-    const mundoY = grillaY * TAMAÑO_CELDA;
+    const mundoX = grillaX * TAMAÑO_CELDA + TAMAÑO_CELDA / 2;
+    const mundoY = grillaY * TAMAÑO_CELDA + TAMAÑO_CELDA / 2;
 
-    for (const obstáculo of obstáculos) {
-        if (mundoX < obstáculo.x + obstáculo.ancho &&
-            mundoX + TAMAÑO_CELDA > obstáculo.x &&
-            mundoY < obstáculo.y + obstáculo.alto &&
-            mundoY + TAMAÑO_CELDA > obstáculo.y) {
+    for (const obstáculo of obstáculosDinámicos) {
+        const dx = mundoX - obstáculo.x;
+        const dy = mundoY - obstáculo.y;
+        const distancia = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distancia < obstáculo.radioColision + TAMAÑO_CELDA / 2) {
             return true;
         }
     }

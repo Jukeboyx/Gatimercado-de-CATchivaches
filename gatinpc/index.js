@@ -4,14 +4,16 @@ import { MEF } from "../mef.js"
 import * as Comportamiento from "./estados-comportamiento/indice.js"
 import * as Animacion from "./estados-animacion/indice.js"
 import { Jugador } from '../jugador/index.js';
+import { catálogoObjetos } from '../datos.js';
 
 export class GatiNPC {
-    constructor(posX, posY, idObjetoQueTiene, idObjetoQuePide, jugador, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000) {
+    constructor(posX, posY, idObjetoQueTiene, idObjetoQuePide, jugador, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000, obstaculos = []) {
         this.idObjetoQueTiene = idObjetoQueTiene
         this.idObjetoQuePide = idObjetoQuePide
         this.jugador = jugador
         this.ANCHO_MUNDO = ANCHO_MUNDO
         this.ALTO_MUNDO = ALTO_MUNDO
+        this.obstaculos = obstaculos
         
         this.alIniciarIntercambio = null
         this.alCerrarIntercambio = null
@@ -139,12 +141,94 @@ export class GatiNPC {
         this.mefComportamiento.cambiarEstado('merodeo')
     }
 
-    asignarAccesorio(textura) {
-        this.spriteAccesorio = new PIXI.Sprite(textura)
-        this.spriteAccesorio.anchor.set(0.5)
-        this.spriteAccesorio.scale.set(3)
-        this.spriteAccesorio.y = 10
-        this.contenedor.addChild(this.spriteAccesorio)
+    asignarAccesorio(idObjetoTiene, idObjetoPide) {
+        const objetoTiene = catálogoObjetos[idObjetoTiene]
+        const objetoPide = catálogoObjetos[idObjetoPide]
+        if (!objetoTiene || !objetoPide) return
+        
+        // Contenedor para el tradeo
+        this.contenedorTradeo = new PIXI.Container()
+        this.contenedorTradeo.y = -50 // Posición sobre la cabeza
+        
+        // Objeto que el NPC tiene (izquierda)
+        this.spriteObjetoTiene = new PIXI.Text({
+            text: objetoTiene.emoji,
+            style: {
+                fontSize: 35,
+                fontFamily: 'Arial'
+            }
+        })
+        this.spriteObjetoTiene.anchor.set(0.5)
+        this.spriteObjetoTiene.x = -35
+        
+        // Emoji de rotación en el centro
+        this.spriteFlecha = new PIXI.Text({
+            text: '🔄',
+            style: {
+                fontSize: 30,
+                fontFamily: 'Arial'
+            }
+        })
+        this.spriteFlecha.anchor.set(0.5)
+        this.spriteFlecha.x = 0
+        
+        // Objeto que el NPC quiere (derecha)
+        this.spriteObjetoPide = new PIXI.Text({
+            text: objetoPide.emoji,
+            style: {
+                fontSize: 35,
+                fontFamily: 'Arial'
+            }
+        })
+        this.spriteObjetoPide.anchor.set(0.5)
+        this.spriteObjetoPide.x = 35
+        
+        this.contenedorTradeo.addChild(this.spriteObjetoTiene)
+        this.contenedorTradeo.addChild(this.spriteFlecha)
+        this.contenedorTradeo.addChild(this.spriteObjetoPide)
+        this.contenedorTradeo.visible = false // Oculto inicialmente
+        
+        this.contenedor.addChild(this.contenedorTradeo)
+    }
+
+    actualizarAccesorio() {
+        if (!this.contenedorTradeo) return
+        
+        // Verificar si el jugador está cerca para mostrar el tradeo
+        if (this.jugador) {
+            const dx = this.jugador.contenedor.x - this.contenedor.x
+            const dy = this.jugador.contenedor.y - this.contenedor.y
+            const distancia = Math.sqrt(dx * dx + dy * dy)
+            const DISTANCIA_VISIBILIDAD = 200
+            
+            this.contenedorTradeo.visible = distancia < DISTANCIA_VISIBILIDAD
+        }
+        
+        // Ajustar posición del contenedor según animación
+        const estadoAnimacion = this.mefAnimacion.estadoActual
+        if (estadoAnimacion) {
+            const nombreEstado = estadoAnimacion.constructor.name
+            switch (nombreEstado) {
+                case 'Caminando':
+                case 'Sentandose':
+                case 'Sentado':
+                case 'Pestañeando':
+                    this.contenedorTradeo.y = -50
+                    break
+                case 'Bañandose':
+                    this.contenedorTradeo.y = -45
+                    this.contenedorTradeo.rotation = 0.1
+                    break
+                case 'Exhausto':
+                case 'Durmiendo':
+                    this.contenedorTradeo.y = -40
+                    this.contenedorTradeo.rotation = 0
+                    break
+                default:
+                    this.contenedorTradeo.y = -50
+                    this.contenedorTradeo.rotation = 0
+            }
+        }
     }
     
     jugadorVaAIntercambiar() {
@@ -158,12 +242,18 @@ export class GatiNPC {
 
     actualizarObjetos() {
         [this.idObjetoQueTiene, this.idObjetoQuePide] = [this.idObjetoQuePide, this.idObjetoQueTiene]
+        // Actualizar el tradeo para mostrar los nuevos objetos
+        if (this.contenedorTradeo) {
+            this.contenedor.removeChild(this.contenedorTradeo)
+        }
+        this.asignarAccesorio(this.idObjetoQueTiene, this.idObjetoQuePide)
     }
 
     actualizarDireccion(dx, dy) {
         if (this.mefAnimacion.estadoActual.actualizarDireccion) {
             this.mefAnimacion.estadoActual.actualizarDireccion(dx, dy)
         }
+        this.actualizarAccesorio()
     }
 
     // MANEJO DE ANIMACIONES Y COMPORTAMIENTOS //
@@ -210,5 +300,6 @@ export class GatiNPC {
     actualizar(datos) {
         this.mefComportamiento.actualizar(datos)
         this.mefAnimacion.actualizar(datos)
+        this.actualizarAccesorio()
     }
 }

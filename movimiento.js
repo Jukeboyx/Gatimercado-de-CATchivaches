@@ -1,8 +1,9 @@
 //Movement, buena canción de Hozier
 
-import { calcularRuta } from './pathfinding.js'
+import { calcularRuta, setObstáculos } from './pathfinding.js'
 
-export function calcularCamino(origenX, origenY, destinoX, destinoY, anchoMundo, altoMundo) {
+export function calcularCamino(origenX, origenY, destinoX, destinoY, anchoMundo, altoMundo, obstaculos = []) {
+    setObstáculos(obstaculos)
     const ruta = calcularRuta(origenX, origenY, destinoX, destinoY, anchoMundo, altoMundo)
     if (ruta && ruta.length > 0) {
         return ruta
