@@ -1,6 +1,6 @@
 # 🐱 Gatimercado de CATchivaches
 
-Juego Point and Click de intercambio y exploración con elementos de puzzle, gestión de tiempo y memoria visual. Desarrollado para navegador web con PixiJS.
+Juego Point and Click de intercambio y exploración con elementos de puzzle, gestión de tiempo y memoria visual. Desarrollado para navegador web con PixiJS. Haz clic [aquí](https://jukeboyx.github.io/Gatimercado-de-CATchivaches/ "Jugar a Gatimercado de CATchivaches") para acceder al juego en GitHub Pages.
 
 **Equipo:** Paloma Ferrara, Juan Achucarro, Ayelen Aranda  
 **Contexto:** Proyecto universitario  

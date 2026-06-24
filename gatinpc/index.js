@@ -43,21 +43,16 @@ export class GatiNPC {
 
         const sheet = PIXI.Assets.get(`recursos/sprites/gato_${this.colorDeGatoActual}.json`)
 
-        const construirAnimacion = (desde, hasta) => {
-            const frames = []
-            for (let i = desde; i <= hasta; i++) {
-                frames.push(sheet.textures[`gato_${this.colorDeGatoActual}_${tag.name}_${i - desde}`])
-            }
-            return frames
-        }
-
         const animacionesDesdeTag = {}
-        for (const tag of sheet.data.meta.frameTags) {
-            const frames = []
-            for (let i = tag.from; i <= tag.to; i++) {
-                frames.push(sheet.textures[`gato_${this.colorDeGatoActual}_${tag.name}_${i - tag.from}`])
+        for (const [nombreTextura, textura] of Object.entries(sheet.textures)) {
+            const partes = nombreTextura.split('_')
+            if (partes.length >= 3) {
+                const nombreAnimacion = partes[2] // tercera parte es el nombre de animación
+                if (!animacionesDesdeTag[nombreAnimacion]) {
+                    animacionesDesdeTag[nombreAnimacion] = []
+                }
+                animacionesDesdeTag[nombreAnimacion].push(textura)
             }
-            animacionesDesdeTag[tag.name] = frames
         }
 
         this.animaciones = {
@@ -73,7 +68,7 @@ export class GatiNPC {
             dormido:    animacionesDesdeTag['dormido'],
         }
 
-        this.texturaEspera = this.animaciones.sentado[0]
+        this.texturaEspera = animacionesDesdeTag['sentado'][0]
         
         this.CANTIDAD_FRAMES = 4
         this.ANCHO_FRAME = 64
