@@ -65,7 +65,9 @@ export class Juego {
             'recursos/sprites/arbol3.png',
             'recursos/sprites/arbol4.png',
             'recursos/sprites/picnic.png',
-            'recursos/sprites/banquito1.png'
+            'recursos/sprites/banquito1.png',
+            'recursos/sprites/items.png',
+            'recursos/sprites/tiempo_objeto.png'
         ])
     }
 

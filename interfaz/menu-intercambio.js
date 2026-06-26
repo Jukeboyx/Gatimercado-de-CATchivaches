@@ -59,17 +59,20 @@ export class MenuIntercambio {
         this.contenedor.addChild(this.fondo)
         
         //Objeto que el NPC quiere
+        this.ranuraJugador = new PIXI.Container()
+        this.ranuraJugador.x = this.ANCHO * 0.25
+        this.ranuraJugador.y = this.ALTO * 0.75
+        this.ranuraJugador.eventMode = 'static'
+        this.contenedor.addChild(this.ranuraJugador)
+        
         this.objetoJugador = new PIXI.Text({
             text: '',
             style: { fontSize: this.TAMAÑO_EMOJI_OBJETO, padding: this.MARGEN_EMOJI }
         })
         this.objetoJugador.anchor.set(0.5)
-        this.objetoJugador.x = this.ANCHO * 0.25
-        this.objetoJugador.y = this.ALTO * 0.75
-        this.objetoJugador.eventMode = 'static'
-        this.contenedor.addChild(this.objetoJugador)
+        this.ranuraJugador.addChild(this.objetoJugador)
 
-        this.objetoJugador.on('pointerover', () => {
+        this.ranuraJugador.on('pointerover', () => {
             this.textoBurbuja.text = this.infoJugador
 
             const nuevoAncho = this.textoBurbuja.width + 10 * 2
@@ -90,22 +93,25 @@ export class MenuIntercambio {
             this.burbuja.visible = true
         })
 
-        this.objetoJugador.on('pointerout', () => {
+        this.ranuraJugador.on('pointerout', () => {
             this.burbuja.visible = false
         })
 
         //Objeto que el NPC tiene
+        this.ranuraNPC = new PIXI.Container()
+        this.ranuraNPC.x = this.ANCHO * 0.75
+        this.ranuraNPC.y = this.ALTO * 0.75
+        this.ranuraNPC.eventMode = 'static'
+        this.contenedor.addChild(this.ranuraNPC)
+        
         this.objetoNPC = new PIXI.Text({
             text: '',
             style: { fontSize: this.TAMAÑO_EMOJI_OBJETO, padding: this.MARGEN_EMOJI }
         })
         this.objetoNPC.anchor.set(0.5)
-        this.objetoNPC.x = this.ANCHO * 0.75
-        this.objetoNPC.y = this.ALTO * 0.75
-        this.objetoNPC.eventMode = 'static'
-        this.contenedor.addChild(this.objetoNPC)
+        this.ranuraNPC.addChild(this.objetoNPC)
 
-        this.objetoNPC.on('pointerover', () => {
+        this.ranuraNPC.on('pointerover', () => {
             this.textoBurbuja.text = this.infoNPC
 
             const nuevoAncho = this.textoBurbuja.width + 10 * 2
@@ -126,7 +132,7 @@ export class MenuIntercambio {
             this.burbuja.visible = true
         })
 
-        this.objetoNPC.on('pointerout', () => {
+        this.ranuraNPC.on('pointerout', () => {
             this.burbuja.visible = false
         })
 
@@ -190,11 +196,29 @@ export class MenuIntercambio {
 
         this.spriteGatiNPC.texture = this.npc.texturaEspera
 
-        this.objetoJugador.text = catálogoObjetos[npc.idObjetoQuePide].emoji
-        this.infoJugador = catálogoObjetos[npc.idObjetoQuePide].nombre
-
-        this.objetoNPC.text = catálogoObjetos[npc.idObjetoQueTiene].emoji
-        this.infoNPC = catálogoObjetos[npc.idObjetoQueTiene].nombre
+        const objetoJugador = catálogoObjetos[npc.idObjetoQuePide]
+        const objetoNPC = catálogoObjetos[npc.idObjetoQueTiene]
+        
+        const spriteJugador = objetoJugador.crearSprite()
+        const spriteNPC = objetoNPC.crearSprite()
+        
+        // Reemplazar los textos con sprites
+        this.ranuraJugador.removeChild(this.objetoJugador)
+        this.ranuraNPC.removeChild(this.objetoNPC)
+        
+        this.ranuraJugador.addChild(spriteJugador)
+        this.ranuraNPC.addChild(spriteNPC)
+        
+        spriteJugador.anchor.set(0.5)
+        spriteNPC.anchor.set(0.5)
+        spriteJugador.scale.set(1.2)
+        spriteNPC.scale.set(1.2)
+        
+        this.objetoJugador = spriteJugador
+        this.objetoNPC = spriteNPC
+        
+        this.infoJugador = objetoJugador.nombre
+        this.infoNPC = objetoNPC.nombre
 
         this.contenedor.x = (this.app.screen.width - this.ANCHO) / 2
         this.contenedor.y = (this.app.screen.height - this.ALTO) / 2

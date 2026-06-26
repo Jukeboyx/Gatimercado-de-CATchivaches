@@ -17,16 +17,16 @@ export class HUD {
 
         this.temporizador = new Temporizador(app, datos.tiempoLímite)
 
-        this.objetivo = new Objetivo(datos.objetivo)
+        this.objetivo = new Objetivo(datos.objetivo, datos.tiempoLímite)
 
         this.contenedor.addChild(this.inventario.contenedor)
         this.contenedor.addChild(this.menuIntercambio.contenedor)
-        this.contenedor.addChild(this.temporizador.contenedor)
         this.contenedor.addChild(this.objetivo.contenedor)
     }
 
     actualizar(delta) {
         this.temporizador.actualizar(delta)
+        this.objetivo.actualizarTiempo(Math.ceil(this.temporizador.tiempoRestante))
     }
 
     redimensionar() {

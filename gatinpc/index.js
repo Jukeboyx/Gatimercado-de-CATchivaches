@@ -146,14 +146,9 @@ export class GatiNPC {
         this.contenedorTradeo.y = -50 // Posición sobre la cabeza
         
         // Objeto que el NPC tiene (izquierda)
-        this.spriteObjetoTiene = new PIXI.Text({
-            text: objetoTiene.emoji,
-            style: {
-                fontSize: 35,
-                fontFamily: 'Arial'
-            }
-        })
+        this.spriteObjetoTiene = objetoTiene.crearSprite()
         this.spriteObjetoTiene.anchor.set(0.5)
+        this.spriteObjetoTiene.scale.set(0.8)
         this.spriteObjetoTiene.x = -35
         
         // Emoji de rotación en el centro
@@ -168,14 +163,9 @@ export class GatiNPC {
         this.spriteFlecha.x = 0
         
         // Objeto que el NPC quiere (derecha)
-        this.spriteObjetoPide = new PIXI.Text({
-            text: objetoPide.emoji,
-            style: {
-                fontSize: 35,
-                fontFamily: 'Arial'
-            }
-        })
+        this.spriteObjetoPide = objetoPide.crearSprite()
         this.spriteObjetoPide.anchor.set(0.5)
+        this.spriteObjetoPide.scale.set(0.8)
         this.spriteObjetoPide.x = 35
         
         this.contenedorTradeo.addChild(this.spriteObjetoTiene)

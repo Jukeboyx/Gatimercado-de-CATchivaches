@@ -1,8 +1,8 @@
 import * as PIXI from "../pixi.js"
 
 export class Objetivo {
-    constructor(objetivo) {
-        const ANCHO_CUADRO = 80
+    constructor(objetivo, tiempoInicial) {
+        const ANCHO_CUADRO = 108
         const MARGEN = 10
         
         this.contenedor = new PIXI.Container()
@@ -11,22 +11,14 @@ export class Objetivo {
             e.stopPropagation()
         })
         
-        this.cuadro = new PIXI.Graphics()
-        this.cuadro.roundRect(0, 0, ANCHO_CUADRO, ANCHO_CUADRO, 10)
-        this.cuadro.fill({
-            color: '#FFA500',
-            alpha: 0.6
-        })
-
-        this.icono = new PIXI.Text ({ 
-            text: objetivo.emoji,
-            style: {
-                fontSize: 45,
-                padding: 12
-            },
-        })
-        this.icono.x = (ANCHO_CUADRO - this.icono.width) / 2
-        this.icono.y = (ANCHO_CUADRO - this.icono.height) / 2
+        // Usar la imagen tiempo_objeto.png como fondo
+        const texturaFondo = PIXI.Assets.get('recursos/sprites/tiempo_objeto.png')
+        this.fondo = new PIXI.Sprite(texturaFondo)
+        
+        this.icono = objetivo.crearSprite()
+        this.icono.x = 54 // Centro exacto de la imagen 108x108
+        this.icono.y = 36
+        this.icono.anchor.set(0.5)
 
         this.estrella = new PIXI.Text ({
             text: '⭐',
@@ -38,6 +30,19 @@ export class Objetivo {
         this.estrella.anchor.set(0.5)
         this.estrella.x = ANCHO_CUADRO * 0.90
         this.estrella.y = MARGEN * 2
+        
+        // Texto del tiempo en posición (41, 94)
+        this.tiempoTexto = new PIXI.Text({
+            text: this.formatearTiempo(tiempoInicial),
+            style: {
+                fontSize: 16,
+                fill: '#000000',
+                fontWeight: 'bold'
+            }
+        })
+        this.tiempoTexto.x = 50 // Movido un poco a la derecha
+        this.tiempoTexto.y = 94
+        this.tiempoTexto.anchor.set(0.5)
         
         this.contenedor.x = window.innerWidth - ANCHO_CUADRO - MARGEN
         this.contenedor.y = MARGEN
@@ -77,22 +82,28 @@ export class Objetivo {
         this.burbuja.addChild(this.fondoBurbuja)
         this.burbuja.addChild(this.textoBurbuja)
 
-        this.cuadroContenedor = new PIXI.Container()
-        this.cuadroContenedor.addChild(this.cuadro)
-        this.cuadroContenedor.addChild(this.icono)
-        this.cuadroContenedor.addChild(this.estrella)
-
-        this.contenedor.addChild(this.cuadroContenedor)
+        this.contenedor.addChild(this.fondo)
+        this.contenedor.addChild(this.icono)
+        this.contenedor.addChild(this.estrella)
+        this.contenedor.addChild(this.tiempoTexto)
         this.contenedor.addChild(this.burbuja)
-        
+    }
+
+    formatearTiempo(segundos) {
+        const minutos = Math.floor(segundos / 60)
+        const segs = segundos % 60
+        return `${minutos}:${segs.toString().padStart(2, '0')}`
+    }
+
+    actualizarTiempo(segundos) {
+        this.tiempoTexto.text = this.formatearTiempo(segundos)
     }
 
     redimensionar() {
         const MARGEN = 10
-        const ANCHO_CUADRO = 80
-        const ANCHO_TEMPORIZADOR = 80
+        const ANCHO_CUADRO = 108
 
-        this.contenedor.x = window.innerWidth - ANCHO_TEMPORIZADOR - MARGEN - ANCHO_CUADRO - MARGEN
+        this.contenedor.x = window.innerWidth - ANCHO_CUADRO - MARGEN
         this.contenedor.y = MARGEN
     }
 }

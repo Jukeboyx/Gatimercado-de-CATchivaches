@@ -120,18 +120,12 @@ export class Inventario {
                 this.burbuja.visible = false
             })
             
-            const icono = new PIXI.Text ({
-                text: this.objetosActuales[i].emoji,
-                style: {
-                    fontSize: this.TAMAÑO_FUENTE_ICONO,
-                    padding: this.PADDING_ICONO
-                }
-            })
+            const icono = objetoActual.crearSprite()
             icono.objetoReferencia = objetoActual
             this.iconos.push(icono)
 
-            icono.x = (this.ANCHO_RANURA - icono.width) / 2
-            icono.y = (this.ALTO_RANURA - icono.height) / 2
+            icono.x = (this.ANCHO_RANURA - 36) / 2
+            icono.y = (this.ALTO_RANURA - 36) / 2
             
             ranura.addChild(fondoRanura)
             ranura.addChild(icono)
@@ -156,7 +150,17 @@ export class Inventario {
 
     actualizarRanura(indice, nuevoObjeto) {
         this.objetosActuales[indice] = nuevoObjeto
-        this.iconos[indice].text = nuevoObjeto.emoji
-        this.iconos[indice].objetoReferencia = nuevoObjeto
+        const nuevoSprite = nuevoObjeto.crearSprite()
+        nuevoSprite.objetoReferencia = nuevoObjeto
+        
+        const ranura = this.ranuras[indice]
+        const viejoIcono = this.iconos[indice]
+        ranura.removeChild(viejoIcono)
+        ranura.addChild(nuevoSprite)
+        
+        nuevoSprite.x = (this.ANCHO_RANURA - 36) / 2
+        nuevoSprite.y = (this.ALTO_RANURA - 36) / 2
+        
+        this.iconos[indice] = nuevoSprite
     }
 }
