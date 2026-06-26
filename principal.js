@@ -4,7 +4,7 @@ import { catálogoObjetos } from './datos.js';
 import { Jugador } from './jugador/index.js';
 import { GatiNPC } from './gatinpc/index.js';
 import { HUD } from './interfaz/hud.js';
-import { mezclar, cortarGrilla } from './herramientas-funciones.js';
+import { mezclar, cortarGrilla, SistemaTrucos } from './herramientas-funciones.js';
 import { Accesorios } from './accesorios.js';
 import { catálogoObstáculos, generarPosicionRandom, verificarSuperposicion, puntoDentroDeObstáculo, calcularPuntoMásCercano } from './obstaculos.js';
 
@@ -54,6 +54,7 @@ export class Juego {
             'recursos/sprites/gato_blanco.json',
             'recursos/sprites/gato_violeta.json',
             'recursos/sprites/gato_naranja.json',
+            'recursos/sprites/shiro.json',
             'recursos/sprites/accesorios.png',
             'recursos/sprites/pastito.png',
             'recursos/sprites/comercio1.png',
@@ -419,6 +420,20 @@ export class Juego {
 
         this.app.stage.on('pointertap', (evento) => {
             this.clicMundo(evento)
+        })
+
+        // Sistema de trucos
+        this.sistemaTrucos = new SistemaTrucos()
+        this.sistemaTrucos.registrarTruco('shiro', () => {
+            if (this.jugador.skinActual === 'default') {
+                this.jugador.cambiarSkin('recursos/sprites/shiro.json')
+            } else {
+                this.jugador.restaurarSkinDefault()
+            }
+        }, 'Skin especial de Shiro')
+
+        window.addEventListener('keydown', (evento) => {
+            this.sistemaTrucos.procesarTecla(evento.key)
         })
     }
 

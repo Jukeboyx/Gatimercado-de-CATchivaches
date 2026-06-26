@@ -17,6 +17,7 @@ export class Jugador {
         this.mundoContenedor.setChildIndex(this.estelaJugador, 1)
 
         this.banderitas = []
+        this.skinActual = 'default'
 
         const sheet = PIXI.Assets.get('recursos/sprites/jugador.json')
 
@@ -89,6 +90,17 @@ export class Jugador {
     empezarADetenerse() {
         this.mefAnimacion.cambiarEstado('sentandose')
         this.mefComportamiento.cambiarEstado('espera')
+    }
+
+    asegurarseDeEstarSentado() {
+        const animActual = this.mefAnimacion.estadoActual
+        
+        if (animActual instanceof Animacion.Sentado || 
+            animActual instanceof Animacion.Sentandose ||
+            animActual instanceof Animacion.Pestañeando) {
+            return
+        }
+        this.empezarADetenerse()
     }
 
     actualizarDireccion(dx, dy) {
@@ -164,5 +176,63 @@ export class Jugador {
                 this.banderitas.splice(i, 1)
             }
         }
+    }
+
+    async cambiarSkin(rutaSpritesheet) {
+        const sheet = PIXI.Assets.get(rutaSpritesheet)
+
+        const animacionesDesdeTag = {}
+        for (const tag of sheet.data.meta.frameTags) {
+            const frames = []
+            for (let i = tag.from; i <= tag.to; i++) {
+                frames.push(sheet.textures[`shiro_${tag.name}_${i - tag.from}.ase`])
+            }
+            animacionesDesdeTag[tag.name] = frames
+        }
+
+        this.animaciones = {
+            abajo:      animacionesDesdeTag['abajo'],
+            derecha:    animacionesDesdeTag['derecha'],
+            arriba:     animacionesDesdeTag['arriba'],
+            izquierda:  animacionesDesdeTag['izquierda'],
+            sentandose: animacionesDesdeTag['sentandose'],
+            sentado:    animacionesDesdeTag['sentado'],
+            pestañea:   animacionesDesdeTag['pestañea'],
+            baño:       animacionesDesdeTag['baño'],
+            exhausto:   animacionesDesdeTag['exhausto'],
+            dormido:    animacionesDesdeTag['dormido'],
+        }
+
+        this.texturaEspera = this.animaciones.sentado[0]
+        this.skinActual = rutaSpritesheet
+    }
+
+    async restaurarSkinDefault() {
+        const sheet = PIXI.Assets.get('recursos/sprites/jugador.json')
+
+        const animacionesDesdeTag = {}
+        for (const tag of sheet.data.meta.frameTags) {
+            const frames = []
+            for (let i = tag.from; i <= tag.to; i++) {
+                frames.push(sheet.textures[`${tag.name}_${i - tag.from}.ase`])
+            }
+            animacionesDesdeTag[tag.name] = frames
+        }
+
+        this.animaciones = {
+            abajo:      animacionesDesdeTag['abajo'],
+            derecha:    animacionesDesdeTag['derecha'],
+            arriba:     animacionesDesdeTag['arriba'],
+            izquierda:  animacionesDesdeTag['izquierda'],
+            sentandose: animacionesDesdeTag['sentandose'],
+            sentado:    animacionesDesdeTag['sentado'],
+            pestañea:   animacionesDesdeTag['pestañea'],
+            baño:       animacionesDesdeTag['baño'],
+            exhausto:   animacionesDesdeTag['exhausto'],
+            dormido:    animacionesDesdeTag['dormido'],
+        }
+
+        this.texturaEspera = this.animaciones.sentado[0]
+        this.skinActual = 'default'
     }
 }

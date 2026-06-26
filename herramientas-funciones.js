@@ -30,3 +30,42 @@ export function mezclar(lista) {
     }
     return lista;
 }
+
+// Sistema de trucos estilo GTA
+export class SistemaTrucos {
+    constructor() {
+        this.trucos = new Map()
+        this.teclasPresionadas = []
+        this.tiempoMaximoEntreTeclas = 1000 // ms
+        this.ultimoTiempoTecla = 0
+    }
+
+    registrarTruco(codigo, accion, descripcion) {
+        this.trucos.set(codigo, { accion, descripcion })
+    }
+
+    procesarTecla(tecla) {
+        const ahora = Date.now()
+        
+        // Si pasó mucho tiempo, resetear
+        if (ahora - this.ultimoTiempoTecla > this.tiempoMaximoEntreTeclas) {
+            this.teclasPresionadas = []
+        }
+        
+        this.teclasPresionadas.push(tecla.toLowerCase())
+        this.ultimoTiempoTecla = ahora
+        
+        // Verificar si alguna combinación coincide
+        for (const [codigo, truco] of this.trucos) {
+            const ultimasTeclas = this.teclasPresionadas.slice(-codigo.length)
+            if (ultimasTeclas.join('') === codigo) {
+                truco.accion()
+                this.teclasPresionadas = [] // Resetear después de activar
+                console.log(`¡Truco activado: ${truco.descripcion}!`)
+                return true
+            }
+        }
+        
+        return false
+    }
+}

@@ -26,3 +26,4 @@ function arreglarJSON(nombreArchivo, prefijo) {
 arreglarJSON('recursos/sprites/gato_blanco.json', 'gato_blanco')
 arreglarJSON('recursos/sprites/gato_violeta.json', 'gato_violeta')
 arreglarJSON('recursos/sprites/gato_naranja.json', 'gato_naranja')
+arreglarJSON('recursos/sprites/shiro.json', 'shiro')

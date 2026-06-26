@@ -3,6 +3,6 @@ import { Estado } from "../../mef.js"
 
 export class Espera extends Estado {
     alEntrar() {
-        this.dueño.mefAnimacion.cambiarEstado('sentado')
+        this.dueño.asegurarseDeEstarSentado()
     }
 }
