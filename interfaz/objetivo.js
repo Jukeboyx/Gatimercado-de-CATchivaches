@@ -2,7 +2,7 @@ import * as PIXI from "../pixi.js"
 
 export class Objetivo {
     constructor(objetivo, tiempoInicial) {
-        const ANCHO_CUADRO = 108
+        const ANCHO_CUADRO = 58
         const MARGEN = 10
         
         this.contenedor = new PIXI.Container()

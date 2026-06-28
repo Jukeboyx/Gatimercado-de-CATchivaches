@@ -1,73 +1,78 @@
 import * as PIXI from './pixi.js';
 
 export class Objeto {
-    constructor(id, nombre, spriteX, spriteY, esObjetivo = false){
-        this.id = id
+    constructor(nombre, indice, esObjetivo = false){
         this.nombre = nombre
-        this.spriteX = spriteX
-        this.spriteY = spriteY
+        this.indice = indice
         this.esObjetivo = esObjetivo
     }
 
     crearSprite() {
+        const TAMAÑO_SPRITE = 36
+        const columnas = 8
+        const fila = Math.floor(this.indice / columnas)
+        const columna = this.indice % columnas
+        const x = columna * TAMAÑO_SPRITE
+        const y = fila * TAMAÑO_SPRITE
+
         const texturaItems = PIXI.Assets.get('recursos/sprites/items.png')
         return new PIXI.Sprite(new PIXI.Texture({
             source: texturaItems,
-            frame: new PIXI.Rectangle(this.spriteX, this.spriteY, 36, 36)
+            frame: new PIXI.Rectangle(x, y, TAMAÑO_SPRITE, TAMAÑO_SPRITE)
         }))
     }
 }
 
 //¿Objetos Objeto?
 export const catálogoObjetos = {
-    manzanaRoja: new Objeto('manzanaRoja', 'Manzana roja', 0, 0),
-    pezFresco: new Objeto('pezFresco', 'Pez fresco', 36, 0),
-    ovilloLana: new Objeto('ovilloLana', 'Ovillo de lana', 72, 0),
-    libro: new Objeto('libro', 'Libro', 108, 0),
-    girasol: new Objeto('girasol', 'Girasol', 144, 0),
-    manzanaVerde: new Objeto('manzanaVerde', 'Manzana verde', 180, 0),
-    calabaza: new Objeto('calabaza', 'Calabaza', 216, 0),
-    panIntegral: new Objeto('panIntegral', 'Pan integral', 252, 0),
-    leche: new Objeto('leche', 'Leche', 0, 36),
-    queso: new Objeto('queso', 'Queso', 36, 36),
-    huevo: new Objeto('huevo', 'Huevo', 72, 36),
-    zanahoria: new Objeto('zanahoria', 'Zanahoria', 108, 36),
-    peluche: new Objeto('peluche', 'Peluche', 144, 36),
-    tomate: new Objeto('tomate', 'Tomate', 180, 36),
-    uva: new Objeto('uva', 'Uva', 216, 36),
-    sandia: new Objeto('sandia', 'Sandía', 252, 36),
-    platano: new Objeto('platano', 'Plátano', 0, 72),
-    limon: new Objeto('limon', 'Limón', 36, 72),
-    naranja: new Objeto('naranja', 'Naranja', 72, 72),
-    fresa: new Objeto('fresa', 'Fresa', 108, 72),
-    martillo: new Objeto('martillo', 'Martillo', 144, 72),
-    tijeras: new Objeto('tijeras', 'Tijeras', 180, 72),
-    lapiz: new Objeto('lapiz', 'Lápiz', 216, 72),
-    estrella: new Objeto('estrella', 'Estrella', 252, 72),
-    pizza: new Objeto('pizza', 'Pizza', 0, 108),
-    gato: new Objeto('gato', 'Gato', 36, 108),
-    perro: new Objeto('perro', 'Perro', 72, 108),
-    pez: new Objeto('pez', 'Pez', 108, 108),
-    cafe: new Objeto('cafe', 'Café', 144, 108),
-    te: new Objeto('te', 'Té', 180, 108),
-    galleta: new Objeto('galleta', 'Galleta', 216, 108),
-    pastel: new Objeto('pastel', 'Pastel', 252, 108),
-    mate: new Objeto('mate', 'Mate', 0, 144),
-    refresco: new Objeto('refresco', 'Refresco', 36, 144),
-    miel: new Objeto('miel', 'Miel', 72, 144),
-    jugo: new Objeto('jugo', 'Jugo', 108, 144),
-    camaron: new Objeto('camaron', 'Camarón', 144, 144),
-    pollo: new Objeto('pollo', 'Pollo', 180, 144),
-    carne: new Objeto('carne', 'Carne', 216, 144),
-    champinon: new Objeto('champinon', 'Champiñón', 252, 144),
-    pimiento: new Objeto('pimiento', 'Pimiento', 0, 180),
-    maiz: new Objeto('maiz', 'Maíz', 36, 180),
-    ajo: new Objeto('ajo', 'Ajo', 72, 180),
-    cebolla: new Objeto('cebolla', 'Cebolla', 108, 180),
-    papa: new Objeto('papa', 'Papa', 144, 180),
-    lechuga: new Objeto('lechuga', 'Lechuga', 180, 180),
-    aguacate: new Objeto('aguacate', 'Aguacate', 216, 180),
-    pelotaVoley: new Objeto('pelotaVoley', 'Pelota de vóley', 252, 180),
+    cuadro: new Objeto('Cuadro', 0),
+    zanahoria: new Objeto('Zanahoria', 1),
+    papa: new Objeto('Papa', 2),
+    huevo: new Objeto('Huevo', 3),
+    vasoLeche: new Objeto('Vaso de leche', 4),
+    fosforos: new Objeto('Fósforos', 5),
+    coco: new Objeto('Coco', 6),
+    tetera: new Objeto('Tetera', 7),
+    pelotaFutbol: new Objeto('Pelota de fútbol', 8),
+    sobre: new Objeto('Sobre', 9),
+    pico: new Objeto('Pico', 10),
+    arandano: new Objeto('Arándano', 11),
+    galleta: new Objeto('Galleta', 12),
+    burbuja: new Objeto('Burbuja', 13),
+    trebol: new Objeto('Trébol', 14),
+    probeta: new Objeto('Probeta', 15),
+    jugo: new Objeto('Jugo', 16),
+    abaco: new Objeto('Ábaco', 17),
+    cajaHerramientas: new Objeto('Caja de herramientas', 18),
+    iman: new Objeto('Imán', 19),
+    ovilloLana: new Objeto('Ovillo de lana', 20),
+    ositoPeluche: new Objeto('Osito peluche', 21),
+    escoba: new Objeto('Escoba', 22),
+    piezaRompecabezas: new Objeto('Pieza de rompecabezas', 23),
+    esponja: new Objeto('Esponja', 24),
+    calzoncillo: new Objeto('Calzoncillo', 25),
+    apositoProtector: new Objeto('Apósito protector', 26),
+    cepillo: new Objeto('Cepillo', 27),
+    espejo: new Objeto('Espejo', 28),
+    papelHigienico: new Objeto('Papel higiénico', 29),
+    pato: new Objeto('Pato', 30),
+    pluma: new Objeto('Pluma', 31),
+    sambuchito: new Objeto('Sambuchito', 32),
+    mariposa: new Objeto('Mariposa', 33),
+    bata: new Objeto('Bata', 34),
+    hueso: new Objeto('Hueso', 35),
+    gorra: new Objeto('Gorra', 36),
+    bufanda: new Objeto('Bufanda', 37),
+    medias: new Objeto('Medias', 38),
+    dinamita: new Objeto('Dinamita', 39),
+    telefono: new Objeto('Teléfono', 40),
+    paraguas: new Objeto('Paraguas', 41),
+    peonAjedrez: new Objeto('Peón de ajedrez', 42),
+    escaleraMano: new Objeto('Escalera de mano', 43),
+    cascoMilitar: new Objeto('Casco militar', 44),
+    silla: new Objeto('Silla', 45),
+    abanico: new Objeto('Abanico', 46),
+    macetaConPlanta: new Objeto('Maceta con planta', 47),
 }
 
 export const obstáculos = []

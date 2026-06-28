@@ -2,11 +2,10 @@ import * as PIXI from '../pixi.js';
 import { catálogoObjetos } from '../datos.js';
 
 export function realizarTrueque(npc, inventarioInstancia) {
-    const indice = inventarioInstancia.objetosActuales.findIndex(item => item.id === npc.idObjetoQuePide)
+    const indice = inventarioInstancia.objetosActuales.findIndex(key => key === npc.idObjetoQuePide)
     
     if (indice !== -1) {
-        const nuevoObjetoDelJugador = catálogoObjetos[npc.idObjetoQueTiene]
-        inventarioInstancia.actualizarRanura(indice, nuevoObjetoDelJugador)
+        inventarioInstancia.actualizarRanura(indice, npc.idObjetoQueTiene)
         npc.actualizarObjetos()
         console.log("El trueque fue todo un éxito.")
     }
@@ -18,7 +17,7 @@ export function realizarTrueque(npc, inventarioInstancia) {
 export class Inventario {
     constructor(app, objetosIniciales) {
         this.app = app
-        this.objetosActuales = objetosIniciales.map(id => catálogoObjetos[id])
+        this.objetosActuales = objetosIniciales
 
         this.contenedor = new PIXI.Container()
 
@@ -73,7 +72,7 @@ export class Inventario {
         for (let i = 0; i < this.CANTIDAD_RANURAS; i++) {
             let posX = this.posXInventarioInicial + (this.ANCHO_RANURA + this.MARGEN) * i
             
-            const objetoActual = this.objetosActuales[i]
+            const objetoActual = catálogoObjetos[this.objetosActuales[i]]
 
             const ranura = new PIXI.Container()
             ranura.hitArea = new PIXI.Rectangle(0, 0, this.ANCHO_RANURA, this.ALTO_RANURA)
@@ -148,8 +147,9 @@ export class Inventario {
         }
     }
 
-    actualizarRanura(indice, nuevoObjeto) {
-        this.objetosActuales[indice] = nuevoObjeto
+    actualizarRanura(indice, nuevoKey) {
+        this.objetosActuales[indice] = nuevoKey
+        const nuevoObjeto = catálogoObjetos[nuevoKey]
         const nuevoSprite = nuevoObjeto.crearSprite()
         nuevoSprite.objetoReferencia = nuevoObjeto
         
