@@ -1,5 +1,6 @@
 import * as PIXI from '../pixi.js';
 import { catálogoObjetos } from '../datos.js';
+import { diseño } from './diseno.js';
 
 export function realizarTrueque(npc, inventarioInstancia) {
     const indice = inventarioInstancia.objetosActuales.findIndex(key => key === npc.idObjetoQuePide)
@@ -21,8 +22,8 @@ export class Inventario {
 
         this.contenedor = new PIXI.Container()
 
-        this.ANCHO_RANURA = 60
-        this.ALTO_RANURA = 60
+        this.ANCHO_RANURA = 64
+        this.ALTO_RANURA = 64
         this.MARGEN = 10
         this.ANCHO_BURBUJA = 120
         this.ALTO_BURBUJA = 35
@@ -33,7 +34,7 @@ export class Inventario {
         this.OFFSET_BURBUJA = 45
         this.CANTIDAD_RANURAS = 3
 
-        this.posXInventarioInicial = (this.app.screen.width - ((this.ANCHO_RANURA * this.CANTIDAD_RANURAS) + (this.MARGEN * 2))) / 2
+        this.posXInventarioInicial = (diseño.ancho - ((this.ANCHO_RANURA * this.CANTIDAD_RANURAS) + (this.MARGEN * 2))) / 2
 
             //Burbuja
         this.burbuja = new PIXI.Container()
@@ -77,19 +78,13 @@ export class Inventario {
             const ranura = new PIXI.Container()
             ranura.hitArea = new PIXI.Rectangle(0, 0, this.ANCHO_RANURA, this.ALTO_RANURA)
 
-            const fondoRanura = new PIXI.Graphics()
-            fondoRanura.roundRect(0, 0, this.ANCHO_RANURA, this.ALTO_RANURA, this.RADIO_BORDE)
-            fondoRanura.fill({
-                color: 0x333333,
-                alpha: 0.8
-            })
+            const texturaPanel = PIXI.Assets.get('recursos/sprites/panel.png')
+            const fondoRanura = new PIXI.Sprite(texturaPanel)
+            fondoRanura.width = this.ANCHO_RANURA
+            fondoRanura.height = this.ALTO_RANURA
             
             ranura.eventMode = 'static'
             ranura.on('pointerover', () => {
-                fondoRanura.scale.set(0.9)
-                fondoRanura.x = this.ANCHO_RANURA * 0.05  // centrar el fondo achicado
-                fondoRanura.y = this.ALTO_RANURA * 0.05
-
                 this.textoBurbuja.text = this.iconos[i].objetoReferencia.nombre
 
                 const nuevoAncho = this.textoBurbuja.width + this.MARGEN * 2
@@ -107,15 +102,10 @@ export class Inventario {
                 
                 this.burbuja.x = Math.round(ranura.x + ((this.ANCHO_RANURA - this.burbuja.width) / 2))
                 this.burbuja.y = ranura.y - this.OFFSET_BURBUJA
-
-                this.fondoRanura =
                 
                 this.burbuja.visible = true
             })
             ranura.on('pointerout', () => {
-                fondoRanura.scale.set(1)
-                fondoRanura.x = 0
-                fondoRanura.y = 0
                 this.burbuja.visible = false
             })
             
@@ -135,8 +125,8 @@ export class Inventario {
     }
 
     redimensionar() {
-        const anchoEfectivo = this.app.screen.width
-        const altoEfectivo = this.app.screen.height
+        const anchoEfectivo = diseño.ancho
+        const altoEfectivo = diseño.alto
 
         const posX = (anchoEfectivo - ((this.ANCHO_RANURA * this.CANTIDAD_RANURAS) + (this.MARGEN * 2))) / 2
         const posY = altoEfectivo - this.MARGEN - this.ALTO_RANURA

@@ -4,6 +4,7 @@ import { catálogoObjetos } from './datos.js';
 import { Jugador } from './jugador/index.js';
 import { GatiNPC } from './gatinpc/index.js';
 import { HUD } from './interfaz/hud.js';
+import { ESCALA_UI, diseño } from './interfaz/diseno.js';
 import { mezclar, cortarGrilla, SistemaTrucos } from './herramientas-funciones.js';
 import { Accesorios } from './accesorios.js';
 import { catálogoObstáculos, generarPosicionRandom, verificarSuperposicion, puntoDentroDeObstáculo, calcularPuntoMásCercano } from './obstaculos.js';
@@ -14,7 +15,7 @@ export class Juego {
 
         this.ANCHO_MUNDO = 2500
         this.ALTO_MUNDO = 2500
-        this.ALTO_DISEÑO = 800
+        this.escalaUI = 2
 
         this.init()
     }
@@ -67,7 +68,9 @@ export class Juego {
             'recursos/sprites/picnic.png',
             'recursos/sprites/banquito1.png',
             'recursos/sprites/items.png',
-            'recursos/sprites/tiempo_objeto.png'
+            'recursos/sprites/objetivo_temporizador.png',
+            'recursos/sprites/panel.png',
+            'recursos/sprites/intercambio_item.png'
         ])
     }
 
@@ -77,8 +80,7 @@ export class Juego {
         this.generarCadenaVictoria()
         this.datos = {
             objetosIniciales: this.objetosIniciales,
-            objetivo: catálogoObjetos[this.objetivo],
-            tiempoLímite: 180
+            objetivo: catálogoObjetos[this.objetivo]
         }
     }
 
@@ -380,7 +382,7 @@ export class Juego {
         
         this.crearNPCs()
         
-        this.hud = new HUD(this.app, this.datos)
+        this.hud = new HUD(this.app, this.datos, this.escalaUI)
         this.hud.menuIntercambio.spriteJugador.texture = this.jugador.texturaEspera
         this.interfazContenedor.addChild(this.hud.contenedor)
     }
@@ -479,6 +481,11 @@ export class Juego {
             window.innerWidth,
             window.innerHeight
         )
+
+        this.interfazContenedor.scale.set(this.escalaUI)
+
+        diseño.ancho = window.innerWidth / this.escalaUI
+        diseño.alto = window.innerHeight / this.escalaUI
         this.hud.redimensionar()
     }
 }

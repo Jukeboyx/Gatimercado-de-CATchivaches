@@ -2,22 +2,23 @@ import * as PIXI from "../pixi.js"
 
 import { Inventario } from './inventario.js';
 import { MenuIntercambio } from './menu-intercambio.js';
-import { Temporizador } from "./temporizador.js";
+import { Cronómetro } from "./cronómetro.js";
 import { Objetivo } from "./objetivo.js";
 
 export class HUD {
-    constructor(app, datos) {
+    constructor(app, datos, escalaUI) {
         this.app = app
+        this.escalaUI = escalaUI
 
         this.contenedor = new PIXI.Container()
 
-        this.inventario = new Inventario(app, datos.objetosIniciales)
+        this.inventario = new Inventario(app, datos.objetosIniciales, escalaUI)
 
         this.menuIntercambio = new MenuIntercambio(app, this.inventario)
 
-        this.temporizador = new Temporizador(app, datos.tiempoLímite)
+        this.objetivo = new Objetivo(datos.objetivo)
 
-        this.objetivo = new Objetivo(datos.objetivo, datos.tiempoLímite)
+        this.cronómetro = new Cronómetro(app, this.objetivo)
 
         this.contenedor.addChild(this.inventario.contenedor)
         this.contenedor.addChild(this.menuIntercambio.contenedor)
@@ -25,14 +26,12 @@ export class HUD {
     }
 
     actualizar(delta) {
-        this.temporizador.actualizar(delta)
-        this.objetivo.actualizarTiempo(Math.ceil(this.temporizador.tiempoRestante))
+        this.cronómetro.actualizar(delta)
     }
 
     redimensionar() {
         this.inventario.redimensionar()
         this.menuIntercambio.redimensionar()
-        this.temporizador.redimensionar()
         this.objetivo.redimensionar()
     }
 }

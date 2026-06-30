@@ -1,8 +1,8 @@
 import * as PIXI from "../pixi.js"
-import { ANCHO_DISEÑO, ALTO_DISEÑO } from './diseno.js';
+import { diseño } from './diseno.js';
 
 export class Objetivo {
-    constructor(objetivo, tiempoInicial) {
+    constructor(objetivo) {
         const MARGEN = 10
         
         this.contenedor = new PIXI.Container()
@@ -16,35 +16,9 @@ export class Objetivo {
         
         this.icono = objetivo.crearSprite()
         this.icono.x = this.fondo.width / 2
-        this.icono.y = this.fondo.height * 0.25
+        this.icono.y = this.fondo.height * 0.35
         this.icono.anchor.set(0.5)
 
-        /*
-        this.estrella = new PIXI.Text ({
-            text: '⭐',
-            style: {
-                fontSize: 18,
-                padding: 6
-            }
-        })
-        this.estrella.anchor.set(0.5)
-        this.estrella.x = this.fondo.width * 0.90
-        this.estrella.y = this.fondo.height * 0.25
-        */
-
-        // Texto del tiempo en posición (41, 94)
-        this.tiempoTexto = new PIXI.Text({
-            text: this.formatearTiempo(tiempoInicial),
-            style: {
-                fontSize: 16,
-                fill: '#000000',
-                fontWeight: 'bold'
-            }
-        })
-        this.tiempoTexto.x = 50 // Movido un poco a la derecha
-        this.tiempoTexto.y = 94
-        this.tiempoTexto.anchor.set(0.5)
-        
         this.posicionar()
 
         this.burbuja = new PIXI.Container()
@@ -84,26 +58,14 @@ export class Objetivo {
 
         this.contenedor.addChild(this.fondo)
         this.contenedor.addChild(this.icono)
-        //this.contenedor.addChild(this.estrella)
-        this.contenedor.addChild(this.tiempoTexto)
         this.contenedor.addChild(this.burbuja)
     }
 
     posicionar() {
         const MARGEN = 10
 
-        this.contenedor.x = window.innerWidth - this.fondo.width - MARGEN
+        this.contenedor.x = diseño.ancho - this.fondo.width - MARGEN
         this.contenedor.y = MARGEN
-    }
-
-    formatearTiempo(segundos) {
-        const minutos = Math.floor(segundos / 60)
-        const segs = segundos % 60
-        return `${minutos}:${segs.toString().padStart(2, '0')}`
-    }
-
-    actualizarTiempo(segundos) {
-        this.tiempoTexto.text = this.formatearTiempo(segundos)
     }
 
     redimensionar() {

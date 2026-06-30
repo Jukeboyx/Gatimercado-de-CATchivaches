@@ -1,8 +1,8 @@
 import * as PIXI from '../pixi.js';
 
 import { realizarTrueque } from './inventario.js';
-import { cortarFrames } from '../herramientas-funciones.js';
 import { catálogoObjetos } from '../datos.js';
+import { diseño } from './diseno.js';
 
 export class MenuIntercambio {
     constructor(app, inventario) {
@@ -10,8 +10,8 @@ export class MenuIntercambio {
         this.inventario = inventario
         this.npc = null
 
-        this.ANCHO = 420
-        this.ALTO = 240
+        this.ANCHO = 300
+        this.ALTO = 150
         this.RADIO_BORDE = 50
 
         this.ESCALA_SPRITE = 3
@@ -23,7 +23,7 @@ export class MenuIntercambio {
         this.TAMAÑO_FUENTE_INFORMACIÓN = 14
         this.OFFSET_BURBUJA_INFORMACIÓN = 10
 
-        this.TAMAÑO_BOTON = 50
+        this.TAMAÑO_BOTON = 20
         this.COLOR_FONDO = 0x333333
 
         this.burbuja = new PIXI.Container()
@@ -53,9 +53,15 @@ export class MenuIntercambio {
         this.burbuja.addChild(this.textoBurbuja)
         this.contenedor.addChild(this.burbuja)
 
-        this.fondo = new PIXI.Graphics()
-        this.fondo.roundRect(0, 0, this.ANCHO, this.ALTO, this.RADIO_BORDE)
-        this.fondo.fill({ color: this.COLOR_FONDO, alpha: 0.8 })
+        this.fondo = new PIXI.NineSliceSprite({
+            texture: PIXI.Assets.get('recursos/sprites/panel.png'),
+            leftWidth: 10,
+            rightWidth: 10,
+            topHeight: 10,
+            bottomHeight: 21
+        })
+        this.fondo.width = this.ANCHO
+        this.fondo.height = this.ALTO
         this.contenedor.addChild(this.fondo)
         
         //Objeto que el NPC quiere
@@ -136,32 +142,30 @@ export class MenuIntercambio {
             this.burbuja.visible = false
         })
 
-        //Sprite jugador
+        //Sprite jugador (encima del item en ranuraJugador)
         this.spriteJugador = new PIXI.Sprite()
         this.spriteJugador.anchor.set(0.5)
         this.spriteJugador.scale.set(this.ESCALA_SPRITE)
         this.spriteJugador.position.set(
-            this.objetoJugador.x,
-            this.ALTO * 0.25
+            0,
+            this.ALTO * -0.5
         )
-        this.contenedor.addChild(this.spriteJugador)
+        this.ranuraJugador.addChild(this.spriteJugador)
 
-        //Sprite NPC
+        //Sprite NPC (encima del item en ranuraNPC)
         this.spriteGatiNPC = new PIXI.Sprite()
         this.spriteGatiNPC.anchor.set(0.5)
         this.spriteGatiNPC.scale.set(this.ESCALA_SPRITE)
         this.spriteGatiNPC.position.set(
-            this.objetoNPC.x,
-            this.ALTO * 0.25
+            0,
+            this.ALTO * -0.5
         )
-        this.contenedor.addChild(this.spriteGatiNPC)
+        this.ranuraNPC.addChild(this.spriteGatiNPC)
         
         //Botón de intercambio
-        this.boton = new PIXI.Text({
-            text: '🔄',
-            style: { fontSize: this.TAMAÑO_BOTON, padding: this.MARGEN_EMOJI }
-        })
+        this.boton = new PIXI.Sprite(PIXI.Assets.get('recursos/sprites/intercambio_item.png'))
         this.boton.anchor.set(0.5)
+        this.boton.scale.set(1.5)
         this.boton.x = this.ANCHO * 0.5
         this.boton.y = this.ALTO * 0.5
         this.boton.eventMode = 'static'
@@ -220,8 +224,13 @@ export class MenuIntercambio {
         this.infoJugador = objetoJugador.nombre
         this.infoNPC = objetoNPC.nombre
 
-        this.contenedor.x = (this.app.screen.width - this.ANCHO) / 2
-        this.contenedor.y = (this.app.screen.height - this.ALTO) / 2
+        this.contenedor.x = (diseño.ancho - this.ANCHO) / 2
+        // Posicionar considerando burbujas de información:
+        // 10px margen → burbuja (35px) → 10px margen → inventario (64px) → 10px margen → borde
+        const margen = 10
+        const altoBurbuja = Math.max(this.ALTO_BURBUJA_INFORMACIÓN, 35)
+        const altoRanuraInventario = 64
+        this.contenedor.y = diseño.alto - margen - altoRanuraInventario - margen - altoBurbuja - margen - this.ALTO
         this.contenedor.visible = true
     }
 
@@ -236,7 +245,10 @@ export class MenuIntercambio {
     }
 
     redimensionar() {
-        this.contenedor.x = (this.app.screen.width - this.ANCHO) / 2
-        this.contenedor.y = (this.app.screen.height - this.ALTO) / 2
+        this.contenedor.x = (diseño.ancho - this.ANCHO) / 2
+        const margen = 10
+        const altoBurbuja = Math.max(this.ALTO_BURBUJA_INFORMACIÓN, 35)
+        const altoRanuraInventario = 64
+        this.contenedor.y = diseño.alto - margen - altoRanuraInventario - margen - altoBurbuja - margen - this.ALTO
     }
 }
