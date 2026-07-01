@@ -15,7 +15,7 @@ export class Juego {
 
         this.ANCHO_MUNDO = 2500
         this.ALTO_MUNDO = 2500
-        this.escalaUI = 2
+        this.escalaUI = 1
 
         this.init()
     }
@@ -27,7 +27,7 @@ export class Juego {
             width: window.innerWidth,
             height: window.innerHeight,
             background: 'green',
-            
+            roundPixels: true,
             textureAntiAlias: false
         })
 
