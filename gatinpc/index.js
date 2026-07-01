@@ -79,8 +79,6 @@ export class GatiNPC {
         this.imagen.scale.set(3)
         this.imagen.animationSpeed = this.VELOCIDAD_ANIMACION
         this.imagen.play()
-        // const escalaSprite = window.innerWidth < 768 ? 2 : 1
-        // this.imagen.scale.set(escalaSprite)
         
         this.contenedor.addChild(this.imagen)
         
@@ -145,46 +143,32 @@ export class GatiNPC {
         this.contenedorTradeo = new PIXI.Container()
         this.contenedorTradeo.y = -50 // Posición sobre la cabeza
         
+        const texturaFondo = PIXI.Assets.get('recursos/sprites/globo.png')
+        this.fondoTradeo = new PIXI.Sprite(texturaFondo)
+        this.fondoTradeo.anchor.set(0.5)
+        this.fondoTradeo.tint = '#BFBFBF'
+        this.contenedorTradeo.addChild(this.fondoTradeo)
+
         // Objeto que el NPC pide (izquierda)
         this.spriteObjetoPide = objetoPide.crearSprite()
         this.spriteObjetoPide.anchor.set(0.5)
         this.spriteObjetoPide.scale.set(0.8)
-        this.spriteObjetoPide.x = -35
-        
+        this.spriteObjetoPide.x = this.fondoTradeo.width * -0.25
+        this.spriteObjetoPide.y = this.fondoTradeo.height * -0.08
+
         // Sprite de intercambio en el centro
         this.spriteFlecha = new PIXI.Sprite(PIXI.Assets.get('recursos/sprites/intercambio_item.png'))
         this.spriteFlecha.anchor.set(0.5)
         this.spriteFlecha.scale.set(0.8)
-        this.spriteFlecha.x = 0
-        
+        this.spriteFlecha.x = this.fondoTradeo.width * 0.03
+        this.spriteFlecha.y = this.fondoTradeo.height * -0.08
+
         // Objeto que el NPC tiene (derecha)
         this.spriteObjetoTiene = objetoTiene.crearSprite()
         this.spriteObjetoTiene.anchor.set(0.5)
         this.spriteObjetoTiene.scale.set(0.8)
-        this.spriteObjetoTiene.x = 35
-        
-        // Calcular dimensiones del fondo basado en los sprites
-        const anchoSpritePide = this.spriteObjetoPide.width * this.spriteObjetoPide.scale.x
-        const anchoSpriteTiene = this.spriteObjetoTiene.width * this.spriteObjetoTiene.scale.x
-        const altoSpritePide = this.spriteObjetoPide.height * this.spriteObjetoPide.scale.y
-        const altoSpriteTiene = this.spriteObjetoTiene.height * this.spriteObjetoTiene.scale.y
-        const altoFlecha = this.spriteFlecha.height * this.spriteFlecha.scale.y
-        
-        const anchoTotal = Math.abs(this.spriteObjetoPide.x) + anchoSpritePide / 2 + Math.abs(this.spriteObjetoTiene.x) + anchoSpriteTiene / 2 + 20
-        const altoTotal = Math.max(altoSpritePide, altoSpriteTiene, altoFlecha) + 20
-        
-        // Fondo con panel.png (9-sliced)
-        this.fondoTradeo = new PIXI.NineSliceSprite({
-            texture: PIXI.Assets.get('recursos/sprites/panel.png'),
-            leftWidth: 10,
-            rightWidth: 10,
-            topHeight: 10,
-            bottomHeight: 21
-        })
-        this.fondoTradeo.width = anchoTotal
-        this.fondoTradeo.height = altoTotal
-        this.fondoTradeo.anchor.set(0.5)
-        this.contenedorTradeo.addChild(this.fondoTradeo)
+        this.spriteObjetoTiene.x = this.fondoTradeo.width * 0.30
+        this.spriteObjetoTiene.y = this.fondoTradeo.height * -0.08
         
         this.contenedorTradeo.addChild(this.spriteObjetoPide)
         this.contenedorTradeo.addChild(this.spriteFlecha)
@@ -220,16 +204,13 @@ export class GatiNPC {
                     break
                 case 'Bañandose':
                     this.contenedorTradeo.y = -45
-                    this.contenedorTradeo.rotation = 0
                     break
                 case 'Exhausto':
                 case 'Durmiendo':
                     this.contenedorTradeo.y = -40
-                    this.contenedorTradeo.rotation = 0
                     break
                 default:
                     this.contenedorTradeo.y = -50
-                    this.contenedorTradeo.rotation = 0
             }
         }
     }

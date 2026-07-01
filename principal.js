@@ -70,7 +70,8 @@ export class Juego {
             'recursos/sprites/items.png',
             'recursos/sprites/objetivo_temporizador.png',
             'recursos/sprites/panel.png',
-            'recursos/sprites/intercambio_item.png'
+            'recursos/sprites/intercambio_item.png',
+            'recursos/sprites/globo.png'
         ])
     }
 
