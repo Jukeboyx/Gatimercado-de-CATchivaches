@@ -71,7 +71,8 @@ export class Juego {
             'recursos/sprites/objetivo_temporizador.png',
             'recursos/sprites/panel.png',
             'recursos/sprites/intercambio_item.png',
-            'recursos/sprites/globo.png'
+            'recursos/sprites/globo.png',
+            'recursos/sprites/patita_prota.png'
         ])
     }
 

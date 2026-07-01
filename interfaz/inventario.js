@@ -63,6 +63,8 @@ export class Inventario {
         this.contenedor.addChild(this.burbuja)
 
         this.iconos = []
+        this.patitaIzquierda = null
+        this.patitaDerecha = null
 
         this.inicializar()
     }
@@ -122,6 +124,16 @@ export class Inventario {
             this.contenedor.addChild(ranura)
             this.ranuras.push(ranura)
         }
+        const texturaPatita = PIXI.Assets.get('recursos/sprites/patita_prota.png')
+        this.patitaIzquierda = new PIXI.Sprite(texturaPatita)
+        this.patitaIzquierda.x = this.ranuras[0].x - this.patitaIzquierda.width - this.MARGEN
+        this.patitaIzquierda.y = this.ranuras[0].y
+
+        this.patitaDerecha = new PIXI.Sprite(texturaPatita)
+        this.patitaDerecha.x = this.ranuras[2].x + this.ranuras[2].width + this.MARGEN
+        this.patitaDerecha.y = this.ranuras[2].y
+        this.contenedor.addChild(this.patitaIzquierda)
+        this.contenedor.addChild(this.patitaDerecha)
     }
 
     redimensionar() {
@@ -135,6 +147,15 @@ export class Inventario {
             this.ranuras[i].x = posX + (this.ANCHO_RANURA + this.MARGEN) * i
             this.ranuras[i].y = posY
         }
+
+        if (this.patitaIzquierda && this.patitaDerecha) {
+            this.patitaIzquierda.x = this.ranuras[0].x - this.patitaIzquierda.width - this.MARGEN
+            this.patitaIzquierda.y = this.ranuras[0].y
+            this.patitaDerecha.x = this.ranuras[2].x + this.ranuras[2].width + this.MARGEN
+            this.patitaDerecha.y = this.ranuras[2].y
+        }
+
+        
     }
 
     actualizarRanura(indice, nuevoKey) {
