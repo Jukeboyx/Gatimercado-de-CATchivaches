@@ -15,7 +15,7 @@ export class Juego {
 
         this.ANCHO_MUNDO = 2500
         this.ALTO_MUNDO = 2500
-        this.escalaUI = 1
+        this.escalaUI = 2
 
         this.init()
     }
@@ -46,6 +46,7 @@ export class Juego {
             this.actualizar(ticker.deltaTime)
         })
     }
+    
     
     async cargarRecursos() {
         await PIXI.Assets.load([
