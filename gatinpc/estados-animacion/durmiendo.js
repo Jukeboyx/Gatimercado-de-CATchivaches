@@ -7,6 +7,8 @@ export class Durmiendo extends Estado {
         imagen.loop = true
         imagen.play()
 
+        this.dueño.sombreros.gotoAndStop(this.dueño.tipoSombreroBase)
+
         this.tiempoSiesta = (5 + Math.random() * 5) * 60
         this.tiempoTranscurrido = 0
     }

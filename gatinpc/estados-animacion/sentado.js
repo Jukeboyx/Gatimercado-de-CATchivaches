@@ -9,6 +9,10 @@ export class Sentado extends Estado {
         imagen.play()
 
         this.dueño.tiempoCaminando = Math.max(0, this.dueño.tiempoCaminando)
+
+        this.dueño.sombreros.gotoAndStop(this.dueño.tipoSombreroBase)
+        this.dueño.sombreros.x = 1
+        this.dueño.sombreros.y = 0
     }
 
     alActualizar(datos) {

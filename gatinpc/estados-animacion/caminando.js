@@ -21,13 +21,24 @@ export class Caminando extends Estado {
         let escalaX = imagen.scale.x
 
         if (proporción > 0.5 + UMBRAL_DIAGONAL) {
-            animacionNueva = animaciones.derecha
-            if (movimientoSignificativo) escalaX = dx < 0 ? -escalaBase : escalaBase
+            // Movimiento horizontal predominante
+            if (movimientoSignificativo) {
+                animacionNueva = dx < 0 ? animaciones.izquierda : animaciones.derecha
+                escalaX = escalaBase
+            } else {
+                animacionNueva = animaciones.derecha
+            }
         } else if (proporción < 0.5 - UMBRAL_DIAGONAL) {
+            // Movimiento vertical predominante
             animacionNueva = dy < 0 ? animaciones.arriba : animaciones.abajo
         } else {
-            animacionNueva = animaciones.derecha
-            if (movimientoSignificativo) escalaX = dx < 0 ? -escalaBase : escalaBase
+            // Diagonal - usar derecha
+            if (movimientoSignificativo) {
+                animacionNueva = dx < 0 ? animaciones.izquierda : animaciones.derecha
+                escalaX = escalaBase
+            } else {
+                animacionNueva = animaciones.derecha
+            }
         }
 
         if (animacionNueva !== this.últimaAnimacion) {

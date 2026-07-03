@@ -8,7 +8,7 @@ export class Objeto {
     }
 
     crearSprite() {
-        const TAMAÑO_SPRITE = 36
+        const TAMAÑO_SPRITE = 38
         const columnas = 8
         const fila = Math.floor(this.indice / columnas)
         const columna = this.indice % columnas

@@ -45,6 +45,20 @@ export class Juego {
         this.app.ticker.add((ticker) => {
             this.actualizar(ticker.deltaTime)
         })
+
+        let pausadoParaDebug = false;
+
+        window.addEventListener('keydown', (evento) => {
+        if (evento.key === 's') {
+            pausadoParaDebug = !pausadoParaDebug;
+
+            if (pausadoParaDebug) {
+            this.app.ticker.stop();
+            } else {
+            this.app.ticker.start();
+            }
+        }
+        });
     }
     
     
@@ -73,7 +87,8 @@ export class Juego {
             'recursos/sprites/panel.png',
             'recursos/sprites/intercambio_item.png',
             'recursos/sprites/globo.png',
-            'recursos/sprites/patita_prota.png'
+            'recursos/sprites/patita_prota.png',
+            'recursos/sprites/sombreros.json'
         ])
     }
 

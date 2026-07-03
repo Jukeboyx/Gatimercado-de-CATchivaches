@@ -7,6 +7,8 @@ export class Bañandose extends Estado {
         imagen.loop = false
         imagen.play()
 
+        this.dueño.sombreros.gotoAndStop(this.dueño.tipoSombreroBase)
+
         this.vecesRestantes = 3 + Math.floor(Math.random() * 3)
 
         imagen.onComplete = () => {

@@ -42,6 +42,7 @@ export class GatiNPC {
         this.colorDeGatoActual = coloresDeGatos[Math.floor(Math.random() * coloresDeGatos.length)]
 
         const sheet = PIXI.Assets.get(`recursos/sprites/gato_${this.colorDeGatoActual}.json`)
+        console.log(sheet)
 
         const animacionesDesdeTag = {}
         for (const [nombreTextura, textura] of Object.entries(sheet.textures)) {
@@ -81,7 +82,18 @@ export class GatiNPC {
         this.imagen.play()
         
         this.contenedor.addChild(this.imagen)
+        let spriteshetSombreros = PIXI.Assets.get(`recursos/sprites/sombreros.json`)
         
+        let sombrerosTexturas = Object.values(spriteshetSombreros.textures)
+        this.sombreros = new PIXI.AnimatedSprite(sombrerosTexturas)
+        this.contenedor.addChild(this.sombreros)
+        this.sombreros.scale.set(3)
+        this.sombreros.anchor.set(0.5)
+        this.tipoSombreroBase = Math.floor(Math.random() * 12) // Tipo de sombrero (0-11)
+        this.sombreros.gotoAndStop(this.tipoSombreroBase)
+
+        //console.log(PIXI.Assets.get(`recursos/sprites/sombreros.json`))
+
         this.contenedor.eventMode = 'static'
         this.contenedor.cursor = 'pointer'
 
@@ -237,8 +249,102 @@ export class GatiNPC {
         if (this.mefAnimacion.estadoActual.actualizarDireccion) {
             this.mefAnimacion.estadoActual.actualizarDireccion(dx, dy)
         }
+        this.actualizarPosicionSombrero(dx, dy)
         this.actualizarAccesorio()
     }
+
+    actualizarPosicionSombrero(dx, dy) {
+    // === CONFIGURACIÓN DE POSICIÓN DEL SOMBRERO ===
+    const DESPLAZAMIENTOS = {
+        arriba: { x: 0, y: -8 },
+        abajo: { x: 0, y: 11 },
+        izquierda: { x: -16, y: 7 },
+        derecha: { x: 19, y: 10 },
+        bañandose: { x: 0, y: 0 },
+        durmiendo: { x: 100, y: 100 },
+        exhausto: { x: 100, y: 100 },
+        porDefecto: { x: 100, y: 100 }
+    }
+
+    const UMBRAL_DIAGONAL = 0.3
+    const proporción = Math.abs(dx) / (Math.abs(dx) + Math.abs(dy) + 0.001)
+    const movimientoSignificativo = Math.abs(dx) > 1 || Math.abs(dy) > 1
+
+    let desplazamiento = DESPLAZAMIENTOS.porDefecto
+    let frameSombrero = this.tipoSombreroBase
+
+    // Verificar si estamos en un estado especial
+    const estadoAnimacion = this.mefAnimacion.estadoActual
+
+    if (estadoAnimacion) {
+        const nombreEstado = estadoAnimacion.constructor.name
+
+        switch (nombreEstado) {
+            case 'Bañandose':
+                desplazamiento = DESPLAZAMIENTOS.bañandose
+                frameSombrero = this.tipoSombreroBase
+                break
+
+            case 'Durmiendo':
+                desplazamiento = DESPLAZAMIENTOS.durmiendo
+                frameSombrero = this.tipoSombreroBase
+                break
+
+            case 'Exhausto':
+                desplazamiento = DESPLAZAMIENTOS.exhausto
+                frameSombrero = this.tipoSombreroBase
+                break
+
+            default:
+                if (movimientoSignificativo) {
+
+                    if (proporción > 0.5 + UMBRAL_DIAGONAL) {
+                        // Movimiento horizontal predominante
+
+                        if (dx < 0) {
+                            // Izquierda
+                            desplazamiento = DESPLAZAMIENTOS.izquierda
+                            frameSombrero = this.tipoSombreroBase + 24
+                        } else {
+                            // Derecha
+                            desplazamiento = DESPLAZAMIENTOS.derecha
+                            frameSombrero = this.tipoSombreroBase + 12
+                        }
+
+                    } else if (proporción < 0.5 - UMBRAL_DIAGONAL) {
+                        // Movimiento vertical predominante
+
+                        if (dy < 0) {
+                            desplazamiento = DESPLAZAMIENTOS.arriba
+                            frameSombrero = this.tipoSombreroBase + 36
+                        } else {
+                            desplazamiento = DESPLAZAMIENTOS.abajo
+                            frameSombrero = this.tipoSombreroBase
+                        }
+
+                    } else {
+                        // Movimiento diagonal
+
+                        if (dx < 0) {
+                            // Diagonal hacia la izquierda
+                            desplazamiento = DESPLAZAMIENTOS.izquierda
+                            frameSombrero = this.tipoSombreroBase + 24
+                        } else {
+                            // Diagonal hacia la derecha
+                            desplazamiento = DESPLAZAMIENTOS.derecha
+                            frameSombrero = this.tipoSombreroBase + 12
+                        }
+
+                    }
+                }
+                break
+        }
+    }
+
+    this.sombreros.x = desplazamiento.x
+    this.sombreros.y = desplazamiento.y
+    this.sombreros.gotoAndStop(frameSombrero)
+}
 
     // MANEJO DE ANIMACIONES Y COMPORTAMIENTOS //
     empezarACaminar() {

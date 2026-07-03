@@ -7,6 +7,8 @@ export class Exhausto extends Estado {
         imagen.loop = false
         imagen.play()
 
+        this.dueño.sombreros.gotoAndStop(this.dueño.tipoSombreroBase)
+
         this.tiempoTranscurrido = 0
         this.tiempoSiesta = (10 + Math.random() * 5) * 60
 
