@@ -32,27 +32,27 @@ export const catálogoObstáculos = {
     comercio1: {
         imagen: 'recursos/sprites/comercio1.png',
         escala: 3,
-        celdasBloqueadas: [{"x":-3,"y":1},{"x":-3,"y":2},{"x":-2,"y":1},{"x":-2,"y":2},{"x":-1,"y":1},{"x":-1,"y":2},{"x":0,"y":1},{"x":0,"y":2},{"x":1,"y":1},{"x":1,"y":2},{"x":2,"y":1},{"x":2,"y":2}]
+        celdasBloqueadas: [{"x":-2,"y":1},{"x":-2,"y":2},{"x":-1,"y":1},{"x":-1,"y":2},{"x":0,"y":1},{"x":0,"y":2},{"x":1,"y":1},{"x":1,"y":2},{"x":2,"y":1},{"x":2,"y":2}]
     },
     comercio2: {
         imagen: 'recursos/sprites/comercio2.png',
         escala: 3,
-        celdasBloqueadas: [{"x":-3,"y":1},{"x":-3,"y":2},{"x":-2,"y":0},{"x":-2,"y":1},{"x":-2,"y":2},{"x":-1,"y":1},{"x":-1,"y":2},{"x":0,"y":1},{"x":0,"y":2},{"x":1,"y":1},{"x":1,"y":2},{"x":2,"y":1},{"x":2,"y":2}]
+        celdasBloqueadas: [{"x":-2,"y":1},{"x":-2,"y":2},{"x":-1,"y":1},{"x":-1,"y":2},{"x":0,"y":1},{"x":0,"y":2},{"x":1,"y":1},{"x":1,"y":2},{"x":2,"y":1},{"x":2,"y":2},{"x":3,"y":1},{"x":3,"y":2}]
     },
     comercio3: {
         imagen: 'recursos/sprites/comercio3.png',
         escala: 3,
-        celdasBloqueadas: [{"x":-2,"y":2},{"x":-1,"y":2},{"x":0,"y":2},{"x":1,"y":2}]
+        celdasBloqueadas: [{"x":-1,"y":2},{"x":0,"y":2},{"x":1,"y":2}]
     },
     arbol1: {
         imagen: 'recursos/sprites/arbol1.png',
         escala: 4.5,
-        celdasBloqueadas: [{"x":-3,"y":3},{"x":-3,"y":4},{"x":-2,"y":3},{"x":-2,"y":4},{"x":-1,"y":3},{"x":-1,"y":4},{"x":0,"y":3},{"x":0,"y":4},{"x":1,"y":3},{"x":1,"y":4},{"x":2,"y":3},{"x":2,"y":4}]
+        celdasBloqueadas: [{"x":-2,"y":3},{"x":-2,"y":4},{"x":-1,"y":3},{"x":-1,"y":4},{"x":0,"y":3},{"x":0,"y":4},{"x":1,"y":3},{"x":1,"y":4},{"x":2,"y":3},{"x":2,"y":4}]
     },
     arbol2: {
         imagen: 'recursos/sprites/arbol2.png',
         escala: 4.5,
-        celdasBloqueadas: [{"x":-1,"y":2},{"x":0,"y":2}]
+        celdasBloqueadas: [{"x":-1,"y":1},{"x":0,"y":1},{"x":1,"y":1}]
     },
     arbol3: {
         imagen: 'recursos/sprites/arbol3.png',
@@ -62,7 +62,7 @@ export const catálogoObstáculos = {
     arbol4: {
         imagen: 'recursos/sprites/arbol4.png',
         escala: 4.5,
-        celdasBloqueadas: [{"x":-2,"y":2},{"x":-2,"y":3},{"x":-2,"y":4},{"x":-1,"y":3},{"x":-1,"y":4},{"x":0,"y":3},{"x":0,"y":4},{"x":1,"y":3},{"x":1,"y":4},{"x":2,"y":3},{"x":2,"y":4}]
+        celdasBloqueadas: [{"x":-2,"y":4},{"x":-1,"y":4},{"x":0,"y":4},{"x":1,"y":4},{"x":2,"y":4}]
     },
     picnic: {
         imagen: 'recursos/sprites/picnic.png',
@@ -72,7 +72,7 @@ export const catálogoObstáculos = {
     banquito1: {
         imagen: 'recursos/sprites/banquito1.png',
         escala: 2.5,
-        celdasBloqueadas: [{"x":-2,"y":0},{"x":-2,"y":1},{"x":-1,"y":0},{"x":-1,"y":1},{"x":0,"y":0},{"x":0,"y":1},{"x":1,"y":0},{"x":1,"y":1}]
+        celdasBloqueadas: [{"x":-1,"y":0},{"x":-1,"y":1},{"x":0,"y":0},{"x":0,"y":1},{"x":1,"y":0},{"x":1,"y":1},{"x":2,"y":0},{"x":2,"y":1}]
     }
 }
 

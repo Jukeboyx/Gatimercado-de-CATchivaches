@@ -1,5 +1,5 @@
-import * as PIXI from './pixi.js';
-import { cortarGrilla, mezclar } from './herramientas-funciones.js';
+import * as PIXI from '../pixi.js';
+import { cortarGrilla, mezclar } from '../herramientas-funciones.js';
 
 export class Accesorios {
     constructor() {

@@ -20,6 +20,19 @@ export class SistemaGrilla {
         }
     }
 
+    snapAlCentro(x, y) {
+        const celda = this.mundoAGrilla(x, y)
+        return this.grillaAMundo(celda.x, celda.y)
+    }
+    
+    clampAlMundo(x, y, margenCeldas = 2) {
+        const margen = margenCeldas * this.tamañoCelda
+        return {
+            x: Math.min(Math.max(x, margen), this.anchoMundo - margen),
+            y: Math.min(Math.max(y, margen), this.altoMundo - margen)
+        }
+    }
+
     bloquearCelda(x, y) {
         const clave = `${x},${y}`
         this.celdasBloqueadas.add(clave)

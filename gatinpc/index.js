@@ -21,9 +21,12 @@ export class GatiNPC {
 
         this.tiempoCaminando = 0
 
-        this.contenedor = new PIXI.Container();
+        this.contenedor = new PIXI.Container()
         this.contenedor.x = posX;
         this.contenedor.y = posY;
+        
+        this.contenedorVisual = new PIXI.Container()
+        this.contenedor.addChild(this.contenedorVisual)
 
         this.VELOCIDAD_GATINPC = 2
 
@@ -75,20 +78,22 @@ export class GatiNPC {
         this.ANCHO_FRAME = 64
         this.VELOCIDAD_ANIMACION = 0.1
 
+        // Configurar la imagen del gatito
         this.imagen = new PIXI.AnimatedSprite(this.animaciones.sentado)
-        this.imagen.anchor.set(0.5)
+        this.imagen.anchor.set(0.5, 0.9)
         this.imagen.scale.set(3)
         this.imagen.animationSpeed = this.VELOCIDAD_ANIMACION
         this.imagen.play()
-        this.contenedor.addChild(this.imagen)
+        this.contenedorVisual.addChild(this.imagen)
         
+        // Configurar los accesorios del gatito
         let spriteshetAccesorios = PIXI.Assets.get(`recursos/sprites/accesorios.json`)
         
         let accesoriosTexturas = Object.values(spriteshetAccesorios.textures)
         this.accesorios = new PIXI.AnimatedSprite(accesoriosTexturas)
-        this.contenedor.addChild(this.accesorios)
+        this.contenedorVisual.addChild(this.accesorios)
         this.accesorios.scale.set(3)
-        this.accesorios.anchor.set(0.5)
+        this.accesorios.anchor.set(0.5, 1.15)
         this.tipoAccesorioBase = Math.floor(Math.random() * 12) // Tipo de accesorio (0-11)
         this.accesorios.gotoAndStop(this.tipoAccesorioBase)
 
@@ -153,41 +158,41 @@ export class GatiNPC {
         
         // Contenedor para el tradeo
         this.contenedorTradeo = new PIXI.Container()
-        this.contenedorTradeo.y = -50 // Posición sobre la cabeza
         
         const texturaFondo = PIXI.Assets.get('recursos/sprites/globo.png')
         this.fondoTradeo = new PIXI.Sprite(texturaFondo)
-        this.fondoTradeo.anchor.set(0.5)
+        this.fondoTradeo.anchor.set(0.5, 1.2)
         this.fondoTradeo.tint = '#BFBFBF'
         this.contenedorTradeo.addChild(this.fondoTradeo)
-
+        
         // Objeto que el NPC pide (izquierda)
         this.spriteObjetoPide = objetoPide.crearSprite()
         this.spriteObjetoPide.anchor.set(0.5)
         this.spriteObjetoPide.scale.set(0.8)
         this.spriteObjetoPide.x = this.fondoTradeo.width * -0.25
-        this.spriteObjetoPide.y = this.fondoTradeo.height * -0.08
+        this.spriteObjetoPide.y = this.fondoTradeo.height * -0.78
 
         // Sprite de intercambio en el centro
         this.spriteFlecha = new PIXI.Sprite(PIXI.Assets.get('recursos/sprites/intercambio_item.png'))
         this.spriteFlecha.anchor.set(0.5)
         this.spriteFlecha.scale.set(0.8)
         this.spriteFlecha.x = this.fondoTradeo.width * 0.03
-        this.spriteFlecha.y = this.fondoTradeo.height * -0.08
+        this.spriteFlecha.y = this.fondoTradeo.height * -0.78
 
         // Objeto que el NPC tiene (derecha)
         this.spriteObjetoTiene = objetoTiene.crearSprite()
         this.spriteObjetoTiene.anchor.set(0.5)
         this.spriteObjetoTiene.scale.set(0.8)
         this.spriteObjetoTiene.x = this.fondoTradeo.width * 0.30
-        this.spriteObjetoTiene.y = this.fondoTradeo.height * -0.08
+        this.spriteObjetoTiene.y = this.fondoTradeo.height * -0.78
         
         this.contenedorTradeo.addChild(this.spriteObjetoPide)
         this.contenedorTradeo.addChild(this.spriteFlecha)
         this.contenedorTradeo.addChild(this.spriteObjetoTiene)
-        this.contenedorTradeo.visible = false // Oculto inicialmente
         
-        this.contenedor.addChild(this.contenedorTradeo)
+        this.contenedorTradeo.visible = false
+        
+        this.contenedorVisual.addChild(this.contenedorTradeo)
     }
 
     actualizarGloboIntercambios() {
@@ -202,29 +207,22 @@ export class GatiNPC {
             
             this.contenedorTradeo.visible = distancia < DISTANCIA_VISIBILIDAD
         }
-        
-        // Ajustar posición del contenedor según animación
-        const estadoAnimacion = this.mefAnimacion.estadoActual
-        if (estadoAnimacion) {
-            const nombreEstado = estadoAnimacion.constructor.name
-            switch (nombreEstado) {
-                case 'Caminando':
-                case 'Sentandose':
-                case 'Sentado':
-                case 'Pestañeando':
-                    this.contenedorTradeo.y = -50
-                    break
-                case 'Bañandose':
-                    this.contenedorTradeo.y = -45
-                    break
-                case 'Exhausto':
-                case 'Durmiendo':
-                    this.contenedorTradeo.y = -40
-                    break
-                default:
-                    this.contenedorTradeo.y = -50
-            }
-        }
+    }
+
+    static ALTURAS_VISUALES = {
+        Caminando: -50,
+        Sentandose: -50,
+        Sentado: -50,
+        Pestañeando: -50,
+        Bañandose: -45,
+        Exhausto: -40,
+        Durmiendo: -40,
+    }
+
+    actualizarPosicionVisual() {
+        if (!this.contenedorTradeo) return
+        const nombreEstado = this.mefAnimacion.estadoActual?.constructor.name
+        this.contenedorTradeo.y = GatiNPC.ALTURAS_VISUALES[nombreEstado] ?? -50
     }
     
     jugadorVaAIntercambiar() {
@@ -240,7 +238,7 @@ export class GatiNPC {
         [this.idObjetoQueTiene, this.idObjetoQuePide] = [this.idObjetoQuePide, this.idObjetoQueTiene]
         // Actualizar el tradeo para mostrar los nuevos objetos
         if (this.contenedorTradeo) {
-            this.contenedor.removeChild(this.contenedorTradeo)
+            this.contenedorVisual.removeChild(this.contenedorTradeo)
         }
         this.mostrarGloboIntercambios(this.idObjetoQueTiene, this.idObjetoQuePide)
     }
@@ -263,7 +261,7 @@ export class GatiNPC {
         bañandose: { x: 0, y: 0 },
         durmiendo: { x: 100, y: 100 },
         exhausto: { x: 100, y: 100 },
-        porDefecto: { x: 100, y: 100 }
+        porDefecto: { x: 101.5, y: 100 }
     }
 
     const UMBRAL_DIAGONAL = 0.3
@@ -390,6 +388,7 @@ export class GatiNPC {
     actualizar(datos) {
         this.mefComportamiento.actualizar(datos)
         this.mefAnimacion.actualizar(datos)
+        this.actualizarPosicionVisual()
         this.actualizarGloboIntercambios()
     }
 }

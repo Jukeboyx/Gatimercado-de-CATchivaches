@@ -474,7 +474,6 @@ export class SistemaDebug {
 
     guardarEstadoOriginalObstaculos() {
         this.estadoOriginalObstaculos = this.obstaculos.map(obs => ({
-            tipo: obs.tipo,
             x: obs.x,
             y: obs.y
         }))

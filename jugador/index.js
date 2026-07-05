@@ -3,6 +3,7 @@ import * as PIXI from '../pixi.js';
 import { MEF } from "../mef.js"
 import * as Comportamiento from "./estados-comportamiento/indice.js"
 import * as Animacion from "./estados-animacion/indice.js"
+import { Banderita } from "./banderita.js"
 
 
 export class Jugador {
@@ -16,7 +17,7 @@ export class Jugador {
         this.mundoContenedor.addChild(this.estelaJugador)
         this.mundoContenedor.setChildIndex(this.estelaJugador, 1)
 
-        this.banderitas = []
+        this.banderita = new Banderita(this.mundoContenedor)
         this.skinActual = 'default'
 
         const sheet = PIXI.Assets.get('recursos/sprites/jugador.json')
@@ -52,7 +53,7 @@ export class Jugador {
         this.historialPosiciones = []
 
         this.imagen = new PIXI.AnimatedSprite(this.animaciones.sentado)
-        this.imagen.anchor.set(0.5)
+        this.imagen.anchor.set(0.5, 0.9)
         this.imagen.scale.set(3)
         this.imagen.animationSpeed = this.VELOCIDAD_ANIMACION
         this.imagen.play()
@@ -113,43 +114,32 @@ export class Jugador {
 
     irHacia(punto, distanciaFreno = 5, entidad = null) {
         this.entidadObjetivo = entidad
-        this.limpiarBanderitas()
+
+        let destinoFinal = punto
 
         if (!entidad) {
-            this.colocarBanderita(punto)
+            destinoFinal = this.sistemaGrilla.snapAlCentro(punto.x, punto.y)
+
+            const celdaJugador = this.sistemaGrilla.mundoAGrilla(this.contenedor.x, this.contenedor.y)
+            const celdaDestino = this.sistemaGrilla.mundoAGrilla(destinoFinal.x, destinoFinal.y)
+
+            if (celdaJugador.x === celdaDestino.x && celdaJugador.y === celdaDestino.y) {
+                this.banderita.ocultar()
+                return
+            }
+
+            this.banderita.mostrarEn(destinoFinal)
+        } else {
+            this.banderita.ocultar()
         }
 
-        const destino = { x: punto.x, y: punto.y, distanciaFreno }
+        const destino = { x: destinoFinal.x, y: destinoFinal.y, distanciaFreno }
 
         if (this.mefComportamiento.estadoActual instanceof Comportamiento.Caminando) {
             this.mefComportamiento.estadoActual.actualizarDestino(destino)
         } else {
             this.mefComportamiento.cambiarEstado('caminando', destino)
         }
-    }
-
-    colocarBanderita(punto) {
-        const banderita = new PIXI.Text({
-            text: '🚩',
-            style: {
-                fontSize: 30,
-                fontFamily: 'Arial'
-                }
-        })
-        banderita.anchor.set(0.5)
-        banderita.x = punto.x
-        banderita.y = punto.y
-        banderita.zIndex = banderita.y
-        this.mundoContenedor.addChild(banderita)
-        this.mundoContenedor.setChildIndex(banderita, 2)
-        this.banderitas.push(banderita)
-    }
-
-    limpiarBanderitas() {
-        for (const banderita of this.banderitas) {
-            this.mundoContenedor.removeChild(banderita)
-        }
-        this.banderitas.length = 0
     }
 
     actualizar(datos) {
@@ -161,23 +151,9 @@ export class Jugador {
         if (this.historialPosiciones.length > 15) {
             this.historialPosiciones.shift()
         }
-        this.verificarBanderitas()
+        this.banderita.actualizar(this.contenedor)
         this.mefComportamiento.actualizar(datos)
         this.mefAnimacion.actualizar(datos)
-    }
-
-    verificarBanderitas() {
-        for (let i = this.banderitas.length - 1; i >= 0; i--) {
-            const banderita = this.banderitas[i]
-            const dx = banderita.x - this.contenedor.x
-            const dy = banderita.y - this.contenedor.y
-            const distancia = Math.sqrt(dx * dx + dy * dy)
-
-            if (distancia < 35) {
-                this.mundoContenedor.removeChild(banderita)
-                this.banderitas.splice(i, 1)
-            }
-        }
     }
 
     async cambiarSkin(rutaSpritesheet) {

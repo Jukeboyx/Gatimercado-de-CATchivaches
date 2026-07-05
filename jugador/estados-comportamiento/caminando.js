@@ -76,11 +76,11 @@ export class Caminando extends Estado {
 
         if (!this.camino || this.indicePunto >= this.camino.length) return
 
-        const puntoInicio = Math.min(this.indicePunto + 1, this.camino.length - 1)
+        const puntoInicio = Math.min(this.indicePunto, this.camino.length - 1)
         if (puntoInicio >= this.camino.length) return
 
         gráfico.moveTo(this.camino[puntoInicio].x, this.camino[puntoInicio].y)
-        for (let i = puntoInicio; i < this.camino.length - 1; i++) {
+        for (let i = puntoInicio; i < this.camino.length; i++) {
             gráfico.lineTo(this.camino[i].x, this.camino[i].y)
         }
 

@@ -6,7 +6,7 @@ import { GatiNPC } from './gatinpc/index.js';
 import { HUD } from './interfaz/hud.js';
 import { ESCALA_UI, diseño } from './interfaz/diseno.js';
 import { mezclar, cortarGrilla, SistemaTrucos, TrucoShiro, TrucoDebug, SistemaDebug, OpcionMostrarGrilla, OpcionEditarCeldas, OpcionNoclip, OpcionPausa, OpcionGuardarCeldas } from './herramientas-funciones.js';
-import { Accesorios } from './accesorios.js';
+import { Accesorios } from './gatinpc/accesorios.js';
 import { catálogoObstáculos, generarPosicionRandom, verificarSuperposicion, Obstáculo } from './obstaculos.js';
 import { SistemaGrilla } from './sistema-grilla.js';
 
@@ -14,8 +14,8 @@ export class Juego {
     constructor() {
         this.app = new PIXI.Application();
 
-        this.ANCHO_MUNDO = 2500
-        this.ALTO_MUNDO = 2500
+        this.ANCHO_MUNDO = 2528
+        this.ALTO_MUNDO = 2528
         this.escalaUI = 2
         this.tamañoCelda = 32
 
@@ -222,13 +222,13 @@ export class Juego {
         ]
         
         for (const esquina of esquinas) {
-            // Agregar 1-2 árboles en cada esquina con variación
-            const arbolesPorEsquina = Math.floor(Math.random() * 1) + 1 // 1 o 2 árboles
+            const arbolesPorEsquina = Math.floor(Math.random() * 1) + 1
             for (let i = 0; i < arbolesPorEsquina; i++) {
                 const tipoArbol = tiposArboles[Math.floor(Math.random() * tiposArboles.length)]
-                const offsetX = (Math.random() - 0.5) * 200 // Variación de ±100px
+                const offsetX = (Math.random() - 0.5) * 200
                 const offsetY = (Math.random() - 0.5) * 200
-                this.crearObstáculoEnPosicion(tipoArbol, esquina.x + offsetX, esquina.y + offsetY)
+                const posicion = this.sistemaGrilla.clampAlMundo(esquina.x + offsetX, esquina.y + offsetY, 2)
+                this.crearObstáculoEnPosicion(tipoArbol, posicion.x, posicion.y)
             }
         }
         
@@ -301,23 +301,22 @@ export class Juego {
 
     crearObstáculoEnPosicion(tipo, x, y) {
         const datos = catálogoObstáculos[tipo]
+        const centro = this.sistemaGrilla.snapAlCentro(x, y)
 
         const sprite = new PIXI.Sprite(PIXI.Assets.get(datos.imagen))
         sprite.anchor.set(0.5)
         sprite.scale.set(datos.escala)
-        sprite.x = x
-        sprite.y = y
-        
-        // El picnic tiene zIndex fijo bajo para que el jugador aparezca encima
+        sprite.x = centro.x
+        sprite.y = centro.y
+
         if (tipo === 'picnic') {
             sprite.zIndex = 0
         } else {
-            sprite.zIndex = y
+            sprite.zIndex = centro.y
         }
 
         this.mundoContenedor.addChild(sprite)
-
-        const obstáculo = new Obstáculo(tipo, x, y, sprite, datos.celdasBloqueadas)
+        const obstáculo = new Obstáculo(tipo, centro.x, centro.y, sprite, datos.celdasBloqueadas)
         obstáculo.registrarEnGrilla(this.sistemaGrilla)
         this.obstaculos.push(obstáculo)
     }
@@ -454,7 +453,7 @@ export class Juego {
         // Sistema de trucos
         this.sistemaTrucos = new SistemaTrucos()
         this.sistemaTrucos.registrarTruco('shiro', new TrucoShiro(this.jugador))
-        this.sistemaTrucos.registrarTruco('debug', new TrucoDebug(this.sistemaDebug))
+        this.sistemaTrucos.registrarTruco('dbg', new TrucoDebug(this.sistemaDebug))
 
         window.addEventListener('keydown', (evento) => {
             this.sistemaTrucos.procesarTecla(evento.key)
@@ -462,6 +461,8 @@ export class Juego {
     }
 
     clicMundo(evento) {
+        if (this.sistemaDebug.edicionCeldasActiva) return
+        
         if (this.hud.menuIntercambio.visible) {
             this.hud.menuIntercambio.cerrar()
             return
