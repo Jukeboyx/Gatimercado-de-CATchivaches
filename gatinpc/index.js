@@ -7,13 +7,13 @@ import { Jugador } from '../jugador/index.js';
 import { catálogoObjetos } from '../datos.js';
 
 export class GatiNPC {
-    constructor(posX, posY, idObjetoQueTiene, idObjetoQuePide, jugador, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000, obstaculos = []) {
+    constructor(posX, posY, idObjetoQueTiene, idObjetoQuePide, jugador, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000, sistemaGrilla = null) {
         this.idObjetoQueTiene = idObjetoQueTiene
         this.idObjetoQuePide = idObjetoQuePide
         this.jugador = jugador
         this.ANCHO_MUNDO = ANCHO_MUNDO
         this.ALTO_MUNDO = ALTO_MUNDO
-        this.obstaculos = obstaculos
+        this.sistemaGrilla = sistemaGrilla
         
         this.alIniciarIntercambio = null
         this.alCerrarIntercambio = null
@@ -80,24 +80,24 @@ export class GatiNPC {
         this.imagen.scale.set(3)
         this.imagen.animationSpeed = this.VELOCIDAD_ANIMACION
         this.imagen.play()
-        
         this.contenedor.addChild(this.imagen)
-        let spriteshetSombreros = PIXI.Assets.get(`recursos/sprites/sombreros.json`)
         
-        let sombrerosTexturas = Object.values(spriteshetSombreros.textures)
-        this.sombreros = new PIXI.AnimatedSprite(sombrerosTexturas)
-        this.contenedor.addChild(this.sombreros)
-        this.sombreros.scale.set(3)
-        this.sombreros.anchor.set(0.5)
-        this.tipoSombreroBase = Math.floor(Math.random() * 12) // Tipo de sombrero (0-11)
-        this.sombreros.gotoAndStop(this.tipoSombreroBase)
+        let spriteshetAccesorios = PIXI.Assets.get(`recursos/sprites/accesorios.json`)
+        
+        let accesoriosTexturas = Object.values(spriteshetAccesorios.textures)
+        this.accesorios = new PIXI.AnimatedSprite(accesoriosTexturas)
+        this.contenedor.addChild(this.accesorios)
+        this.accesorios.scale.set(3)
+        this.accesorios.anchor.set(0.5)
+        this.tipoAccesorioBase = Math.floor(Math.random() * 12) // Tipo de accesorio (0-11)
+        this.accesorios.gotoAndStop(this.tipoAccesorioBase)
 
-        //console.log(PIXI.Assets.get(`recursos/sprites/sombreros.json`))
+        //console.log(PIXI.Assets.get(`recursos/sprites/accesorios.json`))
 
         this.contenedor.eventMode = 'static'
         this.contenedor.cursor = 'pointer'
-
         this.contenedor.hitArea = new PIXI.Circle(0, 0, 50)
+        this.contenedor.interactiveChildren = false
 
         this.contenedor.on('pointertap', (e) => {
             e.stopPropagation()
@@ -146,7 +146,7 @@ export class GatiNPC {
         this.mefComportamiento.cambiarEstado('merodeo')
     }
 
-    asignarAccesorio(idObjetoTiene, idObjetoPide) {
+    mostrarGloboIntercambios(idObjetoTiene, idObjetoPide) {
         const objetoTiene = catálogoObjetos[idObjetoTiene]
         const objetoPide = catálogoObjetos[idObjetoPide]
         if (!objetoTiene || !objetoPide) return
@@ -190,7 +190,7 @@ export class GatiNPC {
         this.contenedor.addChild(this.contenedorTradeo)
     }
 
-    actualizarAccesorio() {
+    actualizarGloboIntercambios() {
         if (!this.contenedorTradeo) return
         
         // Verificar si el jugador está cerca para mostrar el tradeo
@@ -242,19 +242,19 @@ export class GatiNPC {
         if (this.contenedorTradeo) {
             this.contenedor.removeChild(this.contenedorTradeo)
         }
-        this.asignarAccesorio(this.idObjetoQueTiene, this.idObjetoQuePide)
+        this.mostrarGloboIntercambios(this.idObjetoQueTiene, this.idObjetoQuePide)
     }
 
     actualizarDireccion(dx, dy) {
         if (this.mefAnimacion.estadoActual.actualizarDireccion) {
             this.mefAnimacion.estadoActual.actualizarDireccion(dx, dy)
         }
-        this.actualizarPosicionSombrero(dx, dy)
-        this.actualizarAccesorio()
+        this.actualizarPosicionAccesorio(dx, dy)
+        this.actualizarGloboIntercambios()
     }
 
-    actualizarPosicionSombrero(dx, dy) {
-    // === CONFIGURACIÓN DE POSICIÓN DEL SOMBRERO ===
+    actualizarPosicionAccesorio(dx, dy) {
+    // === CONFIGURACIÓN DE POSICIÓN DEL ACCESORIO ===
     const DESPLAZAMIENTOS = {
         arriba: { x: 0, y: -8 },
         abajo: { x: 0, y: 11 },
@@ -271,7 +271,7 @@ export class GatiNPC {
     const movimientoSignificativo = Math.abs(dx) > 1 || Math.abs(dy) > 1
 
     let desplazamiento = DESPLAZAMIENTOS.porDefecto
-    let frameSombrero = this.tipoSombreroBase
+    let frameAccesorio = this.tipoAccesorioBase
 
     // Verificar si estamos en un estado especial
     const estadoAnimacion = this.mefAnimacion.estadoActual
@@ -282,17 +282,17 @@ export class GatiNPC {
         switch (nombreEstado) {
             case 'Bañandose':
                 desplazamiento = DESPLAZAMIENTOS.bañandose
-                frameSombrero = this.tipoSombreroBase
+                frameAccesorio = this.tipoAccesorioBase
                 break
 
             case 'Durmiendo':
                 desplazamiento = DESPLAZAMIENTOS.durmiendo
-                frameSombrero = this.tipoSombreroBase
+                frameAccesorio = this.tipoAccesorioBase
                 break
 
             case 'Exhausto':
                 desplazamiento = DESPLAZAMIENTOS.exhausto
-                frameSombrero = this.tipoSombreroBase
+                frameAccesorio = this.tipoAccesorioBase
                 break
 
             default:
@@ -304,11 +304,11 @@ export class GatiNPC {
                         if (dx < 0) {
                             // Izquierda
                             desplazamiento = DESPLAZAMIENTOS.izquierda
-                            frameSombrero = this.tipoSombreroBase + 24
+                            frameAccesorio = this.tipoAccesorioBase + 24
                         } else {
                             // Derecha
                             desplazamiento = DESPLAZAMIENTOS.derecha
-                            frameSombrero = this.tipoSombreroBase + 12
+                            frameAccesorio = this.tipoAccesorioBase + 12
                         }
 
                     } else if (proporción < 0.5 - UMBRAL_DIAGONAL) {
@@ -316,10 +316,10 @@ export class GatiNPC {
 
                         if (dy < 0) {
                             desplazamiento = DESPLAZAMIENTOS.arriba
-                            frameSombrero = this.tipoSombreroBase + 36
+                            frameAccesorio = this.tipoAccesorioBase + 36
                         } else {
                             desplazamiento = DESPLAZAMIENTOS.abajo
-                            frameSombrero = this.tipoSombreroBase
+                            frameAccesorio = this.tipoAccesorioBase
                         }
 
                     } else {
@@ -328,11 +328,11 @@ export class GatiNPC {
                         if (dx < 0) {
                             // Diagonal hacia la izquierda
                             desplazamiento = DESPLAZAMIENTOS.izquierda
-                            frameSombrero = this.tipoSombreroBase + 24
+                            frameAccesorio = this.tipoAccesorioBase + 24
                         } else {
                             // Diagonal hacia la derecha
                             desplazamiento = DESPLAZAMIENTOS.derecha
-                            frameSombrero = this.tipoSombreroBase + 12
+                            frameAccesorio = this.tipoAccesorioBase + 12
                         }
 
                     }
@@ -341,9 +341,9 @@ export class GatiNPC {
         }
     }
 
-    this.sombreros.x = desplazamiento.x
-    this.sombreros.y = desplazamiento.y
-    this.sombreros.gotoAndStop(frameSombrero)
+    this.accesorios.x = desplazamiento.x
+    this.accesorios.y = desplazamiento.y
+    this.accesorios.gotoAndStop(frameAccesorio)
 }
 
     // MANEJO DE ANIMACIONES Y COMPORTAMIENTOS //
@@ -390,6 +390,6 @@ export class GatiNPC {
     actualizar(datos) {
         this.mefComportamiento.actualizar(datos)
         this.mefAnimacion.actualizar(datos)
-        this.actualizarAccesorio()
+        this.actualizarGloboIntercambios()
     }
 }

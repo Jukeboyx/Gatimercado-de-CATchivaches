@@ -1,48 +1,82 @@
-const TAMAÑO_CELDA = 16;
+import { SistemaGrilla } from './sistema-grilla.js';
 
-let obstáculosDinámicos = [];
+// Cola de prioridad (montículo binario mínimo) — reemplaza el sort() + shift()
+// El elemento con menor "f" siempre queda en la raíz (índice 0)
+class ColaPrioridad {
+    constructor() {
+        this.elementos = []
+    }
 
-export function setObstáculos(obstáculos) {
-    obstáculosDinámicos = obstáculos;
+    estaVacia() {
+        return this.elementos.length === 0
+    }
+
+    insertar(elemento) {
+        this.elementos.push(elemento)
+        this.burbujearHaciaArriba(this.elementos.length - 1)
+    }
+
+    extraerMinimo() {
+        const minimo = this.elementos[0]
+        const ultimo = this.elementos.pop()
+
+        if (this.elementos.length > 0) {
+            this.elementos[0] = ultimo
+            this.burbujearHaciaAbajo(0)
+        }
+
+        return minimo
+    }
+
+    burbujearHaciaArriba(indice) {
+        while (indice > 0) {
+            const indicePadre = Math.floor((indice - 1) / 2)
+            if (this.elementos[indicePadre].f <= this.elementos[indice].f) break
+
+            ;[this.elementos[indicePadre], this.elementos[indice]] =
+                [this.elementos[indice], this.elementos[indicePadre]]
+            indice = indicePadre
+        }
+    }
+
+    burbujearHaciaAbajo(indice) {
+        const cantidad = this.elementos.length
+
+        while (true) {
+            let menor = indice
+            const izquierda = 2 * indice + 1
+            const derecha = 2 * indice + 2
+
+            if (izquierda < cantidad && this.elementos[izquierda].f < this.elementos[menor].f) {
+                menor = izquierda
+            }
+            if (derecha < cantidad && this.elementos[derecha].f < this.elementos[menor].f) {
+                menor = derecha
+            }
+            if (menor === indice) break
+
+            ;[this.elementos[menor], this.elementos[indice]] =
+                [this.elementos[indice], this.elementos[menor]]
+            indice = menor
+        }
+    }
+}
+let sistemaGrilla = null;
+
+export function setSistemaGrilla(sgrilla) {
+    sistemaGrilla = sgrilla;
 }
 
 function mundoAGrilla(x, y) {
-    return {
-        x: Math.floor(x / TAMAÑO_CELDA),
-        y: Math.floor(y / TAMAÑO_CELDA)
-    };
+    return sistemaGrilla.mundoAGrilla(x, y);
 }
 
 function grillaAMundo(x, y) {
-    return {
-        x: x * TAMAÑO_CELDA + TAMAÑO_CELDA / 2,
-        y: y * TAMAÑO_CELDA + TAMAÑO_CELDA / 2
-    };
+    return sistemaGrilla.grillaAMundo(x, y);
 }
 
 function celdaBloqueada(grillaX, grillaY) {
-    const mundoX = grillaX * TAMAÑO_CELDA + TAMAÑO_CELDA / 2;
-    const mundoY = grillaY * TAMAÑO_CELDA + TAMAÑO_CELDA / 2;
-
-    for (const obstáculo of obstáculosDinámicos) {
-        if (obstáculo.radioColision === 0) continue // picnic no tiene colisión
-        
-        const dx = mundoX - obstáculo.x;
-        const dy = mundoY - obstáculo.y;
-        const distancia = Math.sqrt(dx * dx + dy * dy);
-        
-        // Verificar si el centro de la celda está dentro del obstáculo
-        if (distancia < obstáculo.radioColision) {
-            return true;
-        }
-        
-        // Verificar si la celda está cerca del borde del obstáculo (considerando el tamaño de la celda)
-        // La distancia desde el centro de la celda al borde más cercano es aproximadamente TAMAÑO_CELDA/2
-        if (distancia < obstáculo.radioColision + TAMAÑO_CELDA) {
-            return true;
-        }
-    }
-    return false;
+    return sistemaGrilla.estaBloqueada(grillaX, grillaY);
 }
 
 // Heurística: distancia Euclidiana — compatible con movimiento en 8 direcciones
@@ -96,35 +130,42 @@ function reconstruirCamino(cameFrom, actual) {
 }
 
 export function calcularRuta(origenX, origenY, destinoX, destinoY, ancho, alto) {
-    const anchoGrilla = Math.ceil(ancho / TAMAÑO_CELDA);
-    const altoGrilla  = Math.ceil(alto  / TAMAÑO_CELDA);
+    const tamañoCelda = sistemaGrilla.tamañoCelda;
+    const anchoGrilla = Math.ceil(ancho / tamañoCelda);
+    const altoGrilla  = Math.ceil(alto  / tamañoCelda);
 
     const inicio = mundoAGrilla(origenX, origenY);
     const fin    = mundoAGrilla(destinoX, destinoY);
 
     if (celdaBloqueada(inicio.x, inicio.y) || celdaBloqueada(fin.x, fin.y)) return null;
 
-    const abierto    = [];
-    const enAbierto  = new Set();   // para chequear pertenencia en O(1)
-    const cerrado    = new Set();
-    const cameFrom   = new Map();
-    const gScore     = new Map();
-    const fScore     = new Map();
+    const cola      = new ColaPrioridad();
+    const cerrado   = new Set();
+    const cameFrom  = new Map();
+    const gScore    = new Map();
+    const fScore    = new Map();
 
     const claveInicio = `${inicio.x},${inicio.y}`;
+    const fInicio = heurística(inicio, fin);
     gScore.set(claveInicio, 0);
-    fScore.set(claveInicio, heurística(inicio, fin));
-    abierto.push({ x: inicio.x, y: inicio.y, f: fScore.get(claveInicio) });
-    enAbierto.add(claveInicio);
+    fScore.set(claveInicio, fInicio);
+    cola.insertar({ x: inicio.x, y: inicio.y, f: fInicio });
 
-    while (abierto.length > 0) {
-        abierto.sort((a, b) => a.f - b.f);
-        const actual      = abierto.shift();
+    let iteraciones = 0
+    while (!cola.estaVacia()) {
+        iteraciones++
+        const actual      = cola.extraerMinimo();
         const claveActual = `${actual.x},${actual.y}`;
-        enAbierto.delete(claveActual);
+
+        // Esta entrada puede ser una versión vieja (insertamos duplicados
+        // en vez de "actualizar" el heap, que sería más costoso)
+        if (actual.f > fScore.get(claveActual)) continue;
+        if (cerrado.has(claveActual)) continue;
 
         if (actual.x === fin.x && actual.y === fin.y) {
-            return reconstruirCamino(cameFrom, actual);
+            const camino = reconstruirCamino(cameFrom, actual);
+            console.log(`A* — iteraciones: ${iteraciones}, celdas en camino: ${camino.length}`)
+            return camino;
         }
 
         cerrado.add(claveActual);
@@ -140,11 +181,7 @@ export function calcularRuta(origenX, origenY, destinoX, destinoY, ancho, alto) 
                 gScore.set(claveVecino, gTentativo);
                 const f = gTentativo + heurística(vecino, fin);
                 fScore.set(claveVecino, f);
-
-                if (!enAbierto.has(claveVecino)) {
-                    abierto.push({ x: vecino.x, y: vecino.y, f });
-                    enAbierto.add(claveVecino);
-                }
+                cola.insertar({ x: vecino.x, y: vecino.y, f });
             }
         }
     }

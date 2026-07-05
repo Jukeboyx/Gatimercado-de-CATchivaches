@@ -22,7 +22,7 @@ export class Caminando extends Estado {
             this.destino.y,
             this.dueño.ANCHO_MUNDO,
             this.dueño.ALTO_MUNDO,
-            this.dueño.obstaculos
+            this.dueño.sistemaGrilla
         )
         this.indicePunto = this.camino.length > 1 ? 1 : 0
     }
@@ -48,7 +48,7 @@ export class Caminando extends Estado {
 
         this.framesSinRecalcular++
 
-        if (this.framesSinRecalcular < 10) return
+        if (this.framesSinRecalcular < 3) return
 
         this.framesSinRecalcular = 0
         this.destino = {
@@ -110,6 +110,10 @@ export class Caminando extends Estado {
 
         if (resultado.llegó && resultado.esUltimoPunto) return
 
-        this.dibujarRuta()
+        this.framesSinRedibujarRuta = (this.framesSinRedibujarRuta || 0) + 1
+        if (this.framesSinRedibujarRuta >= 3) {
+            this.framesSinRedibujarRuta = 0
+            this.dibujarRuta()
+        }
     }
 }

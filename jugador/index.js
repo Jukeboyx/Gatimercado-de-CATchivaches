@@ -6,11 +6,11 @@ import * as Animacion from "./estados-animacion/indice.js"
 
 
 export class Jugador {
-    constructor(mundoContenedor, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000, obstaculos = []) {
+    constructor(mundoContenedor, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000, sistemaGrilla = null) {
         this.mundoContenedor = mundoContenedor
         this.ANCHO_MUNDO = ANCHO_MUNDO
         this.ALTO_MUNDO = ALTO_MUNDO
-        this.obstaculos = obstaculos
+        this.sistemaGrilla = sistemaGrilla
 
         this.estelaJugador = new PIXI.Graphics()
         this.mundoContenedor.addChild(this.estelaJugador)
@@ -60,6 +60,8 @@ export class Jugador {
         // this.imagen.scale.set(escalaSprite)
 
         this.contenedor = new PIXI.Container()
+        this.contenedor.eventMode = 'none'
+        this.contenedor.interactiveChildren = false
         this.contenedor.addChild(this.imagen)
 
         this.contenedor.x = window.innerWidth / 2

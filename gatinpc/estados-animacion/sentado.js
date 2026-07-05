@@ -10,9 +10,9 @@ export class Sentado extends Estado {
 
         this.dueño.tiempoCaminando = Math.max(0, this.dueño.tiempoCaminando)
 
-        this.dueño.sombreros.gotoAndStop(this.dueño.tipoSombreroBase)
-        this.dueño.sombreros.x = 1
-        this.dueño.sombreros.y = 0
+        this.dueño.accesorios.gotoAndStop(this.dueño.tipoAccesorioBase)
+        this.dueño.accesorios.x = 1
+        this.dueño.accesorios.y = 0
     }
 
     alActualizar(datos) {

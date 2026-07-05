@@ -5,9 +5,10 @@ import { Jugador } from './jugador/index.js';
 import { GatiNPC } from './gatinpc/index.js';
 import { HUD } from './interfaz/hud.js';
 import { ESCALA_UI, diseño } from './interfaz/diseno.js';
-import { mezclar, cortarGrilla, SistemaTrucos } from './herramientas-funciones.js';
+import { mezclar, cortarGrilla, SistemaTrucos, TrucoShiro, TrucoDebug, SistemaDebug, OpcionMostrarGrilla, OpcionEditarCeldas, OpcionNoclip, OpcionPausa, OpcionGuardarCeldas } from './herramientas-funciones.js';
 import { Accesorios } from './accesorios.js';
-import { catálogoObstáculos, generarPosicionRandom, verificarSuperposicion, puntoDentroDeObstáculo, calcularPuntoMásCercano } from './obstaculos.js';
+import { catálogoObstáculos, generarPosicionRandom, verificarSuperposicion, Obstáculo } from './obstaculos.js';
+import { SistemaGrilla } from './sistema-grilla.js';
 
 export class Juego {
     constructor() {
@@ -16,6 +17,9 @@ export class Juego {
         this.ANCHO_MUNDO = 2500
         this.ALTO_MUNDO = 2500
         this.escalaUI = 2
+        this.tamañoCelda = 32
+
+        this.sistemaGrilla = new SistemaGrilla(this.tamañoCelda, this.ANCHO_MUNDO, this.ALTO_MUNDO)
 
         this.init()
     }
@@ -45,20 +49,6 @@ export class Juego {
         this.app.ticker.add((ticker) => {
             this.actualizar(ticker.deltaTime)
         })
-
-        let pausadoParaDebug = false;
-
-        window.addEventListener('keydown', (evento) => {
-        if (evento.key === 's') {
-            pausadoParaDebug = !pausadoParaDebug;
-
-            if (pausadoParaDebug) {
-            this.app.ticker.stop();
-            } else {
-            this.app.ticker.start();
-            }
-        }
-        });
     }
     
     
@@ -88,7 +78,7 @@ export class Juego {
             'recursos/sprites/intercambio_item.png',
             'recursos/sprites/globo.png',
             'recursos/sprites/patita_prota.png',
-            'recursos/sprites/sombreros.json'
+            'recursos/sprites/accesorios.json'
         ])
     }
 
@@ -156,10 +146,10 @@ export class Juego {
                 this.jugador,
                 this.ANCHO_MUNDO,
                 this.ALTO_MUNDO,
-                this.obstaculos
+                this.sistemaGrilla
             )
 
-            gato.asignarAccesorio(intercambio.da, intercambio.pide)
+            gato.mostrarGloboIntercambios(intercambio.da, intercambio.pide)
 
             gato.alSeleccionar = () => {
                 if (this.hud.menuIntercambio.visible) {
@@ -200,9 +190,9 @@ export class Juego {
             const maxIntentos = 100
             
             do {
-                posicionBase = generarPosicionRandom(this.ANCHO_MUNDO, this.ALTO_MUNDO, 300)
+                posicionBase = generarPosicionRandom(this.sistemaGrilla, this.ANCHO_MUNDO, this.ALTO_MUNDO, 9)
                 intentos++
-            } while (verificarSuperposicion(posicionBase.x, posicionBase.y, 350, this.obstaculos) && intentos < maxIntentos)
+            } while (verificarSuperposicion(posicionBase.x, posicionBase.y, 350, this.obstaculos, this.tamañoCelda) && intentos < maxIntentos)
             
             // Crear los 3 comercios uno al lado del otro horizontalmente
             const separacionComercios = 180
@@ -250,7 +240,7 @@ export class Juego {
             const maxIntentos = 200
             
             do {
-                posicionArbol = generarPosicionRandom(this.ANCHO_MUNDO, this.ALTO_MUNDO)
+                posicionArbol = generarPosicionRandom(this.sistemaGrilla, this.ANCHO_MUNDO, this.ALTO_MUNDO)
                 intentos++
                 
                 // Verificar que esté lejos de cualquier comercio
@@ -267,7 +257,7 @@ export class Juego {
                     }
                 }
                 
-                if (!cercaDeComercio && !verificarSuperposicion(posicionArbol.x, posicionArbol.y, 100, this.obstaculos)) {
+                if (!cercaDeComercio && !verificarSuperposicion(posicionArbol.x, posicionArbol.y, 100, this.obstaculos, this.tamañoCelda)) {
                     break
                 }
             } while (intentos < maxIntentos)
@@ -282,9 +272,9 @@ export class Juego {
             const maxIntentos = 200
             
             do {
-                posicionArbol4 = generarPosicionRandom(this.ANCHO_MUNDO, this.ALTO_MUNDO)
+                posicionArbol4 = generarPosicionRandom(this.sistemaGrilla, this.ANCHO_MUNDO, this.ALTO_MUNDO)
                 intentos++
-            } while (verificarSuperposicion(posicionArbol4.x, posicionArbol4.y, 100, this.obstaculos) && intentos < maxIntentos)
+            } while (verificarSuperposicion(posicionArbol4.x, posicionArbol4.y, 100, this.obstaculos, this.tamañoCelda) && intentos < maxIntentos)
             
             this.crearObstáculoEnPosicion('arbol4', posicionArbol4.x, posicionArbol4.y)
         }
@@ -298,12 +288,15 @@ export class Juego {
             const maxIntentos = 200
             
             do {
-                posicionBanquito = generarPosicionRandom(this.ANCHO_MUNDO, this.ALTO_MUNDO)
+                posicionBanquito = generarPosicionRandom(this.sistemaGrilla, this.ANCHO_MUNDO, this.ALTO_MUNDO)
                 intentos++
-            } while (verificarSuperposicion(posicionBanquito.x, posicionBanquito.y, 100, this.obstaculos) && intentos < maxIntentos)
+            } while (verificarSuperposicion(posicionBanquito.x, posicionBanquito.y, 100, this.obstaculos, this.tamañoCelda) && intentos < maxIntentos)
             
             this.crearObstáculoEnPosicion('banquito1', posicionBanquito.x, posicionBanquito.y)
         }
+
+        // Bloquear bordes del mapa
+        this.sistemaGrilla.bloquearBordes()
     }
 
     crearObstáculoEnPosicion(tipo, x, y) {
@@ -324,13 +317,9 @@ export class Juego {
 
         this.mundoContenedor.addChild(sprite)
 
-        this.obstaculos.push({
-            sprite,
-            x: x,
-            y: y,
-            radioColision: datos.radioColision,
-            tipo
-        })
+        const obstáculo = new Obstáculo(tipo, x, y, sprite, datos.celdasBloqueadas)
+        obstáculo.registrarEnGrilla(this.sistemaGrilla)
+        this.obstaculos.push(obstáculo)
     }
 
     crearObstáculo(tipo) {
@@ -340,15 +329,17 @@ export class Juego {
         const maxIntentos = 100
 
         do {
-            posicion = generarPosicionRandom(this.ANCHO_MUNDO, this.ALTO_MUNDO)
+            posicion = generarPosicionRandom(this.sistemaGrilla, this.ANCHO_MUNDO, this.ALTO_MUNDO)
             intentos++
-        } while (verificarSuperposicion(posicion.x, posicion.y, datos.radioColision, this.obstaculos) && intentos < maxIntentos)
+        } while (verificarSuperposicion(posicion.x, posicion.y, datos.celdasBloqueadas.length, this.obstaculos, this.tamañoCelda) && intentos < maxIntentos)
 
         const sprite = new PIXI.Sprite(PIXI.Assets.get(datos.imagen))
         sprite.anchor.set(0.5)
         sprite.scale.set(datos.escala)
         sprite.x = posicion.x
         sprite.y = posicion.y
+
+        sprite.eventMode = 'none'
         
         // El picnic tiene zIndex fijo bajo para que el jugador aparezca encima
         if (tipo === 'picnic') {
@@ -359,13 +350,9 @@ export class Juego {
 
         this.mundoContenedor.addChild(sprite)
 
-        this.obstaculos.push({
-            sprite,
-            x: posicion.x,
-            y: posicion.y,
-            radioColision: datos.radioColision,
-            tipo
-        })
+        const obstáculo = new Obstáculo(tipo, posicion.x, posicion.y, sprite, datos.celdasBloqueadas)
+        obstáculo.registrarEnGrilla(this.sistemaGrilla)
+        this.obstaculos.push(obstáculo)
     }
 
     crearEscena() {
@@ -383,6 +370,7 @@ export class Juego {
             width: this.ANCHO_MUNDO,
             height: this.ALTO_MUNDO
         })
+        this.suelo.eventMode = 'none'
         this.mundoContenedor.addChild(this.suelo)
 
         this.crearObstaculos()
@@ -391,7 +379,7 @@ export class Juego {
             this.mundoContenedor,
             this.ANCHO_MUNDO,
             this.ALTO_MUNDO,
-            this.obstaculos
+            this.sistemaGrilla
         )
         this.mundoContenedor.addChild(this.jugador.contenedor)
         
@@ -403,6 +391,25 @@ export class Juego {
         this.hud = new HUD(this.app, this.datos, this.escalaUI)
         this.hud.menuIntercambio.spriteJugador.texture = this.jugador.texturaEspera
         this.interfazContenedor.addChild(this.hud.contenedor)
+        
+        // Inicializar sistema de debug
+        this.sistemaDebug = new SistemaDebug(
+            this.app,
+            this.mundoContenedor,
+            this.interfazContenedor,
+            this.ANCHO_MUNDO,
+            this.ALTO_MUNDO,
+            this.obstaculos,
+            this,
+            this.sistemaGrilla
+        )
+        
+        // Agregar opciones de debug
+        this.sistemaDebug.agregarOpcion(new OpcionMostrarGrilla(this.sistemaDebug))
+        this.sistemaDebug.agregarOpcion(new OpcionEditarCeldas(this.sistemaDebug))
+        this.sistemaDebug.agregarOpcion(new OpcionGuardarCeldas(this.sistemaDebug))
+        this.sistemaDebug.agregarOpcion(new OpcionNoclip(this.sistemaDebug))
+        this.sistemaDebug.agregarOpcion(new OpcionPausa(this.sistemaDebug))
     }
 
     centrarCámara() {
@@ -446,13 +453,8 @@ export class Juego {
 
         // Sistema de trucos
         this.sistemaTrucos = new SistemaTrucos()
-        this.sistemaTrucos.registrarTruco('shiro', () => {
-            if (this.jugador.skinActual === 'default') {
-                this.jugador.cambiarSkin('recursos/sprites/shiro.json')
-            } else {
-                this.jugador.restaurarSkinDefault()
-            }
-        }, 'Skin especial de Shiro')
+        this.sistemaTrucos.registrarTruco('shiro', new TrucoShiro(this.jugador))
+        this.sistemaTrucos.registrarTruco('debug', new TrucoDebug(this.sistemaDebug))
 
         window.addEventListener('keydown', (evento) => {
             this.sistemaTrucos.procesarTecla(evento.key)
@@ -469,29 +471,45 @@ export class Juego {
         
         const puntoEnMundo = this.mundoContenedor.toLocal(evento.global)
 
-        // Verificar si el clic está sobre un obstáculo
-        const obstáculo = puntoDentroDeObstáculo(puntoEnMundo.x, puntoEnMundo.y, this.obstaculos)
+        // Verificar si el clic está en una celda bloqueada
+        const grillaPos = this.sistemaGrilla.mundoAGrilla(puntoEnMundo.x, puntoEnMundo.y)
         
         let destinoFinal = puntoEnMundo
         
-        if (obstáculo) {
-            // Calcular el punto más cercano alrededor del obstáculo
-            destinoFinal = calcularPuntoMásCercano(puntoEnMundo.x, puntoEnMundo.y, obstáculo)
+        if (this.sistemaGrilla.estaBloqueada(grillaPos.x, grillaPos.y)) {
+            // Encontrar la celda accesible más cercana
+            destinoFinal = this.sistemaGrilla.encontrarCeldaAccesibleMásCercana(puntoEnMundo.x, puntoEnMundo.y)
         }
 
         this.jugador.irHacia(destinoFinal)
     }
 
     actualizar(delta) {
-        this.jugador.actualizar(delta)
-        this.jugador.contenedor.zIndex = this.jugador.contenedor.y
-        for (const gato of this.gatos) {
-            gato.contenedor.zIndex = gato.contenedor.y
-            gato.actualizar(delta)
+        // Actualizar noclip si está activo (incluso en pausa)
+        if (this.sistemaDebug) {
+            this.sistemaDebug.actualizarNoclip()
         }
-        this.hud.actualizar(delta)
+        
+        // Solo actualizar el juego si no está en pausa
+        if (!this.sistemaDebug || !this.sistemaDebug.pausaActiva) {
+            this.jugador.actualizar(delta)
+            this.jugador.contenedor.zIndex = this.jugador.contenedor.y
+            for (const gato of this.gatos) {
+                gato.contenedor.zIndex = gato.contenedor.y
+                gato.actualizar(delta)
+            }
+            this.hud.actualizar(delta)
 
-        this.centrarCámara()
+            // Solo centrar cámara si noclip no está activo
+            if (!this.sistemaDebug || !this.sistemaDebug.noclipActivo) {
+                this.centrarCámara()
+            }
+        } else {
+            // En pausa, solo centrar cámara si noclip está activo
+            if (this.sistemaDebug && this.sistemaDebug.noclipActivo) {
+                // La cámara se controla con noclip, no centrar
+            }
+        }
     }
 
     redimensionar() {
