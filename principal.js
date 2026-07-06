@@ -130,15 +130,27 @@ export class Juego {
     reiniciarAlMenu() {
         this.estado = 'menu';
 
+        if (this._onResize) {
+            window.removeEventListener('resize', this._onResize)
+            this._onResize = null
+        }
         // Destruir contenedores viejos del juego si existen para que no se dupliquen elementos en la siguiente partida
         if (this.mundoContenedor) {
             this.app.stage.removeChild(this.mundoContenedor);
             this.mundoContenedor.destroy({ children: true });
+            this.mundoContenedor = null
         }
         if (this.interfazContenedor) {
             this.app.stage.removeChild(this.interfazContenedor);
             this.interfazContenedor.destroy({ children: true });
+            this.interfazContenedor = null
         }
+
+        this.hud = null
+        this.jugador = null
+        this.gatos = null
+        this.sistemaDebug = null
+        this.obstaculos = null
 
         // Resetear grilla para la nueva partida
         this.sistemaGrilla = new SistemaGrilla(this.tamañoCelda, this.ANCHO_MUNDO, this.ALTO_MUNDO);
@@ -519,9 +531,8 @@ export class Juego {
     }
 
     crearEventos() {
-        window.addEventListener('resize', () => {
-            this.redimensionar()
-        })
+        this._onResize = () => this.redimensionar()
+        window.addEventListener('resize', this._onResize)
 
         this.app.stage.eventMode = 'static'
         this.app.stage.hitArea = this.app.screen
