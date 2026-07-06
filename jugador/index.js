@@ -22,6 +22,9 @@ export class Jugador {
 
         const sheet = PIXI.Assets.get('recursos/sprites/jugador.json')
 
+        // Inventario del jugador
+        this.inventario = null
+
         const animacionesDesdeTag = {}
         for (const tag of sheet.data.meta.frameTags) {
             const frames = []

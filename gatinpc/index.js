@@ -196,18 +196,24 @@ export class GatiNPC {
     }
 
     actualizarGloboIntercambios() {
-        if (!this.contenedorTradeo) return
+    if (!this.contenedorTradeo) return
+    
+    // Verificar si el jugador está cerca para mostrar el tradeo
+    if (this.jugador) {
+        const dx = this.jugador.contenedor.x - this.contenedor.x
+        const dy = this.jugador.contenedor.y - this.contenedor.y
+        const distancia = Math.sqrt(dx * dx + dy * dy)
+        const DISTANCIA_VISIBILIDAD = 200
         
-        // Verificar si el jugador está cerca para mostrar el tradeo
-        if (this.jugador) {
-            const dx = this.jugador.contenedor.x - this.contenedor.x
-            const dy = this.jugador.contenedor.y - this.contenedor.y
-            const distancia = Math.sqrt(dx * dx + dy * dy)
-            const DISTANCIA_VISIBILIDAD = 200
-            
-            this.contenedorTradeo.visible = distancia < DISTANCIA_VISIBILIDAD
-        }
+        this.contenedorTradeo.visible = distancia < DISTANCIA_VISIBILIDAD
+        
+        // Verificar si el jugador tiene el item que pide el gato
+        const tieneItem = this.jugador.inventario && this.jugador.inventario.objetosActuales.includes(this.idObjetoQuePide)
+        
+        // Cambiar color del fondo según si tiene el item
+        this.fondoTradeo.tint = tieneItem ? '#ffffff' : '#989898'
     }
+}
 
     static ALTURAS_VISUALES = {
         Caminando: -50,

@@ -413,6 +413,8 @@ export class Juego {
         this.hud = new HUD(this.app, this.datos, this.escalaUI)
         this.hud.menuIntercambio.spriteJugador.texture = this.jugador.texturaEspera
         this.interfazContenedor.addChild(this.hud.contenedor)
+
+        this.jugador.inventario = this.hud.inventario
         
         this.sistemaDebug = new SistemaDebug(
             this.app,
