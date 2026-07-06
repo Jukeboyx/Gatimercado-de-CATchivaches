@@ -117,6 +117,22 @@ export class TrucoShiro extends Truco {
     }
 }
 
+// Truco específico para cambiar la skin de Afro
+export class TrucoAfro extends Truco {
+    constructor(jugador) {
+        super('Skin especial de Afro')
+        this.jugador = jugador
+    }
+
+    ejecutar() {
+        if (this.jugador.skinActual === 'default') {
+            this.jugador.cambiarSkin('recursos/sprites/afro-spritesheet.json')
+        } else {
+            this.jugador.restaurarSkinDefault()
+        }
+    }
+}
+
 // Truco para activar/desactivar el modo debug
 export class TrucoDebug extends Truco {
     constructor(sistemaDebug) {
