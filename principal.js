@@ -11,6 +11,7 @@ import { catálogoObstáculos, generarPosicionRandom, verificarSuperposicion, Ob
 import { SistemaGrilla } from './sistema-grilla.js'; 
 import { MenuPrincipal } from './interfaz/menu.js'; 
 import { PantallaVictoria } from './interfaz/victoria.js'; // <-- IMPORT DE VICTORIA AGREGADO
+import { audioManager } from './sistema-sonido.js'
 
 export class Juego {
     constructor() {
@@ -36,7 +37,7 @@ export class Juego {
         await this.app.init({
             width: window.innerWidth,
             height: window.innerHeight,
-            background: 'green',
+            background: 'black',
             roundPixels: true,
             textureAntiAlias: false
         })
@@ -45,12 +46,21 @@ export class Juego {
 
         await this.cargarRecursos()
 
-        this.menu = new MenuPrincipal(window.innerWidth, window.innerHeight, () => {
-            this.iniciarPartida();
-        });
+        this.menu = new MenuPrincipal(window.innerWidth,
+            window.innerHeight,
+            () => {
+                audioManager.playBsm('sfx_menuClickeado')
+                this.iniciarPartida();
+            },
+            () => {
+                audioManager.playBsm('sfx_menuApuntado')
+            }
+        );
         this.app.stage.addChild(this.menu.contenedor);
+        this.menu.ocultar()
 
-        // Inicializamos la pantalla de victoria (oculta al inicio)
+        this.crearPantallaInicio()
+
         this.pantallaVictoria = new PantallaVictoria(window.innerWidth, window.innerHeight, () => {
             this.reiniciarAlMenu();
         });
@@ -69,10 +79,41 @@ export class Juego {
         this.generarPartida();
         this.crearEscena();
         this.crearEventos();
+        //audioManager.playBgm('bgm_musica')
     }
 
+    crearPantallaInicio() {
+        const pantallaInicio = new PIXI.Container();
+        pantallaInicio.eventMode = 'static';
+        pantallaInicio.cursor = 'pointer';
+        pantallaInicio.hitArea = this.app.screen;
+
+        const fondo = new PIXI.Graphics()
+            .rect(0, 0, this.app.screen.width, this.app.screen.height)
+            .fill({ color: 0x000000, alpha: 0.85 });
+        pantallaInicio.addChild(fondo);
+
+        const texto = new PIXI.Text({
+            text: 'Hacé clic para empezar',
+            style: { fill: 0xffffff, fontSize: 32, fontFamily: 'Perfect' }
+        });
+        texto.anchor.set(0.5);
+        texto.x = this.app.screen.width / 2;
+        texto.y = this.app.screen.height / 2;
+        pantallaInicio.addChild(texto);
+
+        pantallaInicio.on('pointertap', async () => {
+            await audioManager.desbloquearAudio();
+            this.app.stage.removeChild(pantallaInicio);
+            pantallaInicio.destroy({ children: true });
+            this.menu.mostrar(); // recién ahora se muestra el menú con hover/tap sonoro
+        });
+
+        this.app.stage.addChild(pantallaInicio);
+    }
     // Método que debés llamar cuando se cumpla la condición de victoria en tu juego
     ganarPartida() {
+        //audioManager.stopBgm()
         this.estado = 'victoria';
         
         // Limpiamos los eventos del teclado/mouse del juego para que no se mueva el prota de fondo
@@ -109,10 +150,28 @@ export class Juego {
     }
     
     async cargarRecursos() {
+
+        //===== [ CARGAR SONIDOS ] =====
+
+        await Promise.all([
+            audioManager.loadAudio('sfx_maullido_1', 'recursos/sonidos/gato1.mp3'),
+            audioManager.loadAudio('sfx_maullido_2', 'recursos/sonidos/gato2.mp3'),
+            audioManager.loadAudio('sfx_maullido_3', 'recursos/sonidos/gato3.mp3'),
+            audioManager.loadAudio('sfx_maullido_4', 'recursos/sonidos/gato4.mp3'),
+            audioManager.loadAudio('sfx_maullido_5', 'recursos/sonidos/gato5.mp3'),
+            audioManager.loadAudio('sfx_menuApuntado', 'recursos/sonidos/menuApuntado.mp3'),
+            audioManager.loadAudio('sfx_menuClickeado', 'recursos/sonidos/menuClickeado.mp3')
+            //audioManager.loadAudio('bgm_musica', 'recursos/sonidos/soundtrack.wav')
+        ])
+
+        //===== [ AGREGAR FUENTE DE TEXTO (no estaría funcionando) ] ====
+
         PIXI.Assets.add({
             alias: 'Perfect',
             src: 'recursos/fuentePixelart.ttf'
         });
+
+        //===== [ CARGAR IMÁGENES PNG, JSONS Y FUENTE A RECURSOS DE PIXI ] =====
 
         await PIXI.Assets.load([
             'recursos/sprites/jugador.json',
@@ -146,7 +205,6 @@ export class Juego {
             'recursos/sprites/boton1_seleccionado.png',
             'recursos/sprites/titulo_gatimercado.png',
             'Perfect'
-
         ])
 
     }
@@ -225,6 +283,7 @@ export class Juego {
             gato.alIniciarIntercambio = (gato) => {
                 this.hud.menuIntercambio.abrir(gato)
                 this.jugador.mefComportamiento.cambiarEstado('intercambio')
+                this.reproducirMaullidoRandom()
             }
 
             gato.alCerrarIntercambio = () => {
@@ -236,6 +295,19 @@ export class Juego {
             this.gatos.push(gato)
             this.mundoContenedor.addChild(gato.contenedor)
         }
+    }
+
+    reproducirMaullidoRandom() {
+        const maullidosSonidos = [
+
+        'sfx_maullido_1',
+        'sfx_maullido_2',
+        'sfx_maullido_3',
+        'sfx_maullido_4',
+        'sfx_maullido_5'
+    ]
+        const sonidoRandom = maullidosSonidos[Math.floor(Math.random() * maullidosSonidos.length)]
+        audioManager.playBsm(sonidoRandom)
     }
 
     crearObstaculos() {
@@ -465,6 +537,8 @@ export class Juego {
         })
         
     }
+
+
 
     clicMundo(evento) {
         if (this.estado !== 'jugando') return;

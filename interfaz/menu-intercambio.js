@@ -195,7 +195,7 @@ export class MenuIntercambio {
         })
     }
 
-    abrir(npc) {
+    abrir(npc) {       
         this.npc = npc
 
         this.spriteGatiNPC.texture = this.npc.texturaEspera

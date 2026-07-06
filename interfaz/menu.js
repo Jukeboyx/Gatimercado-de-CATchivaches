@@ -1,11 +1,12 @@
 import * as PIXI from '../pixi.js';
 
 export class MenuPrincipal {
-    constructor(ancho, alto, alJugar) {
+    constructor(ancho, alto, alJugar, reproducirSonido) {
         this.contenedor = new PIXI.Container();
         this.ancho = ancho;
         this.alto = alto;
-        this.alJugar = alJugar; // Función que se ejecuta al hacer clic en "Jugar"
+        this.alJugar = alJugar;
+        this.reproducirSonido = reproducirSonido;
 
         this.crearInterfaz();
     }
@@ -64,6 +65,7 @@ export class MenuPrincipal {
         this.contenedorBoton.on('pointerover', () => {
             fondoBotonNormal.visible = false
             fondoBotonApuntado.visible = true
+            this.reproducirSonido()
         });
         this.contenedorBoton.on('pointerout', () => {
             fondoBotonApuntado.visible = false
