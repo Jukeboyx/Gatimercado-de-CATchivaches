@@ -45,7 +45,6 @@ export class Juego {
 
         await this.cargarRecursos()
 
-        // Inicializamos el menú principal
         this.menu = new MenuPrincipal(window.innerWidth, window.innerHeight, () => {
             this.iniciarPartida();
         });
@@ -57,9 +56,15 @@ export class Juego {
         });
         this.app.stage.addChild(this.pantallaVictoria.contenedor);
 
-        this.redimensionar()
+        // Inicializamos la pantalla de victoria (oculta al inicio)
+        this.pantallaVictoria = new PantallaVictoria(window.innerWidth, window.innerHeight, () => {
+            this.reiniciarAlMenu();
+        });
+        this.app.stage.addChild(this.pantallaVictoria.contenedor);
 
+        
         this.app.ticker.add((ticker) => {
+            this.redimensionar()
             this.actualizar(ticker.deltaTime)
         })
     }
@@ -88,7 +93,6 @@ export class Juego {
         this.pantallaVictoria.mostrar(this.cronometro);
     }
 
-    // Método de limpieza para volver al menú de inicio de forma segura y poder volver a jugar
     reiniciarAlMenu() {
         this.estado = 'menu';
 
@@ -112,6 +116,11 @@ export class Juego {
     }
     
     async cargarRecursos() {
+        PIXI.Assets.add({
+            alias: 'Perfect',
+            src: 'recursos/fuentePixelart.ttf'
+        });
+
         await PIXI.Assets.load([
             'recursos/sprites/jugador.json',
             'recursos/sprites/gato_gris.json',
@@ -138,9 +147,14 @@ export class Juego {
             'recursos/sprites/globo.png',
             'recursos/sprites/patita_prota.png',
             'recursos/sprites/accesorios.json',
-            'recursos/sprites/ganaste.png'
+            'recursos/sprites/ganaste.png',
+            'recursos/sprites/boton1.png',
+            'recursos/sprites/boton1_seleccionado.png',
+            'recursos/sprites/titulo_gatimercado.png',
+            'Perfect'
 
         ])
+
     }
 
     generarPartida() {

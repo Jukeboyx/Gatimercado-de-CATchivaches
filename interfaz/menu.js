@@ -11,64 +11,70 @@ export class MenuPrincipal {
     }
 
     crearInterfaz() {
-        // 1. Fondo del menú (puedes cambiarlo por un Sprite si tienes una imagen)
         const texturaFondo = PIXI.Assets.get('recursos/sprites/fondoMenu.png')
         const fondo = new PIXI.Sprite(texturaFondo);
+        fondo.anchor.set(0.5)
+        fondo.x = this.ancho / 2
+        fondo.y = this.alto / 2
         this.contenedor.addChild(fondo);
-
-        // 2. Título del juego
-        const estiloTitulo = new PIXI.Sprite({
-            fontFamily: 'Arial',
-            fontSize: 64,
-            fill: '#ffffff',
-            fontWeight: 'bold',
-            dropShadow: {
-                alpha: 0.5,
-                blur: 4,
-                distance: 4
-            }
-        });
         
-        const titulo = new PIXI.Text({ text: 'Juego de Gatitos', style: estiloTitulo });
-        titulo.anchor.set(0.5);
-        titulo.x = this.ancho / 2;
-        titulo.y = this.alto / 3;
-        this.contenedor.addChild(titulo);
+        const texturaTitulo = PIXI.Assets.get('recursos/sprites/titulo_gatimercado.png')
+        this.titulo = new PIXI.Sprite(texturaTitulo);
+        this.titulo.anchor.set(0.5);
+        this.titulo.scale.set(2)
+        this.titulo.x = this.ancho / 2;
+        this.titulo.y = this.alto / 3;
+        this.contenedor.addChild(this.titulo);
 
         // 3. Botón "Jugar"
-        const contenedorBoton = new PIXI.Container();
-        contenedorBoton.x = this.ancho / 2;
-        contenedorBoton.y = this.alto / 2 + 50;
+        this.contenedorBoton = new PIXI.Container();
+        this.contenedorBoton.x = this.ancho / 2;
+        this.contenedorBoton.y = this.alto * 0.8
 
-        const fondoBoton = new PIXI.Graphics();
-        fondoBoton.roundRect(-100, -30, 200, 60, 15);
-        fondoBoton.fill({ color: 0xffa500 }); // Color naranja
+        const texturaBotonNormal = PIXI.Assets.get('recursos/sprites/boton1.png')
+        const fondoBotonNormal = new PIXI.Sprite(texturaBotonNormal)
+        fondoBotonNormal.anchor.set(0.5)
+        fondoBotonNormal.scale.set(2)
+        fondoBotonNormal.visible = true
 
+        const texturaBotonApuntado = PIXI.Assets.get('recursos/sprites/boton1_seleccionado.png')
+        const fondoBotonApuntado = new PIXI.Sprite(texturaBotonApuntado)
+        fondoBotonApuntado.scale.set(2)
+        fondoBotonApuntado.anchor.set(0.5)
+        fondoBotonApuntado.visible = false
+        
         const estiloBoton = new PIXI.TextStyle({
             fontFamily: 'Arial',
             fontSize: 32,
-            fill: '#ffffff',
+            fill: '#d06004',
             fontWeight: 'bold'
         });
         
         const textoBoton = new PIXI.Text({ text: 'JUGAR', style: estiloBoton });
         textoBoton.anchor.set(0.5);
 
-        contenedorBoton.addChild(fondoBoton);
-        contenedorBoton.addChild(textoBoton);
+        this.contenedorBoton.addChild(fondoBotonNormal);
+        this.contenedorBoton.addChild(fondoBotonApuntado);
+        this.contenedorBoton.addChild(textoBoton);
 
         // 4. Interactividad del botón
-        contenedorBoton.eventMode = 'static';
-        contenedorBoton.cursor = 'pointer';
+        this.contenedorBoton.eventMode = 'static';
+        this.contenedorBoton.cursor = 'pointer';
 
-        contenedorBoton.on('pointerover', () => { fondoBoton.alpha = 0.8; });
-        contenedorBoton.on('pointerout', () => { fondoBoton.alpha = 1; });
-        contenedorBoton.on('pointertap', () => {
+        this.contenedorBoton.on('pointerover', () => {
+            fondoBotonNormal.visible = false
+            fondoBotonApuntado.visible = true
+        });
+        this.contenedorBoton.on('pointerout', () => {
+            fondoBotonApuntado.visible = false
+            fondoBotonNormal.visible = true
+        });
+        this.contenedorBoton.on('pointertap', () => {
             this.ocultar();
             this.alJugar(); // Llamamos a la función para iniciar el juego
         });
 
-        this.contenedor.addChild(contenedorBoton);
+        this.contenedor.addChild(this.contenedorBoton);
     }
 
     mostrar() {
@@ -82,6 +88,11 @@ export class MenuPrincipal {
     redimensionar(nuevoAncho, nuevoAlto) {
         this.ancho = nuevoAncho;
         this.alto = nuevoAlto;
-        // Aquí podrías recalcular las posiciones del título y botón si la pantalla cambia de tamaño estando en el menú
+
+        this.titulo.x = nuevoAncho / 2;
+        this.titulo.y = nuevoAlto / 3;
+
+        this.contenedorBoton.x = nuevoAncho / 2
+        this.contenedorBoton.y = nuevoAlto * 0.8
     }
 }
