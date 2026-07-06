@@ -55,13 +55,6 @@ export class Juego {
             this.reiniciarAlMenu();
         });
         this.app.stage.addChild(this.pantallaVictoria.contenedor);
-
-        // Inicializamos la pantalla de victoria (oculta al inicio)
-        this.pantallaVictoria = new PantallaVictoria(window.innerWidth, window.innerHeight, () => {
-            this.reiniciarAlMenu();
-        });
-        this.app.stage.addChild(this.pantallaVictoria.contenedor);
-
         
         this.app.ticker.add((ticker) => {
             this.redimensionar()
@@ -148,6 +141,7 @@ export class Juego {
             'recursos/sprites/patita_prota.png',
             'recursos/sprites/accesorios.json',
             'recursos/sprites/ganaste.png',
+            'recursos/sprites/fondoMenu.png',
             'recursos/sprites/boton1.png',
             'recursos/sprites/boton1_seleccionado.png',
             'recursos/sprites/titulo_gatimercado.png',
