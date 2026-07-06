@@ -6,12 +6,15 @@ export function realizarTrueque(npc, inventarioInstancia) {
     const indice = inventarioInstancia.objetosActuales.findIndex(key => key === npc.idObjetoQuePide)
     
     if (indice !== -1) {
-        inventarioInstancia.actualizarRanura(indice, npc.idObjetoQueTiene)
+        const objetoEntregado = npc.idObjetoQueTiene
+        inventarioInstancia.actualizarRanura(indice, objetoEntregado)
         npc.actualizarObjetos()
         console.log("El trueque fue todo un éxito.")
+        return { exito: true, objetoRecibido: objetoEntregado }
     }
     else {
         console.log("Eso no era lo que el gatito quería...")
+        return { exito: false, objetoRecibido: null }
     }
 }
 

@@ -37,14 +37,18 @@ export class PantallaVictoria {
         this.contenedor.removeChildren();
 
         // Fondo oscuro
-        const fondo = new PIXI.Graphics();
-        fondo.rect(0, 0, this.ancho, this.alto);
-        fondo.fill({ color: 0x000000, alpha: 0.85 });
+        const texturaFondo = PIXI.Assets.get('recursos/sprites/fondoMenu.png')
+        const fondo = new PIXI.Sprite(texturaFondo);
+        fondo.anchor.set(0.5)
+        fondo.x = this.ancho / 2
+        fondo.y = this.alto / 2
         this.contenedor.addChild(fondo);
 
-        const estiloSub = new PIXI.TextStyle({ fontFamily: 'Arial', fontSize: 24, fill: '#ffffff' });
-        const estiloPodio = new PIXI.TextStyle({ fontFamily: 'Arial', fontSize: 20, fill: '#ffffff' });
-        const estiloDestacado = new PIXI.TextStyle({ fontFamily: 'Arial', fontSize: 20, fill: '#ffda44', fontWeight: 'bold' });
+
+
+        const estiloSub = new PIXI.TextStyle({ fontFamily: 'Arial', fontSize: 24, fill: '#000000' });
+        const estiloPodio = new PIXI.TextStyle({ fontFamily: 'Arial', fontSize: 20, fill: '#000000' });
+        const estiloDestacado = new PIXI.TextStyle({ fontFamily: 'Arial', fontSize: 20, fill: '#ae0909', fontWeight: 'bold' });
 
         // 1. Imagen de Ganaste
         const texturaGanaste = PIXI.Assets.get('recursos/sprites/ganaste.png')
@@ -52,7 +56,7 @@ export class PantallaVictoria {
         imagenVictoria.anchor.set(0.5); 
         imagenVictoria.x = this.ancho / 2;
         imagenVictoria.y = 200; 
-        imagenVictoria.scale.set(6); 
+        imagenVictoria.scale.set(5); 
         this.contenedor.addChild(imagenVictoria);
 
         // 2. Tiempo de esta partida
@@ -101,13 +105,22 @@ export class PantallaVictoria {
         contenedorBoton.x = this.ancho / 2;
         contenedorBoton.y = this.alto - 60;
 
-        const fondoBoton = new PIXI.Graphics();
-        fondoBoton.roundRect(-120, -25, 240, 50, 10);
-        fondoBoton.fill({ color: 0x27ae60 });
+        const fondoBoton = new PIXI.NineSliceSprite({
+            texture: PIXI.Assets.get('recursos/sprites/panel.png'),
+            leftWidth: 10,
+            rightWidth: 10,
+            topHeight: 10,
+            bottomHeight: 21
+        })
+        fondoBoton.anchor.set(0.5)
 
-        const estiloBoton = new PIXI.TextStyle({ fontFamily: 'Arial', fontSize: 24, fill: '#eedcc7ff', fontWeight: 'bold' });
+        const estiloBoton = new PIXI.TextStyle({ fontFamily: 'Arial', fontSize: 24, fill: '#d06004', fontWeight: 'bold' });
         const textoBoton = new PIXI.Text({ text: 'VOLVER A JUGAR', style: estiloBoton });
         textoBoton.anchor.set(0.5);
+        fondoBoton.width = textoBoton.width + 20
+        fondoBoton.height = textoBoton.height + 20
+        fondoBoton.x = textoBoton.x
+        fondoBoton.y = textoBoton.y
 
         contenedorBoton.addChild(fondoBoton);
         contenedorBoton.addChild(textoBoton);

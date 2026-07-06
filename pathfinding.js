@@ -151,9 +151,7 @@ export function calcularRuta(origenX, origenY, destinoX, destinoY, ancho, alto) 
     fScore.set(claveInicio, fInicio);
     cola.insertar({ x: inicio.x, y: inicio.y, f: fInicio });
 
-    let iteraciones = 0
     while (!cola.estaVacia()) {
-        iteraciones++
         const actual      = cola.extraerMinimo();
         const claveActual = `${actual.x},${actual.y}`;
 
@@ -164,7 +162,6 @@ export function calcularRuta(origenX, origenY, destinoX, destinoY, ancho, alto) 
 
         if (actual.x === fin.x && actual.y === fin.y) {
             const camino = reconstruirCamino(cameFrom, actual);
-            console.log(`A* — iteraciones: ${iteraciones}, celdas en camino: ${camino.length}`)
             return camino;
         }
 

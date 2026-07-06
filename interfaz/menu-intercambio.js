@@ -187,9 +187,15 @@ export class MenuIntercambio {
             e.stopPropagation()
 
             if (this.npc) {
-                realizarTrueque(this.npc, this.inventario)
+                const resultado = realizarTrueque(this.npc, this.inventario)
+
+                if (resultado.exito && this.alTruequeExitoso) {
+                    this.alTruequeExitoso(resultado)
+                }
+
                 this.cerrar()
-            } else {
+                
+                } else {
                 console.warn("Ojo q no hay npc con el cual interactuar")
             }
         })

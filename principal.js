@@ -249,9 +249,13 @@ export class Juego {
     }
 
     generarObjetivo() {
+        if (this.objetivo) {
+            catálogoObjetos[this.objetivo].esObjetivo = false
+        }
         const ids = Object.keys(catálogoObjetos)
         const candidatos = ids.filter(id => !this.objetosIniciales.includes(id))
         this.objetivo = candidatos[Math.floor(Math.random() * candidatos.length)]
+        catálogoObjetos[this.objetivo].esObjetivo = true
     }
 
     generarCadenaVictoria(pasos = 10) {
@@ -542,6 +546,12 @@ export class Juego {
         this.hud = new HUD(this.app, this.datos, this.escalaUI)
         this.hud.menuIntercambio.spriteJugador.texture = this.jugador.texturaEspera
         this.interfazContenedor.addChild(this.hud.contenedor)
+
+        this.hud.menuIntercambio.alTruequeExitoso = (resultado) => {
+            if (resultado.objetoRecibido === this.objetivo) {
+                this.ganarPartida()
+            }
+        }
 
         this.jugador.inventario = this.hud.inventario
         
