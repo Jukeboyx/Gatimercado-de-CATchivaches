@@ -10,13 +10,12 @@ export class Enojado extends Estado {
         const dy = this.dueño.contenedor.y - this.dueño.jugador.contenedor.y
         const distancia = Math.sqrt(dx * dx + dy * dy)
 
-        const destino = {
+        let destino = {
             x: this.dueño.contenedor.x + (dx / distancia) * 600,
             y: this.dueño.contenedor.y + (dy / distancia) * 600
         }
 
-        destino.x = Math.max(0, Math.min(destino.x, this.dueño.ANCHO_MUNDO))
-        destino.y = Math.max(0, Math.min(destino.y, this.dueño.ALTO_MUNDO))
+        destino = this.dueño.sistemaGrilla.clampAlMundo(destino.x, destino.y, 2)
 
         this.camino = mover.calcularCamino(
             this.dueño.contenedor.x,
@@ -24,7 +23,8 @@ export class Enojado extends Estado {
             destino.x,
             destino.y,
             this.dueño.ANCHO_MUNDO,
-            this.dueño.ALTO_MUNDO
+            this.dueño.ALTO_MUNDO,
+            this.dueño.sistemaGrilla
         )
 
         this.indicePunto = this.camino.length > 1 ? 1 : 0

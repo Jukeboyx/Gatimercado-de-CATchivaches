@@ -42,15 +42,14 @@ export class Juego {
 
         await this.cargarRecursos()
 
-        // En lugar de arrancar la partida, inicializamos el menú
         this.menu = new MenuPrincipal(window.innerWidth, window.innerHeight, () => {
             this.iniciarPartida();
         });
         this.app.stage.addChild(this.menu.contenedor);
 
-        this.redimensionar()
-
+        
         this.app.ticker.add((ticker) => {
+            this.redimensionar()
             this.actualizar(ticker.deltaTime)
         })
     }
@@ -64,6 +63,11 @@ export class Juego {
     }
     
     async cargarRecursos() {
+        PIXI.Assets.add({
+            alias: 'Perfect',
+            src: 'recursos/fuentePixelart.ttf'
+        });
+
         await PIXI.Assets.load([
             'recursos/sprites/jugador.json',
             'recursos/sprites/gato_gris.json',
@@ -90,8 +94,13 @@ export class Juego {
             'recursos/sprites/globo.png',
             'recursos/sprites/patita_prota.png',
             'recursos/sprites/accesorios.json',
-            'recursos/sprites/fondoMenu.png'
+            'recursos/sprites/fondoMenu.png',
+            'recursos/sprites/boton1.png',
+            'recursos/sprites/boton1_seleccionado.png',
+            'recursos/sprites/titulo_gatimercado.png',
+            'Perfect'
         ])
+
     }
 
     generarPartida() {
