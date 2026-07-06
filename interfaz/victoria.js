@@ -51,8 +51,8 @@ export class PantallaVictoria {
         const imagenVictoria = new PIXI.Sprite(texturaGanaste);
         imagenVictoria.anchor.set(0.5); 
         imagenVictoria.x = this.ancho / 2;
-        imagenVictoria.y = 290; 
-        imagenVictoria.scale.set(9); 
+        imagenVictoria.y = 200; 
+        imagenVictoria.scale.set(6); 
         this.contenedor.addChild(imagenVictoria);
 
         // 2. Tiempo de esta partida
@@ -62,18 +62,18 @@ export class PantallaVictoria {
         });
         textoTuTiempo.anchor.set(0.5);
         textoTuTiempo.x = this.ancho / 2;
-        textoTuTiempo.y = 575; 
+        textoTuTiempo.y = 410; 
         this.contenedor.addChild(textoTuTiempo);
 
         // 3. Subtítulo del podio (Texto actualizado a TOP 5)
         const tituloPodio = new PIXI.Text({ text: '🏆 TOP 5 MEJORES TIEMPOS 🏆', style: estiloSub });
         tituloPodio.anchor.set(0.5);
         tituloPodio.x = this.ancho / 2;
-        tituloPodio.y = 625; 
+        tituloPodio.y = 450; 
         this.contenedor.addChild(tituloPodio);
 
         // 4. Lista del Podio
-        let inicioY = 675; 
+        let inicioY = 490; 
         this.topTiempos.forEach((tiempo, indice) => {
             const posicion = indice + 1;
             
