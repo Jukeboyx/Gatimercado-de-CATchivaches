@@ -9,7 +9,8 @@ import { mezclar, cortarGrilla, SistemaTrucos, TrucoShiro, TrucoDebug, SistemaDe
 import { Accesorios } from './gatinpc/accesorios.js';
 import { catálogoObstáculos, generarPosicionRandom, verificarSuperposicion, Obstáculo } from './obstaculos.js';
 import { SistemaGrilla } from './sistema-grilla.js'; 
-import { MenuPrincipal } from './interfaz/menu.js'; // <-- IMPORT DEL MENÚ AGREGADO
+import { MenuPrincipal } from './interfaz/menu.js'; 
+import { PantallaVictoria } from './interfaz/victoria.js'; // <-- IMPORT DE VICTORIA AGREGADO
 
 export class Juego {
     constructor() {
@@ -20,7 +21,9 @@ export class Juego {
         this.escalaUI = 2
         this.tamañoCelda = 32
 
+        // Variables de estado y tiempo
         this.estado = 'menu';
+        this.cronometro = 0; // Almacena el tiempo en segundos de la partida actual
 
         this.sistemaGrilla = new SistemaGrilla(this.tamañoCelda, this.ANCHO_MUNDO, this.ALTO_MUNDO)
 
@@ -42,11 +45,17 @@ export class Juego {
 
         await this.cargarRecursos()
 
-        // En lugar de arrancar la partida, inicializamos el menú
+        // Inicializamos el menú principal
         this.menu = new MenuPrincipal(window.innerWidth, window.innerHeight, () => {
             this.iniciarPartida();
         });
         this.app.stage.addChild(this.menu.contenedor);
+
+        // Inicializamos la pantalla de victoria (oculta al inicio)
+        this.pantallaVictoria = new PantallaVictoria(window.innerWidth, window.innerHeight, () => {
+            this.reiniciarAlMenu();
+        });
+        this.app.stage.addChild(this.pantallaVictoria.contenedor);
 
         this.redimensionar()
 
@@ -57,10 +66,49 @@ export class Juego {
     
     // Método para arrancar el juego cuando el jugador hace clic en "JUGAR"
     iniciarPartida() {
+        this.cronometro = 0; // Resetear tiempo al empezar
         this.estado = 'jugando';
         this.generarPartida();
         this.crearEscena();
         this.crearEventos();
+    }
+
+    // Método que debés llamar cuando se cumpla la condición de victoria en tu juego
+    ganarPartida() {
+        this.estado = 'victoria';
+        
+        // Limpiamos los eventos del teclado/mouse del juego para que no se mueva el prota de fondo
+        window.removeEventListener('resize', this.redimensionar);
+        
+        // Removemos los contenedores del juego visualmente para dejar solo la pantalla de victoria limpio
+        if (this.mundoContenedor) this.mundoContenedor.visible = false;
+        if (this.interfazContenedor) this.interfazContenedor.visible = false;
+
+        // Mostramos el podio enviando el tiempo final acumulado
+        this.pantallaVictoria.mostrar(this.cronometro);
+    }
+
+    // Método de limpieza para volver al menú de inicio de forma segura y poder volver a jugar
+    reiniciarAlMenu() {
+        this.estado = 'menu';
+
+        // Destruir contenedores viejos del juego si existen para que no se dupliquen elementos en la siguiente partida
+        if (this.mundoContenedor) {
+            this.app.stage.removeChild(this.mundoContenedor);
+            this.mundoContenedor.destroy({ children: true });
+        }
+        if (this.interfazContenedor) {
+            this.app.stage.removeChild(this.interfazContenedor);
+            this.interfazContenedor.destroy({ children: true });
+        }
+
+        // Resetear grilla para la nueva partida
+        this.sistemaGrilla = new SistemaGrilla(this.tamañoCelda, this.ANCHO_MUNDO, this.ALTO_MUNDO);
+
+        // Volver a mostrar el menú principal
+        if (this.menu) {
+            this.menu.mostrar();
+        }
     }
     
     async cargarRecursos() {
@@ -90,7 +138,8 @@ export class Juego {
             'recursos/sprites/globo.png',
             'recursos/sprites/patita_prota.png',
             'recursos/sprites/accesorios.json',
-            'recursos/sprites/fondoMenu.png'
+            'recursos/sprites/ganaste.png'
+
         ])
     }
 
@@ -106,17 +155,13 @@ export class Juego {
 
     generarInventarioInicial() {
         const ids = Object.keys(catálogoObjetos)
-        
         const idsMezclados = ids.sort(() => Math.random() - 0.5)
-
         this.objetosIniciales = idsMezclados.slice(0, 3)
     }
 
     generarObjetivo() {
         const ids = Object.keys(catálogoObjetos)
-
         const candidatos = ids.filter(id => !this.objetosIniciales.includes(id))
-        
         this.objetivo = candidatos[Math.floor(Math.random() * candidatos.length)]
     }
 
@@ -147,7 +192,7 @@ export class Juego {
     crearNPCs() {
         this.gatos = []
 
-        for (let i = 0;i < this.intercambios.length; i++) {
+        for (let i = 0; i < this.intercambios.length; i++) {
             const intercambio = this.intercambios[i]
 
             const gato = new GatiNPC(
@@ -181,22 +226,16 @@ export class Juego {
             }
 
             this.gatos.push(gato)
-
-            this.mundoContenedor.addChild(
-                gato.contenedor
-            )
+            this.mundoContenedor.addChild(gato.contenedor)
         }
     }
 
     crearObstaculos() {
         this.obstaculos = []
-
-        // Crear 2-3 grupitos de comercios
-        const cantidadGrupitos = Math.floor(Math.random() * 2) + 2 // 2 o 3 grupitos
+        const cantidadGrupitos = Math.floor(Math.random() * 2) + 2 
         const tiposComercios = ['comercio1', 'comercio2', 'comercio3']
         
         for (let g = 0; g < cantidadGrupitos; g++) {
-            // Posición base del grupito
             let posicionBase
             let intentos = 0
             const maxIntentos = 100
@@ -206,31 +245,27 @@ export class Juego {
                 intentos++
             } while (verificarSuperposicion(posicionBase.x, posicionBase.y, 350, this.obstaculos, this.tamañoCelda) && intentos < maxIntentos)
             
-            // Crear los 3 comercios uno al lado del otro horizontalmente
             const separacionComercios = 180
-            const ordenComercios = [...tiposComercios].sort(() => Math.random() - 0.5) // Orden random
+            const ordenComercios = [...tiposComercios].sort(() => Math.random() - 0.5) 
             
             for (let i = 0; i < ordenComercios.length; i++) {
                 const offsetX = (i - 1) * separacionComercios
                 this.crearObstáculoEnPosicion(ordenComercios[i], posicionBase.x + offsetX, posicionBase.y)
             }
             
-            // Colocar picnic delante del grupito (más separado)
             const picnicX = posicionBase.x
             const picnicY = posicionBase.y + 160
             this.crearObstáculoEnPosicion('picnic', picnicX, picnicY)
         }
         
-        // Generar árboles alejados de los comercios
         const tiposArboles = ['arbol1', 'arbol2', 'arbol3']
-        const totalArboles = Math.floor(Math.random() * 7) + 6 // Entre 6 y 12 árboles
+        const totalArboles = Math.floor(Math.random() * 7) + 6 
         
-        // Primero agregar árboles en las esquinas
         const esquinas = [
-            { x: 100, y: 100 }, // Superior izquierda
-            { x: this.ANCHO_MUNDO - 100, y: 100 }, // Superior derecha
-            { x: 100, y: this.ALTO_MUNDO - 100 }, // Inferior izquierda
-            { x: this.ANCHO_MUNDO - 100, y: this.ALTO_MUNDO - 100 } // Inferior derecha
+            { x: 100, y: 100 }, 
+            { x: this.ANCHO_MUNDO - 100, y: 100 }, 
+            { x: 100, y: this.ALTO_MUNDO - 100 }, 
+            { x: this.ANCHO_MUNDO - 100, y: this.ALTO_MUNDO - 100 } 
         ]
         
         for (const esquina of esquinas) {
@@ -244,7 +279,6 @@ export class Juego {
             }
         }
         
-        // Luego generar árboles random en el resto del mapa
         for (let i = 0; i < totalArboles; i++) {
             const tipoArbol = tiposArboles[Math.floor(Math.random() * tiposArboles.length)]
             let posicionArbol
@@ -255,7 +289,6 @@ export class Juego {
                 posicionArbol = generarPosicionRandom(this.sistemaGrilla, this.ANCHO_MUNDO, this.ALTO_MUNDO)
                 intentos++
                 
-                // Verificar que esté lejos de cualquier comercio
                 let cercaDeComercio = false
                 for (const obs of this.obstaculos) {
                     if (obs.tipo.startsWith('comercio')) {
@@ -270,14 +303,13 @@ export class Juego {
                 }
                 
                 if (!cercaDeComercio && !verificarSuperposicion(posicionArbol.x, posicionArbol.y, 100, this.obstaculos, this.tamañoCelda)) {
-                    break
+                break
                 }
             } while (intentos < maxIntentos)
             
             this.crearObstáculoEnPosicion(tipoArbol, posicionArbol.x, posicionArbol.y)
         }
         
-        // Generar 4 árboles arbol4
         for (let i = 0; i < 4; i++) {
             let posicionArbol4
             let intentos = 0
@@ -291,8 +323,7 @@ export class Juego {
             this.crearObstáculoEnPosicion('arbol4', posicionArbol4.x, posicionArbol4.y)
         }
         
-        // Generar hasta 7 banquitos (banquito1)
-        const totalBanquitos = Math.floor(Math.random() * 5) + 5 // Entre 5 y 9 banquitos
+        const totalBanquitos = Math.floor(Math.random() * 5) + 5 
         
         for (let i = 0; i < totalBanquitos; i++) {
             let posicionBanquito
@@ -307,7 +338,6 @@ export class Juego {
             this.crearObstáculoEnPosicion('banquito1', posicionBanquito.x, posicionBanquito.y)
         }
 
-        // Bloquear bordes del mapa
         this.sistemaGrilla.bloquearBordes()
     }
 
@@ -333,44 +363,13 @@ export class Juego {
         this.obstaculos.push(obstáculo)
     }
 
-    crearObstáculo(tipo) {
-        const datos = catálogoObstáculos[tipo]
-        let posicion
-        let intentos = 0
-        const maxIntentos = 100
-
-        do {
-            posicion = generarPosicionRandom(this.sistemaGrilla, this.ANCHO_MUNDO, this.ALTO_MUNDO)
-            intentos++
-        } while (verificarSuperposicion(posicion.x, posicion.y, datos.celdasBloqueadas.length, this.obstaculos, this.tamañoCelda) && intentos < maxIntentos)
-
-        const sprite = new PIXI.Sprite(PIXI.Assets.get(datos.imagen))
-        sprite.anchor.set(0.5)
-        sprite.scale.set(datos.escala)
-        sprite.x = posicion.x
-        sprite.y = posicion.y
-
-        sprite.eventMode = 'none'
-        
-        // El picnic tiene zIndex fijo bajo para que el jugador aparezca encima
-        if (tipo === 'picnic') {
-            sprite.zIndex = 0
-        } else {
-            sprite.zIndex = posicion.y
-        }
-
-        this.mundoContenedor.addChild(sprite)
-
-        const obstáculo = new Obstáculo(tipo, posicion.x, posicion.y, sprite, datos.celdasBloqueadas)
-        obstáculo.registrarEnGrilla(this.sistemaGrilla)
-        this.obstaculos.push(obstáculo)
-    }
-
     crearEscena() {
         this.mundoContenedor = new PIXI.Container()
         this.mundoContenedor.sortableChildren = true
-        
         this.app.stage.addChild(this.mundoContenedor)
+
+        // Aseguramos que los menús queden siempre por encima del mundo del juego re-indexando
+        this.app.stage.setChildIndex(this.mundoContenedor, 0);
 
         this.interfazContenedor = new PIXI.Container()
         this.app.stage.addChild(this.interfazContenedor)
@@ -403,7 +402,6 @@ export class Juego {
         this.hud.menuIntercambio.spriteJugador.texture = this.jugador.texturaEspera
         this.interfazContenedor.addChild(this.hud.contenedor)
         
-        // Inicializar sistema de debug
         this.sistemaDebug = new SistemaDebug(
             this.app,
             this.mundoContenedor,
@@ -415,7 +413,6 @@ export class Juego {
             this.sistemaGrilla
         )
         
-        // Agregar opciones de debug
         this.sistemaDebug.agregarOpcion(new OpcionMostrarGrilla(this.sistemaDebug))
         this.sistemaDebug.agregarOpcion(new OpcionEditarCeldas(this.sistemaDebug))
         this.sistemaDebug.agregarOpcion(new OpcionGuardarCeldas(this.sistemaDebug))
@@ -426,28 +423,13 @@ export class Juego {
     centrarCámara() {
         const objetivoX = this.app.screen.width / 2 - this.jugador.contenedor.x
         const objetivoY = this.app.screen.height / 2 - this.jugador.contenedor.y
-
         const suavizado = 0.08
 
         this.mundoContenedor.x += (objetivoX - this.mundoContenedor.x) * suavizado
-
         this.mundoContenedor.y += (objetivoY - this.mundoContenedor.y) * suavizado
 
-        this.mundoContenedor.x = Math.min(
-            0,
-            Math.max(
-                this.mundoContenedor.x,
-                this.app.screen.width - this.ANCHO_MUNDO
-            )
-        )
-
-        this.mundoContenedor.y = Math.min(
-            0,
-            Math.max(
-                this.mundoContenedor.y,
-                this.app.screen.height - this.ALTO_MUNDO
-            )
-        )
+        this.mundoContenedor.x = Math.min(0, Math.max(this.mundoContenedor.x, this.app.screen.width - this.ANCHO_MUNDO))
+        this.mundoContenedor.y = Math.min(0, Math.max(this.mundoContenedor.y, this.app.screen.height - this.ALTO_MUNDO))
     }
 
     crearEventos() {
@@ -462,20 +444,25 @@ export class Juego {
             this.clicMundo(evento)
         })
 
-        // Sistema de trucos
         this.sistemaTrucos = new SistemaTrucos()
         this.sistemaTrucos.registrarTruco('shiro', new TrucoShiro(this.jugador))
         this.sistemaTrucos.registrarTruco('dbg', new TrucoDebug(this.sistemaDebug))
 
         window.addEventListener('keydown', (evento) => {
             this.sistemaTrucos.procesarTecla(evento.key)
+            // --- ATAJO PARA TESTEAR VICTORIA ---
+        if ((evento.key === 'v' || evento.key === 'V') && this.estado === 'jugando') {
+                this.ganarPartida()
+            }
         })
+        
     }
 
     clicMundo(evento) {
-        if (this.sistemaDebug.edicionCeldasActiva) return
+        if (this.estado !== 'jugando') return;
+        if (this.sistemaDebug && this.sistemaDebug.edicionCeldasActiva) return
         
-        if (this.hud.menuIntercambio.visible) {
+        if (this.hud && this.hud.menuIntercambio.visible) {
             this.hud.menuIntercambio.cerrar()
             return
         }
@@ -483,14 +470,11 @@ export class Juego {
         if (evento.target !== this.app.stage) return
         
         const puntoEnMundo = this.mundoContenedor.toLocal(evento.global)
-
-        // Verificar si el clic está en una celda bloqueada
         const grillaPos = this.sistemaGrilla.mundoAGrilla(puntoEnMundo.x, puntoEnMundo.y)
         
         let destinoFinal = puntoEnMundo
         
         if (this.sistemaGrilla.estaBloqueada(grillaPos.x, grillaPos.y)) {
-            // Encontrar la celda accesible más cercana
             destinoFinal = this.sistemaGrilla.encontrarCeldaAccesibleMásCercana(puntoEnMundo.x, puntoEnMundo.y)
         }
 
@@ -498,15 +482,17 @@ export class Juego {
     }
 
     actualizar(delta) {
-        // Solo actualizar el juego si estamos en el estado 'jugando'
+        // Si el estado es de victoria o menú, nos aseguramos de que las interfaces superiores respondan si hay redimensionamiento
         if (this.estado !== 'jugando') return;
 
-        // Actualizar noclip si está activo (incluso en pausa)
+        // Sumar tiempo transcurrido basándonos en el Ticker de PixiJS (convirtiendo los frames calculados a segundos)
+        // app.ticker.elapsedMS nos da los milisegundos exactos desde el último frame
+        this.cronometro += this.app.ticker.elapsedMS / 1000;
+
         if (this.sistemaDebug) {
             this.sistemaDebug.actualizarNoclip()
         }
         
-        // Solo actualizar el juego si no está en pausa
         if (!this.sistemaDebug || !this.sistemaDebug.pausaActiva) {
             this.jugador.actualizar(delta)
             this.jugador.contenedor.zIndex = this.jugador.contenedor.y
@@ -516,14 +502,8 @@ export class Juego {
             }
             this.hud.actualizar(delta)
 
-            // Solo centrar cámara si noclip no está activo
             if (!this.sistemaDebug || !this.sistemaDebug.noclipActivo) {
                 this.centrarCámara()
-            }
-        } else {
-            // En pausa, solo centrar cámara si noclip está activo
-            if (this.sistemaDebug && this.sistemaDebug.noclipActivo) {
-                // La cámara se controla con noclip, no centrar
             }
         }
     }
@@ -534,12 +514,14 @@ export class Juego {
             window.innerHeight
         )
 
-        // Redimensionar el menú si existe
         if (this.menu) {
             this.menu.redimensionar(window.innerWidth, window.innerHeight);
         }
 
-        // Se usa if para chequear que la interfaz esté inicializada antes de modificarla
+        if (this.pantallaVictoria) {
+            this.pantallaVictoria.redimensionar(window.innerWidth, window.innerHeight);
+        }
+
         if (this.interfazContenedor) {
             this.interfazContenedor.scale.set(this.escalaUI);
         }
