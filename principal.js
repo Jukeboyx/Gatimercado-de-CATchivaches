@@ -5,7 +5,7 @@ import { Jugador } from './jugador/index.js';
 import { GatiNPC } from './gatinpc/index.js';
 import { HUD } from './interfaz/hud.js';
 import { ESCALA_UI, diseño } from './interfaz/diseno.js';
-import { mezclar, cortarGrilla, SistemaTrucos, TrucoShiro, TrucoDebug, SistemaDebug, OpcionMostrarGrilla, OpcionEditarCeldas, OpcionNoclip, OpcionPausa, OpcionGuardarCeldas } from './herramientas-funciones.js';
+import { mezclar, cortarGrilla, SistemaTrucos, TrucoShiro, TrucoAfro, TrucoDebug, SistemaDebug, OpcionMostrarGrilla, OpcionEditarCeldas, OpcionNoclip, OpcionPausa, OpcionGuardarCeldas } from './herramientas-funciones.js';
 import { Accesorios } from './gatinpc/accesorios.js';
 import { catálogoObstáculos, generarPosicionRandom, verificarSuperposicion, Obstáculo } from './obstaculos.js';
 import { SistemaGrilla } from './sistema-grilla.js'; 
@@ -122,6 +122,7 @@ export class Juego {
             'recursos/sprites/gato_violeta.json',
             'recursos/sprites/gato_naranja.json',
             'recursos/sprites/shiro.json',
+            'recursos/sprites/afro-spritesheet.json',
             'recursos/sprites/accesorios.png',
             'recursos/sprites/pastito.png',
             'recursos/sprites/comercio1.png',
@@ -145,8 +146,9 @@ export class Juego {
             'recursos/sprites/boton1.png',
             'recursos/sprites/boton1_seleccionado.png',
             'recursos/sprites/titulo_gatimercado.png',
-            'Perfect'
-
+            'Perfect',
+            'recursos/sprites/afro-spritesheet-sheet.png',
+            'recursos/sprites/afro-spritesheet.json'
         ])
 
     }
@@ -460,6 +462,7 @@ export class Juego {
 
         this.sistemaTrucos = new SistemaTrucos()
         this.sistemaTrucos.registrarTruco('shiro', new TrucoShiro(this.jugador))
+        this.sistemaTrucos.registrarTruco('afro', new TrucoAfro(this.jugador))
         this.sistemaTrucos.registrarTruco('dbg', new TrucoDebug(this.sistemaDebug))
 
         window.addEventListener('keydown', (evento) => {
@@ -536,14 +539,14 @@ export class Juego {
             this.pantallaVictoria.redimensionar(window.innerWidth, window.innerHeight);
         }
 
-        if (this.interfazContenedor) {
+        if (this.estado !== 'menu' && this.interfazContenedor) {
             this.interfazContenedor.scale.set(this.escalaUI);
         }
 
         diseño.ancho = window.innerWidth / this.escalaUI
         diseño.alto = window.innerHeight / this.escalaUI
         
-        if (this.hud) {
+        if (this.estado !== 'menu' && this.hud) {
             this.hud.redimensionar()
         }
     }
