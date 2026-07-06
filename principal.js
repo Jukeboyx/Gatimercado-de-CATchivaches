@@ -11,6 +11,7 @@ import { catálogoObstáculos, generarPosicionRandom, verificarSuperposicion, Ob
 import { SistemaGrilla } from './sistema-grilla.js'; 
 import { MenuPrincipal } from './interfaz/menu.js'; 
 import { PantallaVictoria } from './interfaz/victoria.js'; // <-- IMPORT DE VICTORIA AGREGADO
+import { NPCAmbiente } from './npcsNoInteractuables/index.js';
 
 export class Juego {
     constructor() {
@@ -145,9 +146,18 @@ export class Juego {
             'recursos/sprites/boton1.png',
             'recursos/sprites/boton1_seleccionado.png',
             'recursos/sprites/titulo_gatimercado.png',
-            'Perfect'
+            'Perfect',
+            'recursos/sprites/mariposa_roja.png',
+            'recursos/sprites/mariposa_rosa.png',
+            'recursos/sprites/mariposa_verde.png',
+            'recursos/sprites/mariposa_violeta.png',
+            'recursos/sprites/sapito_amarillo.png',
+            'recursos/sprites/sapito_gris.png',
+            'recursos/sprites/sapito_naranja.png',
+            'recursos/sprites/sapito_verde.png'
 
         ])
+        
 
     }
 
@@ -237,7 +247,40 @@ export class Juego {
             this.mundoContenedor.addChild(gato.contenedor)
         }
     }
+   crearNPCsAmbiente() {
+    this.npcsAmbiente = [];
+    const tiposMariposa = ['roja', 'rosa', 'verde', 'violeta'];
+    const tiposSapito = ['amarillo', 'gris', 'naranja', 'verde'];
 
+    for (let i = 0; i < 15; i++) {
+        const esMariposa = Math.random() > 0.5;
+        const categoria = esMariposa ? 'mariposa' : 'sapito';
+        const tipo = esMariposa ? 
+            tiposMariposa[Math.floor(Math.random() * 4)] : 
+            tiposSapito[Math.floor(Math.random() * 4)];
+        
+        const frames = esMariposa ? 4 : 15;
+        
+        // Sapitos: Z=1 (atrás), Velocidad=0.15 (más rápido)
+        // Mariposas: Z=5000 (adelante), Velocidad=0.08 (más lento)
+        const profundidad = esMariposa ? 5000 : 1;
+        const animSpeed = esMariposa ? 0.08 : 0.15;
+
+        const npc = new NPCAmbiente(
+            Math.random() * this.ANCHO_MUNDO,
+            Math.random() * this.ALTO_MUNDO,
+            tipo,
+            categoria,
+            { x: this.ANCHO_MUNDO, y: this.ALTO_MUNDO },
+            frames,
+            profundidad,
+            3,
+            animSpeed
+        );
+        this.npcsAmbiente.push(npc);
+        this.mundoContenedor.addChild(npc.contenedor);
+    }
+}
     crearObstaculos() {
         this.obstaculos = []
         const cantidadGrupitos = Math.floor(Math.random() * 2) + 2 
@@ -405,6 +448,7 @@ export class Juego {
         this.accesorios.cargar()
         
         this.crearNPCs()
+        this.crearNPCsAmbiente()
         
         this.hud = new HUD(this.app, this.datos, this.escalaUI)
         this.hud.menuIntercambio.spriteJugador.texture = this.jugador.texturaEspera
@@ -508,6 +552,11 @@ export class Juego {
                 gato.contenedor.zIndex = gato.contenedor.y
                 gato.actualizar(delta)
             }
+        if (this.npcsAmbiente && this.npcsAmbiente.length > 0) {
+            for (const npc of this.npcsAmbiente) {
+                npc.actualizar(delta)
+            }
+        }
             this.hud.actualizar(delta)
 
             if (!this.sistemaDebug || !this.sistemaDebug.noclipActivo) {
