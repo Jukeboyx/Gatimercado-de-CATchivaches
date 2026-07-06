@@ -56,3 +56,4 @@ export class NPCAmbiente {
         }
     }
 }
+//este es un comentariompara poder volver a hacer push pq a juan no le sale mi commit
