@@ -7,7 +7,7 @@ import { Jugador } from '../jugador/index.js';
 import { catálogoObjetos } from '../datos.js';
 
 export class GatiNPC {
-    constructor(posX, posY, idObjetoQueTiene, idObjetoQuePide, jugador, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000, sistemaGrilla = null) {
+    constructor(posX, posY, idObjetoQueTiene, idObjetoQuePide, jugador, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000, sistemaGrilla = null, colorGato = null) {
         this.idObjetoQueTiene = idObjetoQueTiene
         this.idObjetoQuePide = idObjetoQuePide
         this.jugador = jugador
@@ -41,8 +41,8 @@ export class GatiNPC {
             'violeta',
             'naranja'
         ]
-
-        this.colorDeGatoActual = coloresDeGatos[Math.floor(Math.random() * coloresDeGatos.length)]
+ 
+        this.colorDeGatoActual = colorGato || coloresDeGatos[Math.floor(Math.random() * coloresDeGatos.length)]
 
         const sheet = PIXI.Assets.get(`recursos/sprites/gato_${this.colorDeGatoActual}.json`)
         console.log(sheet)

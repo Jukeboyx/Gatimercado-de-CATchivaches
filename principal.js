@@ -203,6 +203,9 @@ export class Juego {
         for (let i = 0; i < this.intercambios.length; i++) {
             const intercambio = this.intercambios[i]
 
+            const coloresNormales = ['gris', 'negro', 'blanco', 'naranja']
+            const colorGato = (i === this.intercambios.length - 1) ? 'violeta' : coloresNormales[Math.floor(Math.random() * coloresNormales.length)]
+
             const gato = new GatiNPC(
                 300 + i * 250,
                 200,
@@ -211,7 +214,8 @@ export class Juego {
                 this.jugador,
                 this.ANCHO_MUNDO,
                 this.ALTO_MUNDO,
-                this.sistemaGrilla
+                this.sistemaGrilla,
+                colorGato  // <-- AGREGAR ESTE PARÁMETRO
             )
 
             gato.mostrarGloboIntercambios(intercambio.da, intercambio.pide)
