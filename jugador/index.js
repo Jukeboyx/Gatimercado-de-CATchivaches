@@ -29,7 +29,7 @@ export class Jugador {
         for (const tag of sheet.data.meta.frameTags) {
             const frames = []
             for (let i = tag.from; i <= tag.to; i++) {
-                frames.push(sheet.textures[`${tag.name}_${i - tag.from}.ase`])
+                frames.push(sheet.textures[`jugador_${tag.name}_${i - tag.from}`])
             }
             animacionesDesdeTag[tag.name] = frames
         }
@@ -159,14 +159,16 @@ export class Jugador {
         this.mefAnimacion.actualizar(datos)
     }
 
-    async cambiarSkin(rutaSpritesheet) {
+    async cambiarSkin(rutaSpritesheet, nombreSkin) {
+        this.skinActual = nombreSkin
         const sheet = PIXI.Assets.get(rutaSpritesheet)
+        console.log('Texturas disponibles:', Object.keys(sheet.textures))
 
         const animacionesDesdeTag = {}
         for (const tag of sheet.data.meta.frameTags) {
             const frames = []
             for (let i = tag.from; i <= tag.to; i++) {
-                frames.push(sheet.textures[`shiro_${tag.name}_${i - tag.from}.ase`])
+                frames.push(sheet.textures[`${nombreSkin}_${tag.name}_${i - tag.from}`])
             }
             animacionesDesdeTag[tag.name] = frames
         }
@@ -185,7 +187,7 @@ export class Jugador {
         }
 
         this.texturaEspera = this.animaciones.sentado[0]
-        this.skinActual = rutaSpritesheet
+        this.skinActual = nombreSkin
     }
 
     async restaurarSkinDefault() {
@@ -195,7 +197,7 @@ export class Jugador {
         for (const tag of sheet.data.meta.frameTags) {
             const frames = []
             for (let i = tag.from; i <= tag.to; i++) {
-                frames.push(sheet.textures[`${tag.name}_${i - tag.from}.ase`])
+                frames.push(sheet.textures[`jugador_${tag.name}_${i - tag.from}`])
             }
             animacionesDesdeTag[tag.name] = frames
         }

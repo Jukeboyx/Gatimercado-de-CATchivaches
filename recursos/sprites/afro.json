@@ -1,7 +1,6 @@
 {
   "frames": {
-    "shiro_abajo_0": {
-      "filename": "shiro-sprite2 0.png",
+    "afro_abajo_0": {
       "frame": {
         "x": 0,
         "y": 0,
@@ -20,10 +19,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_abajo_1": {
-      "filename": "shiro-sprite2 1.png",
+    "afro_abajo_1": {
       "frame": {
         "x": 32,
         "y": 0,
@@ -42,10 +40,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_abajo_2": {
-      "filename": "shiro-sprite2 2.png",
+    "afro_abajo_2": {
       "frame": {
         "x": 64,
         "y": 0,
@@ -64,10 +61,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_abajo_3": {
-      "filename": "shiro-sprite2 3.png",
+    "afro_abajo_3": {
       "frame": {
         "x": 96,
         "y": 0,
@@ -86,10 +82,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_derecha_0": {
-      "filename": "shiro-sprite2 4.png",
+    "afro_derecha_0": {
       "frame": {
         "x": 128,
         "y": 0,
@@ -108,10 +103,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_derecha_1": {
-      "filename": "shiro-sprite2 5.png",
+    "afro_derecha_1": {
       "frame": {
         "x": 160,
         "y": 0,
@@ -130,10 +124,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_derecha_2": {
-      "filename": "shiro-sprite2 6.png",
+    "afro_derecha_2": {
       "frame": {
         "x": 192,
         "y": 0,
@@ -152,10 +145,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_derecha_3": {
-      "filename": "shiro-sprite2 7.png",
+    "afro_derecha_3": {
       "frame": {
         "x": 224,
         "y": 0,
@@ -174,10 +166,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_arriba_0": {
-      "filename": "shiro-sprite2 8.png",
+    "afro_arriba_0": {
       "frame": {
         "x": 256,
         "y": 0,
@@ -196,10 +187,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_arriba_1": {
-      "filename": "shiro-sprite2 9.png",
+    "afro_arriba_1": {
       "frame": {
         "x": 288,
         "y": 0,
@@ -218,10 +208,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_arriba_2": {
-      "filename": "shiro-sprite2 10.png",
+    "afro_arriba_2": {
       "frame": {
         "x": 320,
         "y": 0,
@@ -240,10 +229,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_arriba_3": {
-      "filename": "shiro-sprite2 11.png",
+    "afro_arriba_3": {
       "frame": {
         "x": 352,
         "y": 0,
@@ -262,10 +250,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_izquierda_0": {
-      "filename": "shiro-sprite2 12.png",
+    "afro_izquierda_0": {
       "frame": {
         "x": 384,
         "y": 0,
@@ -284,10 +271,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_izquierda_1": {
-      "filename": "shiro-sprite2 13.png",
+    "afro_izquierda_1": {
       "frame": {
         "x": 416,
         "y": 0,
@@ -306,10 +292,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_izquierda_2": {
-      "filename": "shiro-sprite2 14.png",
+    "afro_izquierda_2": {
       "frame": {
         "x": 448,
         "y": 0,
@@ -328,10 +313,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_izquierda_3": {
-      "filename": "shiro-sprite2 15.png",
+    "afro_izquierda_3": {
       "frame": {
         "x": 480,
         "y": 0,
@@ -350,10 +334,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_sentandose_0": {
-      "filename": "shiro-sprite2 16.png",
+    "afro_sentandose_0": {
       "frame": {
         "x": 512,
         "y": 0,
@@ -372,10 +355,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_sentandose_1": {
-      "filename": "shiro-sprite2 17.png",
+    "afro_sentandose_1": {
       "frame": {
         "x": 544,
         "y": 0,
@@ -394,10 +376,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_sentandose_2": {
-      "filename": "shiro-sprite2 18.png",
+    "afro_sentandose_2": {
       "frame": {
         "x": 576,
         "y": 0,
@@ -416,10 +397,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_sentado_0": {
-      "filename": "shiro-sprite2 19.png",
+    "afro_sentado_0": {
       "frame": {
         "x": 608,
         "y": 0,
@@ -438,10 +418,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_pestañea_0": {
-      "filename": "shiro-sprite2 20.png",
+    "afro_pestañea_0": {
       "frame": {
         "x": 640,
         "y": 0,
@@ -460,10 +439,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_baño_0": {
-      "filename": "shiro-sprite2 21.png",
+    "afro_baño_0": {
       "frame": {
         "x": 672,
         "y": 0,
@@ -482,10 +460,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_baño_1": {
-      "filename": "shiro-sprite2 22.png",
+    "afro_baño_1": {
       "frame": {
         "x": 704,
         "y": 0,
@@ -504,10 +481,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_baño_2": {
-      "filename": "shiro-sprite2 23.png",
+    "afro_baño_2": {
       "frame": {
         "x": 736,
         "y": 0,
@@ -526,10 +502,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_baño_3": {
-      "filename": "shiro-sprite2 24.png",
+    "afro_baño_3": {
       "frame": {
         "x": 768,
         "y": 0,
@@ -548,10 +523,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_baño_4": {
-      "filename": "shiro-sprite2 25.png",
+    "afro_baño_4": {
       "frame": {
         "x": 800,
         "y": 0,
@@ -570,10 +544,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_dormido_0": {
-      "filename": "shiro-sprite2 26.png",
+    "afro_exhausto_0": {
       "frame": {
         "x": 832,
         "y": 0,
@@ -592,10 +565,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_dormido_1": {
-      "filename": "shiro-sprite2 27.png",
+    "afro_exhausto_1": {
       "frame": {
         "x": 864,
         "y": 0,
@@ -614,10 +586,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_dormido_2": {
-      "filename": "shiro-sprite2 28.png",
+    "afro_exhausto_2": {
       "frame": {
         "x": 896,
         "y": 0,
@@ -636,10 +607,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_dormido_3": {
-      "filename": "shiro-sprite2 29.png",
+    "afro_exhausto_3": {
       "frame": {
         "x": 928,
         "y": 0,
@@ -658,10 +628,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_exhausto_0": {
-      "filename": "shiro-sprite2 30.png",
+    "afro_dormido_0": {
       "frame": {
         "x": 960,
         "y": 0,
@@ -680,10 +649,9 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
     },
-    "shiro_exhausto_1": {
-      "filename": "shiro-sprite2 31.png",
+    "afro_dormido_1": {
       "frame": {
         "x": 992,
         "y": 0,
@@ -702,13 +670,55 @@
         "w": 32,
         "h": 32
       },
-      "duration": 200
+      "duration": 100
+    },
+    "afro_jugueton_0": {
+      "frame": {
+        "x": 1024,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "duration": 100
+    },
+    "afro_jugueton_1": {
+      "frame": {
+        "x": 1056,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "duration": 100
     }
   },
   "meta": {
     "app": "https://www.aseprite.org/",
     "version": "1.3.17.2-x64",
-    "image": "shiro.png",
+    "image": "afro.png",
     "format": "RGBA8888",
     "size": {
       "w": 1088,
@@ -773,16 +783,23 @@
         "color": "#000000ff"
       },
       {
-        "name": "dormido",
+        "name": "exhausto",
         "from": 26,
         "to": 29,
         "direction": "forward",
         "color": "#000000ff"
       },
       {
-        "name": "exhausto",
+        "name": "dormido",
         "from": 30,
         "to": 31,
+        "direction": "forward",
+        "color": "#000000ff"
+      },
+      {
+        "name": "jugueton",
+        "from": 32,
+        "to": 33,
         "direction": "forward",
         "color": "#000000ff"
       }

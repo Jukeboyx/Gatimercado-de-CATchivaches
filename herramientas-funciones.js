@@ -104,15 +104,15 @@ export class Truco {
 // Truco específico para cambiar la skin de Shiro
 export class TrucoShiro extends Truco {
     constructor(jugador) {
-        super('Skin especial de Shiro')
+        super('¡Skin especial de Shiro!')
         this.jugador = jugador
     }
 
     ejecutar() {
-        if (this.jugador.skinActual === 'default') {
-            this.jugador.cambiarSkin('recursos/sprites/shiro.json')
-        } else {
+        if (this.jugador.skinActual === 'shiro') {
             this.jugador.restaurarSkinDefault()
+        } else {
+            this.jugador.cambiarSkin('recursos/sprites/shiro.json', 'shiro')
         }
     }
 }
@@ -120,15 +120,15 @@ export class TrucoShiro extends Truco {
 // Truco específico para cambiar la skin de Afro
 export class TrucoAfro extends Truco {
     constructor(jugador) {
-        super('Skin especial de Afro')
+        super('¡Skin especial de Afrodita!')
         this.jugador = jugador
     }
 
     ejecutar() {
-        if (this.jugador.skinActual === 'default') {
-            this.jugador.cambiarSkin('recursos/sprites/afro-spritesheet.json')
-        } else {
+        if (this.jugador.skinActual === 'afro') {
             this.jugador.restaurarSkinDefault()
+        } else {
+            this.jugador.cambiarSkin('recursos/sprites/afro.json', 'afro')
         }
     }
 }

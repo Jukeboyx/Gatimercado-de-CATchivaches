@@ -194,7 +194,9 @@ export class Juego {
             'recursos/sprites/gato_violeta.json',
             'recursos/sprites/gato_naranja.json',
             'recursos/sprites/shiro.json',
-            'recursos/sprites/afro-spritesheet.json',
+            'recursos/sprites/shiro.png',
+            'recursos/sprites/afro.json',
+            'recursos/sprites/afro.png',
             'recursos/sprites/accesorios.png',
             'recursos/sprites/pastito.png',
             'recursos/sprites/comercio1.png',
@@ -226,9 +228,7 @@ export class Juego {
             'recursos/sprites/sapito_amarillo.png',
             'recursos/sprites/sapito_gris.png',
             'recursos/sprites/sapito_naranja.png',
-            'recursos/sprites/sapito_verde.png',
-            'recursos/sprites/afro-spritesheet-sheet.png',
-            'recursos/sprites/afro-spritesheet.json'
+            'recursos/sprites/sapito_verde.png'
         ])
     }
 
