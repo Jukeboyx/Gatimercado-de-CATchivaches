@@ -33,6 +33,6 @@ Juego Point and Click en navegador web llamado "Gatimercado de CATchivaches". El
 1. Antes de crear un archivo nuevo, verificar si la lógica corresponde a uno existente.
 2. Toda lógica visual pasa por PixiJS.
 3. Los estados nuevos deben heredar de `Estado` (de `MEF.js`) e integrarse con la MEF existente.
-4. Los spritesheets del jugador son 4 frames de 64x64px en fila horizontal.
+4. Los spritesheets del jugador son de 32x32 
 5. Mantener consistencia con el estilo del código existente.
 6. Preferir soluciones simples y legibles sobre abstracciones innecesarias.

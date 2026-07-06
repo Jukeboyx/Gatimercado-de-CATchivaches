@@ -8,16 +8,19 @@ import { ESCALA_UI, diseño } from './interfaz/diseno.js';
 import { mezclar, cortarGrilla, SistemaTrucos, TrucoShiro, TrucoDebug, SistemaDebug, OpcionMostrarGrilla, OpcionEditarCeldas, OpcionNoclip, OpcionPausa, OpcionGuardarCeldas } from './herramientas-funciones.js';
 import { Accesorios } from './gatinpc/accesorios.js';
 import { catálogoObstáculos, generarPosicionRandom, verificarSuperposicion, Obstáculo } from './obstaculos.js';
-import { SistemaGrilla } from './sistema-grilla.js';
+import { SistemaGrilla } from './sistema-grilla.js'; 
+import { MenuPrincipal } from './interfaz/menu.js'; // <-- IMPORT DEL MENÚ AGREGADO
 
 export class Juego {
     constructor() {
-        this.app = new PIXI.Application();
+        this.app = new PIXI.Application(); 
 
         this.ANCHO_MUNDO = 2528
         this.ALTO_MUNDO = 2528
         this.escalaUI = 2
         this.tamañoCelda = 32
+
+        this.estado = 'menu';
 
         this.sistemaGrilla = new SistemaGrilla(this.tamañoCelda, this.ANCHO_MUNDO, this.ALTO_MUNDO)
 
@@ -39,18 +42,26 @@ export class Juego {
 
         await this.cargarRecursos()
 
-        this.generarPartida()
-        this.crearEscena()
-        this.crearEventos()
+        // En lugar de arrancar la partida, inicializamos el menú
+        this.menu = new MenuPrincipal(window.innerWidth, window.innerHeight, () => {
+            this.iniciarPartida();
+        });
+        this.app.stage.addChild(this.menu.contenedor);
 
         this.redimensionar()
-
 
         this.app.ticker.add((ticker) => {
             this.actualizar(ticker.deltaTime)
         })
     }
     
+    // Método para arrancar el juego cuando el jugador hace clic en "JUGAR"
+    iniciarPartida() {
+        this.estado = 'jugando';
+        this.generarPartida();
+        this.crearEscena();
+        this.crearEventos();
+    }
     
     async cargarRecursos() {
         await PIXI.Assets.load([
@@ -78,7 +89,8 @@ export class Juego {
             'recursos/sprites/intercambio_item.png',
             'recursos/sprites/globo.png',
             'recursos/sprites/patita_prota.png',
-            'recursos/sprites/accesorios.json'
+            'recursos/sprites/accesorios.json',
+            'recursos/sprites/fondoMenu.png'
         ])
     }
 
@@ -486,6 +498,9 @@ export class Juego {
     }
 
     actualizar(delta) {
+        // Solo actualizar el juego si estamos en el estado 'jugando'
+        if (this.estado !== 'jugando') return;
+
         // Actualizar noclip si está activo (incluso en pausa)
         if (this.sistemaDebug) {
             this.sistemaDebug.actualizarNoclip()
@@ -519,11 +534,22 @@ export class Juego {
             window.innerHeight
         )
 
-        this.interfazContenedor.scale.set(this.escalaUI)
+        // Redimensionar el menú si existe
+        if (this.menu) {
+            this.menu.redimensionar(window.innerWidth, window.innerHeight);
+        }
+
+        // Se usa if para chequear que la interfaz esté inicializada antes de modificarla
+        if (this.interfazContenedor) {
+            this.interfazContenedor.scale.set(this.escalaUI);
+        }
 
         diseño.ancho = window.innerWidth / this.escalaUI
         diseño.alto = window.innerHeight / this.escalaUI
-        this.hud.redimensionar()
+        
+        if (this.hud) {
+            this.hud.redimensionar()
+        }
     }
 }
 
