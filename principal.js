@@ -80,7 +80,7 @@ export class Juego {
         this.generarPartida();
         this.crearEscena();
         this.crearEventos();
-        //audioManager.playBgm('bgm_musica')
+        audioManager.playBgm('bgm_juego')
     }
 
     crearPantallaInicio() {
@@ -108,13 +108,15 @@ export class Juego {
             this.app.stage.removeChild(pantallaInicio);
             pantallaInicio.destroy({ children: true });
             this.menu.mostrar(); // recién ahora se muestra el menú con hover/tap sonoro
+            audioManager.playBgm('bgm_menu')
         });
 
         this.app.stage.addChild(pantallaInicio);
     }
     // Método que debés llamar cuando se cumpla la condición de victoria en tu juego
     ganarPartida() {
-        //audioManager.stopBgm()
+        audioManager.stopBgm()
+        audioManager.playBsm('sfx_victoriaComun')
         this.estado = 'victoria';
         
         // Limpiamos los eventos del teclado/mouse del juego para que no se mueva el prota de fondo
@@ -159,12 +161,13 @@ export class Juego {
         // Volver a mostrar el menú principal
         if (this.menu) {
             this.menu.mostrar();
+            audioManager.playBgm('bgm_menu')
         }
     }
     
     async cargarRecursos() {
 
-        //===== [ CARGAR SONIDOS ] =====
+        //===== [ CARGAR SONIDOS Y MÚSICA ] =====
 
         await Promise.all([
             audioManager.loadAudio('sfx_maullido_1', 'recursos/sonidos/gato1.mp3'),
@@ -173,8 +176,11 @@ export class Juego {
             audioManager.loadAudio('sfx_maullido_4', 'recursos/sonidos/gato4.mp3'),
             audioManager.loadAudio('sfx_maullido_5', 'recursos/sonidos/gato5.mp3'),
             audioManager.loadAudio('sfx_menuApuntado', 'recursos/sonidos/menuApuntado.mp3'),
-            audioManager.loadAudio('sfx_menuClickeado', 'recursos/sonidos/menuClickeado.mp3')
-            //audioManager.loadAudio('bgm_musica', 'recursos/sonidos/soundtrack.wav')
+            audioManager.loadAudio('sfx_menuClickeado', 'recursos/sonidos/menuClickeado.mp3'),
+            audioManager.loadAudio('bgm_menu', 'recursos/musica/soundtrackMenu.wav'),
+            audioManager.loadAudio('bgm_juego', 'recursos/musica/soundtrackJuego.wav'),
+            audioManager.loadAudio('sfx_victoriaComun', 'recursos/sonidos/victoriaComun.mp3'),
+            audioManager.loadAudio('sfx_victoriaPrimerPuesto', 'recursos/musica/victoriaPrimerPuesto.mp3')
         ])
 
         //===== [ AGREGAR FUENTE DE TEXTO (no estaría funcionando) ] ====
@@ -312,12 +318,14 @@ export class Juego {
             }
 
             gato.alIniciarIntercambio = (gato) => {
+                audioManager.setBgmVolume(0.1)
                 this.hud.menuIntercambio.abrir(gato)
                 this.jugador.mefComportamiento.cambiarEstado('intercambio')
                 this.reproducirMaullidoRandom()
             }
 
             gato.alCerrarIntercambio = () => {
+                audioManager.setBgmVolume(0.5)
                 this.jugador.entidadObjetivo = null
                 gato.mefComportamiento.cambiarEstado('espera')
                 this.jugador.mefComportamiento.cambiarEstado('espera')
@@ -490,10 +498,14 @@ export class Juego {
         const centro = this.sistemaGrilla.snapAlCentro(x, y)
 
         const sprite = new PIXI.Sprite(PIXI.Assets.get(datos.imagen))
-        sprite.anchor.set(0.5)
+        sprite.anchor.set(0.5,0.8)
         sprite.scale.set(datos.escala)
         sprite.x = centro.x
         sprite.y = centro.y
+        sprite.eventMode = 'none'
+        sprite.interactiveChildren = false
+
+
 
         if (tipo === 'picnic') {
             sprite.zIndex = 0

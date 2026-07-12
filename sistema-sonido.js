@@ -4,7 +4,7 @@ class AudioManager {
     constructor() {
         // Volúmenes base normalizados (0.0 a 1.0)
         this.bgmVolume = 0.5;
-        this.bsmVolume = 0.8;
+        this.bsmVolume = 0.7;
         this.currentBgm = null;
     }
 

@@ -14,7 +14,7 @@ export class Obstáculo {
         
         for (const celdaRelativa of this.celdasBloqueadas) {
             const celdaAbsolutaX = grillaPos.x + celdaRelativa.x
-            const celdaAbsolutaY = grillaPos.y + celdaRelativa.y
+            const celdaAbsolutaY = grillaPos.y - 1 + celdaRelativa.y
             sistemaGrilla.bloquearCelda(celdaAbsolutaX, celdaAbsolutaY)
         }
     }
@@ -47,7 +47,7 @@ export const catálogoObstáculos = {
     arbol1: {
         imagen: 'recursos/sprites/arbol1.png',
         escala: 4.5,
-        celdasBloqueadas: [{"x":-2,"y":3},{"x":-2,"y":4},{"x":-1,"y":3},{"x":-1,"y":4},{"x":0,"y":3},{"x":0,"y":4},{"x":1,"y":3},{"x":1,"y":4},{"x":2,"y":3},{"x":2,"y":4}]
+        celdasBloqueadas: [{"x":-2,"y":1},{"x":-2,"y":2},{"x":-1,"y":1},{"x":-1,"y":2},{"x":0,"y":1},{"x":0,"y":2},{"x":1,"y":1},{"x":1,"y":2},{"x":2,"y":1},{"x":2,"y":2}]
     },
     arbol2: {
         imagen: 'recursos/sprites/arbol2.png',
@@ -57,12 +57,12 @@ export const catálogoObstáculos = {
     arbol3: {
         imagen: 'recursos/sprites/arbol3.png',
         escala: 4.5,
-        celdasBloqueadas: [{"x":-1,"y":2},{"x":0,"y":2},{"x":1,"y":2}]
+        celdasBloqueadas: [{"x":-1,"y":1},{"x":0,"y":1},{"x":1,"y":1}]
     },
     arbol4: {
         imagen: 'recursos/sprites/arbol4.png',
         escala: 4.5,
-        celdasBloqueadas: [{"x":-2,"y":4},{"x":-1,"y":4},{"x":0,"y":4},{"x":1,"y":4},{"x":2,"y":4}]
+        celdasBloqueadas: [{"x":-2,"y":2},{"x":-1,"y":2},{"x":0,"y":2},{"x":1,"y":2},{"x":2,"y":2}]
     },
     picnic: {
         imagen: 'recursos/sprites/picnic.png',
