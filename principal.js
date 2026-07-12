@@ -180,7 +180,7 @@ export class Juego {
             audioManager.loadAudio('bgm_menu', 'recursos/musica/soundtrackMenu.wav'),
             audioManager.loadAudio('bgm_juego', 'recursos/musica/soundtrackJuego.wav'),
             audioManager.loadAudio('sfx_victoriaComun', 'recursos/sonidos/victoriaComun.mp3'),
-            audioManager.loadAudio('sfx_victoriaPrimerPuesto', 'recursos/musica/victoriaPrimerPuesto.mp3')
+            audioManager.loadAudio('sfx_victoriaPrimerPuesto', 'recursos/sonidos/victoriaPrimerPuesto.mp3')
         ])
 
         //===== [ AGREGAR FUENTE DE TEXTO (no estaría funcionando) ] ====
