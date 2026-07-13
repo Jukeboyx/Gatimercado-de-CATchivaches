@@ -64,7 +64,13 @@ export class Juego {
 
         this.pantallaVictoria = new PantallaVictoria(window.innerWidth, window.innerHeight, () => {
             this.reiniciarAlMenu();
-        });
+        },() => {
+                audioManager.playBsm('sfx_menuClickeado');
+            },
+            () => {
+                audioManager.playBsm('sfx_menuApuntado')
+            }
+    );
         this.app.stage.addChild(this.pantallaVictoria.contenedor);
         
         this.app.ticker.add((ticker) => {
@@ -234,7 +240,10 @@ export class Juego {
             'recursos/sprites/sapito_amarillo.png',
             'recursos/sprites/sapito_gris.png',
             'recursos/sprites/sapito_naranja.png',
-            'recursos/sprites/sapito_verde.png'
+            'recursos/sprites/sapito_verde.png',
+            'recursos/sprites/boton2.png',
+            'recursos/sprites/boton_largo1.png',
+            'recursos/sprites/boton2_seleccionado.png'
         ])
     }
 

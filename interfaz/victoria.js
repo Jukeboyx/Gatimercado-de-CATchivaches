@@ -1,11 +1,14 @@
+import { Container } from 'pixi.js';
 import * as PIXI from '../pixi.js';
 
 export class PantallaVictoria {
-    constructor(ancho, alto, alReiniciar) {
+    constructor(ancho, alto, alReiniciar, alJugar, reproducirSonido) {
         this.contenedor = new PIXI.Container();
         this.ancho = ancho;
         this.alto = alto;
         this.alReiniciar = alReiniciar;
+        this.alJugar = alJugar;
+        this.reproducirSonido = reproducirSonido;
 
         this.claveLocalStorage = 'record_tiempos_gatitos';
         this.ocultar();
@@ -44,12 +47,11 @@ export class PantallaVictoria {
         fondo.y = this.alto / 2
         this.contenedor.addChild(fondo);
 
-
-
+        
         const estiloSub = new PIXI.TextStyle({ fontFamily: 'Arial', fontSize: 24, fill: '#000000' });
         const estiloPodio = new PIXI.TextStyle({ fontFamily: 'Arial', fontSize: 20, fill: '#000000' });
         const estiloDestacado = new PIXI.TextStyle({ fontFamily: 'Arial', fontSize: 20, fill: '#ae0909', fontWeight: 'bold' });
-
+        
         // 1. Imagen de Ganaste
         const texturaGanaste = PIXI.Assets.get('recursos/sprites/ganaste.png')
         const imagenVictoria = new PIXI.Sprite(texturaGanaste);
@@ -58,7 +60,21 @@ export class PantallaVictoria {
         imagenVictoria.y = 200; 
         imagenVictoria.scale.set(5); 
         this.contenedor.addChild(imagenVictoria);
-
+        
+        //FONDO TOP
+        this.contenedorPodio = new Container()
+        this.contenedorPodio.x = this.ancho / 110;
+        this.contenedorPodio.y = this.alto / 110;
+        this.contenedorPodio.zIndex = 1000
+        const texturaRanking = PIXI.Assets.get('recursos/sprites/panel.png');
+        const fondoRanking = new PIXI.NineSliceSprite({
+            texture:texturaRanking,
+            leftWidth: 10,
+            rightWidth: 10,
+            topHeight: 10,
+            bottomHeight: 21
+        })
+        
         // 2. Tiempo de esta partida
         const textoTuTiempo = new PIXI.Text({ 
             text: `Tu tiempo: ${this.formatearTiempo(tiempoActual)}`, 
@@ -67,14 +83,14 @@ export class PantallaVictoria {
         textoTuTiempo.anchor.set(0.5);
         textoTuTiempo.x = this.ancho / 2;
         textoTuTiempo.y = 410; 
-        this.contenedor.addChild(textoTuTiempo);
+        this.contenedorPodio.addChild(textoTuTiempo);
 
         // 3. Subtítulo del podio (Texto actualizado a TOP 5)
         const tituloPodio = new PIXI.Text({ text: '🏆 TOP 5 MEJORES TIEMPOS 🏆', style: estiloSub });
         tituloPodio.anchor.set(0.5);
         tituloPodio.x = this.ancho / 2;
         tituloPodio.y = 450; 
-        this.contenedor.addChild(tituloPodio);
+        this.contenedorPodio.addChild(tituloPodio);
 
         // 4. Lista del Podio
         let inicioY = 490; 
@@ -97,44 +113,66 @@ export class PantallaVictoria {
             elementoPodio.anchor.set(0.5);
             elementoPodio.x = this.ancho / 2;
             elementoPodio.y = inicioY + (indice * 30); 
-            this.contenedor.addChild(elementoPodio);
+            this.contenedorPodio.addChild(elementoPodio);
         });
 
-        // 5. Botón Volver a Jugar
-        const contenedorBoton = new PIXI.Container();
-        contenedorBoton.x = this.ancho / 2;
-        contenedorBoton.y = this.alto - 60;
+        fondoRanking.width = tituloPodio.width + 20
+        fondoRanking.height = 80
+        this.contenedor.addChild(this.contenedorPodio)
 
-        const fondoBoton = new PIXI.NineSliceSprite({
-            texture: PIXI.Assets.get('recursos/sprites/panel.png'),
-            leftWidth: 10,
-            rightWidth: 10,
-            topHeight: 10,
-            bottomHeight: 21
-        })
-        fondoBoton.anchor.set(0.5)
+        // 5. Botón Volver a Jugar
+        this.contenedorBoton = new PIXI.Container();
+        this.contenedorBoton.x = this.ancho / 2;
+        this.contenedorBoton.y = this.alto * 0.93
+
+        const texturaBotonNormal = PIXI.Assets.get('recursos/sprites/boton2.png')
+        const fondoBotonNormal = new PIXI.Sprite(texturaBotonNormal)
+        fondoBotonNormal.anchor.set(0.5)
+        fondoBotonNormal.scale.set(2)
+        fondoBotonNormal.visible = true
+
+        const texturaBotonApuntado = PIXI.Assets.get('recursos/sprites/boton2_seleccionado.png')
+        const fondoBotonApuntado = new PIXI.Sprite(texturaBotonApuntado)
+        fondoBotonApuntado.scale.set(2)
+        fondoBotonApuntado.anchor.set(0.5)
+        fondoBotonApuntado.visible = false
 
         const estiloBoton = new PIXI.TextStyle({ fontFamily: 'Arial', fontSize: 24, fill: '#d06004', fontWeight: 'bold' });
         const textoBoton = new PIXI.Text({ text: 'VOLVER A JUGAR', style: estiloBoton });
         textoBoton.anchor.set(0.5);
-        fondoBoton.width = textoBoton.width + 20
-        fondoBoton.height = textoBoton.height + 20
-        fondoBoton.x = textoBoton.x
-        fondoBoton.y = textoBoton.y
+        fondoBotonNormal.width = textoBoton.width + 30
+        fondoBotonApuntado.width = textoBoton.width + 30
+        fondoBotonNormal.height = textoBoton.height + 20
+        fondoBotonApuntado.height = textoBoton.height + 20
+        fondoBotonNormal.x = textoBoton.x
+        fondoBotonNormal.y = textoBoton.y
+        fondoBotonApuntado.x = textoBoton.x
+        fondoBotonApuntado.y = textoBoton.y
 
-        contenedorBoton.addChild(fondoBoton);
-        contenedorBoton.addChild(textoBoton);
+        this.contenedorBoton.addChild(fondoBotonNormal);
+        this.contenedorBoton.addChild(fondoBotonApuntado);
+        this.contenedorBoton.addChild(textoBoton);
 
-        contenedorBoton.eventMode = 'static';
-        contenedorBoton.cursor = 'pointer';
-        contenedorBoton.on('pointerover', () => { fondoBoton.alpha = 0.8; });
-        contenedorBoton.on('pointerout', () => { fondoBoton.alpha = 1; });
-        contenedorBoton.on('pointertap', () => {
+        // 4. Interactividad del botón
+        this.contenedorBoton.eventMode = 'static';
+        this.contenedorBoton.cursor = 'pointer';
+
+        this.contenedorBoton.on('pointerover', () => {
+            fondoBotonNormal.visible = false
+            fondoBotonApuntado.visible = true
+            this.reproducirSonido()
+        });
+        this.contenedorBoton.on('pointerout', () => {
+            fondoBotonApuntado.visible = false
+            fondoBotonNormal.visible = true
+        });
+        this.contenedorBoton.on('pointertap', () => {
             this.ocultar();
             this.alReiniciar();
+            this.alJugar(); // Llamamos a la función para iniciar el juego
         });
 
-        this.contenedor.addChild(contenedorBoton);
+        this.contenedor.addChild(this.contenedorBoton);
     }
 
     mostrar(tiempoFinal) {
@@ -149,5 +187,10 @@ export class PantallaVictoria {
     redimensionar(nuevoAncho, nuevoAlto) {
         this.ancho = nuevoAncho;
         this.alto = nuevoAlto;
+
+        if(this.contenedorBoton){
+            this.contenedorBoton.x = nuevoAncho / 2;
+            this.contenedorBoton.y = nuevoAlto * 0.93
+        }
     }
 }
