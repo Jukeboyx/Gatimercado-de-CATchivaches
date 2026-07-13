@@ -46,7 +46,6 @@ export class PantallaVictoria {
         fondo.x = this.ancho / 2
         fondo.y = this.alto / 2
         this.contenedor.addChild(fondo);
-
         
         const estiloSub = new PIXI.TextStyle({ fontFamily: 'Arial', fontSize: 24, fill: '#000000' });
         const estiloPodio = new PIXI.TextStyle({ fontFamily: 'Arial', fontSize: 20, fill: '#000000' });
@@ -63,37 +62,36 @@ export class PantallaVictoria {
         
         //FONDO TOP
         this.contenedorPodio = new Container()
-        this.contenedorPodio.x = this.ancho / 110;
-        this.contenedorPodio.y = this.alto / 110;
+        this.contenedorPodio.x = this.ancho / 2;
+        this.contenedorPodio.y = this.alto / 2;
         this.contenedorPodio.zIndex = 1000
         const texturaRanking = PIXI.Assets.get('recursos/sprites/panel.png');
         const fondoRanking = new PIXI.NineSliceSprite({
-            texture:texturaRanking,
+            texture: texturaRanking,
             leftWidth: 10,
             rightWidth: 10,
             topHeight: 10,
             bottomHeight: 21
         })
+        fondoRanking.anchor.set(0.5)
+        this.contenedorPodio.addChild(fondoRanking)
         
         // 2. Tiempo de esta partida
         const textoTuTiempo = new PIXI.Text({ 
             text: `Tu tiempo: ${this.formatearTiempo(tiempoActual)}`, 
             style: estiloSub 
         });
-        textoTuTiempo.anchor.set(0.5);
-        textoTuTiempo.x = this.ancho / 2;
-        textoTuTiempo.y = 410; 
+        textoTuTiempo.anchor.set(0.5)
         this.contenedorPodio.addChild(textoTuTiempo);
 
         // 3. Subtítulo del podio (Texto actualizado a TOP 5)
         const tituloPodio = new PIXI.Text({ text: '🏆 TOP 5 MEJORES TIEMPOS 🏆', style: estiloSub });
         tituloPodio.anchor.set(0.5);
-        tituloPodio.x = this.ancho / 2;
-        tituloPodio.y = 450; 
+        tituloPodio.y = 30
         this.contenedorPodio.addChild(tituloPodio);
 
         // 4. Lista del Podio
-        let inicioY = 490; 
+        let inicioY = 60; 
         this.topTiempos.forEach((tiempo, indice) => {
             const posicion = indice + 1;
             
@@ -111,13 +109,22 @@ export class PantallaVictoria {
 
             const elementoPodio = new PIXI.Text({ text: textoFila, style: estiloFila });
             elementoPodio.anchor.set(0.5);
-            elementoPodio.x = this.ancho / 2;
             elementoPodio.y = inicioY + (indice * 30); 
             this.contenedorPodio.addChild(elementoPodio);
         });
 
-        fondoRanking.width = tituloPodio.width + 20
-        fondoRanking.height = 80
+        fondoRanking.visible = false;
+
+        const bounds = this.contenedorPodio.getLocalBounds();
+        const padding = 20; // margen interno
+
+        fondoRanking.width = bounds.width + padding * 2;
+        fondoRanking.height = bounds.height + padding * 2;
+        fondoRanking.x = bounds.x + bounds.width / 2;
+        fondoRanking.y = bounds.y + bounds.height / 2;
+
+        fondoRanking.visible = true;
+        
         this.contenedor.addChild(this.contenedorPodio)
 
         // 5. Botón Volver a Jugar
