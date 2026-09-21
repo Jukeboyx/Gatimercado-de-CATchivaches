@@ -4,8 +4,9 @@ import { catálogoObjetos } from './datos.js';
 import { Jugador } from './jugador/index.js';
 import { GatiNPC } from './gatinpc/index.js';
 import { HUD } from './interfaz/hud.js';
-import { ESCALA_UI, diseño } from './interfaz/diseno.js';
-import { mezclar, cortarGrilla, SistemaTrucos, TrucoShiro, TrucoAfro, TrucoDebug, SistemaDebug, OpcionMostrarGrilla, OpcionEditarCeldas, OpcionNoclip, OpcionPausa, OpcionGuardarCeldas } from './herramientas-funciones.js';
+import { diseño } from './interfaz/diseno.js';
+import { SistemaTrucos, TrucoShiro, TrucoAfro, TrucoDebug, SistemaDebug, OpcionMostrarGrilla, OpcionEditarCeldas, OpcionNoclip, OpcionPausa, OpcionGuardarCeldas } from './herramientas-funciones.js';
+import { MANIFEST_AUDIO, FUENTE_UI, MANIFEST_SPRITES } from './recursos/manifest-carga.js';
 import { Accesorios } from './gatinpc/accesorios.js';
 import { catálogoObstáculos, generarPosicionRandom, verificarSuperposicion, Obstáculo } from './obstaculos.js';
 import { SistemaGrilla } from './sistema-grilla.js'; 
@@ -125,9 +126,8 @@ export class Juego {
         audioManager.playBsm('sfx_victoriaComun')
         this.estado = 'victoria';
         
-        // Limpiamos los eventos del teclado/mouse del juego para que no se mueva el prota de fondo
-        window.removeEventListener('resize', this.redimensionar);
-        
+        this.liberarEventosPartida();
+
         // Removemos los contenedores del juego visualmente para dejar solo la pantalla de victoria limpio
         if (this.mundoContenedor) this.mundoContenedor.visible = false;
         if (this.interfazContenedor) this.interfazContenedor.visible = false;
@@ -139,10 +139,8 @@ export class Juego {
     reiniciarAlMenu() {
         this.estado = 'menu';
 
-        if (this._onResize) {
-            window.removeEventListener('resize', this._onResize)
-            this._onResize = null
-        }
+        this.liberarEventosPartida();
+
         // Destruir contenedores viejos del juego si existen para que no se dupliquen elementos en la siguiente partida
         if (this.mundoContenedor) {
             this.app.stage.removeChild(this.mundoContenedor);
@@ -172,79 +170,28 @@ export class Juego {
     }
     
     async cargarRecursos() {
+        await Promise.all(
+            MANIFEST_AUDIO.map(([id, src]) => audioManager.loadAudio(id, src))
+        )
 
-        //===== [ CARGAR SONIDOS Y MÚSICA ] =====
+        PIXI.Assets.add(FUENTE_UI)
 
-        await Promise.all([
-            audioManager.loadAudio('sfx_maullido_1', 'recursos/sonidos/gato1.mp3'),
-            audioManager.loadAudio('sfx_maullido_2', 'recursos/sonidos/gato2.mp3'),
-            audioManager.loadAudio('sfx_maullido_3', 'recursos/sonidos/gato3.mp3'),
-            audioManager.loadAudio('sfx_maullido_4', 'recursos/sonidos/gato4.mp3'),
-            audioManager.loadAudio('sfx_maullido_5', 'recursos/sonidos/gato5.mp3'),
-            audioManager.loadAudio('sfx_menuApuntado', 'recursos/sonidos/menuApuntado.mp3'),
-            audioManager.loadAudio('sfx_menuClickeado', 'recursos/sonidos/menuClickeado.mp3'),
-            audioManager.loadAudio('bgm_menu', 'recursos/musica/soundtrackMenu.wav'),
-            audioManager.loadAudio('bgm_juego', 'recursos/musica/soundtrackJuego.wav'),
-            audioManager.loadAudio('sfx_victoriaComun', 'recursos/sonidos/victoriaComun.mp3'),
-            audioManager.loadAudio('sfx_victoriaPrimerPuesto', 'recursos/sonidos/victoriaPrimerPuesto.mp3')
-        ])
+        await PIXI.Assets.load(MANIFEST_SPRITES)
+    }
 
-        //===== [ AGREGAR FUENTE DE TEXTO (no estaría funcionando) ] ====
-
-        PIXI.Assets.add({
-            alias: 'Perfect',
-            src: 'recursos/fuentePixelart.ttf'
-        });
-
-        //===== [ CARGAR IMÁGENES PNG, JSONS Y FUENTE A RECURSOS DE PIXI ] =====
-
-        await PIXI.Assets.load([
-            'recursos/sprites/jugador.json',
-            'recursos/sprites/gato_gris.json',
-            'recursos/sprites/gato_negro.json',
-            'recursos/sprites/gato_blanco.json',
-            'recursos/sprites/gato_violeta.json',
-            'recursos/sprites/gato_naranja.json',
-            'recursos/sprites/shiro.json',
-            'recursos/sprites/shiro.png',
-            'recursos/sprites/afro.json',
-            'recursos/sprites/afro.png',
-            'recursos/sprites/accesorios.png',
-            'recursos/sprites/pastito.png',
-            'recursos/sprites/comercio1.png',
-            'recursos/sprites/comercio2.png',
-            'recursos/sprites/comercio3.png',
-            'recursos/sprites/arbol1.png',
-            'recursos/sprites/arbol2.png',
-            'recursos/sprites/arbol3.png',
-            'recursos/sprites/arbol4.png',
-            'recursos/sprites/picnic.png',
-            'recursos/sprites/banquito1.png',
-            'recursos/sprites/items.png',
-            'recursos/sprites/objetivo_temporizador.png',
-            'recursos/sprites/panel.png',
-            'recursos/sprites/intercambio_item.png',
-            'recursos/sprites/globo.png',
-            'recursos/sprites/patita_prota.png',
-            'recursos/sprites/accesorios.json',
-            'recursos/sprites/ganaste.png',
-            'recursos/sprites/fondoMenu.png',
-            'recursos/sprites/boton1.png',
-            'recursos/sprites/boton1_seleccionado.png',
-            'recursos/sprites/titulo_gatimercado.png',
-            'Perfect',
-            'recursos/sprites/mariposa_roja.png',
-            'recursos/sprites/mariposa_rosa.png',
-            'recursos/sprites/mariposa_verde.png',
-            'recursos/sprites/mariposa_violeta.png',
-            'recursos/sprites/sapito_amarillo.png',
-            'recursos/sprites/sapito_gris.png',
-            'recursos/sprites/sapito_naranja.png',
-            'recursos/sprites/sapito_verde.png',
-            'recursos/sprites/boton2.png',
-            'recursos/sprites/boton_largo1.png',
-            'recursos/sprites/boton2_seleccionado.png'
-        ])
+    liberarEventosPartida() {
+        if (this._onResize) {
+            window.removeEventListener('resize', this._onResize)
+            this._onResize = null
+        }
+        if (this._onKeydown) {
+            window.removeEventListener('keydown', this._onKeydown)
+            this._onKeydown = null
+        }
+        if (this._onStageTap && this.app?.stage) {
+            this.app.stage.off('pointertap', this._onStageTap)
+            this._onStageTap = null
+        }
     }
 
     generarPartida() {
@@ -326,9 +273,12 @@ export class Juego {
                 }
             }
 
-            gato.alIniciarIntercambio = (gato) => {
+            gato.alIniciarIntercambio = (gatoNpc) => {
+                const menu = this.hud.menuIntercambio
+                if (menu.visible && menu.npc === gatoNpc) return
+
                 audioManager.setBgmVolume(0.1)
-                this.hud.menuIntercambio.abrir(gato)
+                menu.abrir(gatoNpc)
                 this.jugador.mefComportamiento.cambiarEstado('intercambio')
                 this.reproducirMaullidoRandom()
             }
@@ -607,29 +557,29 @@ export class Juego {
     }
 
     crearEventos() {
+        this.liberarEventosPartida()
+
         this._onResize = () => this.redimensionar()
         window.addEventListener('resize', this._onResize)
 
         this.app.stage.eventMode = 'static'
         this.app.stage.hitArea = this.app.screen
 
-        this.app.stage.on('pointertap', (evento) => {
-            this.clicMundo(evento)
-        })
+        this._onStageTap = (evento) => this.clicMundo(evento)
+        this.app.stage.on('pointertap', this._onStageTap)
 
         this.sistemaTrucos = new SistemaTrucos()
         this.sistemaTrucos.registrarTruco('shiro', new TrucoShiro(this.jugador))
         this.sistemaTrucos.registrarTruco('afro', new TrucoAfro(this.jugador))
         this.sistemaTrucos.registrarTruco('dbg', new TrucoDebug(this.sistemaDebug))
 
-        window.addEventListener('keydown', (evento) => {
+        this._onKeydown = (evento) => {
             this.sistemaTrucos.procesarTecla(evento.key)
-            // --- ATAJO PARA TESTEAR VICTORIA ---
-        if ((evento.key === 'v' || evento.key === 'V') && this.estado === 'jugando') {
+            if ((evento.key === 'v' || evento.key === 'V') && this.estado === 'jugando') {
                 this.ganarPartida()
             }
-        })
-        
+        }
+        window.addEventListener('keydown', this._onKeydown)
     }
 
 
