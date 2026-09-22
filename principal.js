@@ -13,6 +13,7 @@ import { MenuPrincipal } from './interfaz/menu.js';
 import { PantallaVictoria } from './interfaz/victoria.js'; // <-- IMPORT DE VICTORIA AGREGADO
 import { NPCAmbiente } from './npcsNoInteractuables/index.js';
 import { audioManager } from './sistema-sonido.js'
+import { SistemaCamara } from './sistema-camara.js'
 
 export class Juego {
     constructor() {
@@ -315,7 +316,8 @@ export class Juego {
                 this.ANCHO_MUNDO,
                 this.ALTO_MUNDO,
                 this.sistemaGrilla,
-                colorGato  // <-- AGREGAR ESTE PARÁMETRO
+                colorGato,
+                this.capaGlobos
             )
 
             gato.mostrarGloboIntercambios(intercambio.da, intercambio.pide)
@@ -548,6 +550,13 @@ export class Juego {
         this.suelo.eventMode = 'none'
         this.mundoContenedor.addChild(this.suelo)
 
+        // Capa para los globos de intercambio: siempre por encima de árboles, gatos y jugador,
+        // sin importar su posición en Y, porque el sorteo por Y de mundoContenedor trata a cada
+        // gatito como un solo punto (sus patas) y el globo sobresale bastante arriba de eso.
+        this.capaGlobos = new PIXI.Container()
+        this.capaGlobos.zIndex = 999999
+        this.mundoContenedor.addChild(this.capaGlobos)
+
         this.crearObstaculos()
 
         this.jugador = new Jugador(
@@ -556,6 +565,9 @@ export class Juego {
             this.ALTO_MUNDO,
             this.sistemaGrilla
         )
+
+        this.sistemaCamara = new SistemaCamara(this.app, this.mundoContenedor, this.ANCHO_MUNDO, this.ALTO_MUNDO)
+        this.sistemaCamara.activarEventos()
         this.mundoContenedor.addChild(this.jugador.contenedor)
         
         this.accesorios = new Accesorios()
@@ -566,6 +578,12 @@ export class Juego {
         
         this.hud = new HUD(this.app, this.datos, this.escalaUI)
         this.hud.menuIntercambio.spriteJugador.texture = this.jugador.texturaEspera
+        this.hud.centrador.spriteJugador.texture = this.jugador.texturaEspera
+        
+        this.sistemaCamara.alCambiarBloqueo = (bloqueada) => this.hud.centrador.marcarBloqueo(bloqueada)
+        this.hud.centrador.alTocar = () => this.sistemaCamara.alternarBloqueo()
+        this.hud.centrador.marcarBloqueo(this.sistemaCamara.bloqueada)
+
         this.interfazContenedor.addChild(this.hud.contenedor)
 
         this.hud.menuIntercambio.alTruequeExitoso = (resultado) => {
@@ -592,18 +610,6 @@ export class Juego {
         this.sistemaDebug.agregarOpcion(new OpcionGuardarCeldas(this.sistemaDebug))
         this.sistemaDebug.agregarOpcion(new OpcionNoclip(this.sistemaDebug))
         this.sistemaDebug.agregarOpcion(new OpcionPausa(this.sistemaDebug))
-    }
-
-    centrarCámara() {
-        const objetivoX = this.app.screen.width / 2 - this.jugador.contenedor.x
-        const objetivoY = this.app.screen.height / 2 - this.jugador.contenedor.y
-        const suavizado = 0.08
-
-        this.mundoContenedor.x += (objetivoX - this.mundoContenedor.x) * suavizado
-        this.mundoContenedor.y += (objetivoY - this.mundoContenedor.y) * suavizado
-
-        this.mundoContenedor.x = Math.min(0, Math.max(this.mundoContenedor.x, this.app.screen.width - this.ANCHO_MUNDO))
-        this.mundoContenedor.y = Math.min(0, Math.max(this.mundoContenedor.y, this.app.screen.height - this.ALTO_MUNDO))
     }
 
     crearEventos() {
@@ -684,7 +690,7 @@ export class Juego {
             this.hud.actualizar(delta)
 
             if (!this.sistemaDebug || !this.sistemaDebug.noclipActivo) {
-                this.centrarCámara()
+                this.sistemaCamara.actualizar(this.jugador)
             }
         }
     }
@@ -713,6 +719,8 @@ export class Juego {
         if (this.estado !== 'menu' && this.hud) {
             this.hud.redimensionar()
         }
+
+        if (this.estado !== 'menu' && this.sistemaCamara) { this.sistemaCamara.redimensionar() }
     }
 }
 

@@ -7,13 +7,14 @@ import { Jugador } from '../jugador/index.js';
 import { catálogoObjetos } from '../datos.js';
 
 export class GatiNPC {
-    constructor(posX, posY, idObjetoQueTiene, idObjetoQuePide, jugador, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000, sistemaGrilla = null, colorGato = null) {
+    constructor(posX, posY, idObjetoQueTiene, idObjetoQuePide, jugador, ANCHO_MUNDO = 2000, ALTO_MUNDO = 2000, sistemaGrilla = null, colorGato = null, capaGlobos = null) {
         this.idObjetoQueTiene = idObjetoQueTiene
         this.idObjetoQuePide = idObjetoQuePide
         this.jugador = jugador
         this.ANCHO_MUNDO = ANCHO_MUNDO
         this.ALTO_MUNDO = ALTO_MUNDO
         this.sistemaGrilla = sistemaGrilla
+        this.capaGlobos = capaGlobos // Contenedor de mundoContenedor donde vive el globo, para que no lo tape el sorteo por Y de árboles/gatos
         
         this.alIniciarIntercambio = null
         this.alCerrarIntercambio = null
@@ -26,6 +27,7 @@ export class GatiNPC {
         this.contenedor.y = posY;
         
         this.contenedorVisual = new PIXI.Container()
+        this.contenedorVisual.sortableChildren = true
         this.contenedor.addChild(this.contenedorVisual)
 
         this.VELOCIDAD_GATINPC = 2
@@ -77,7 +79,7 @@ export class GatiNPC {
         this.CANTIDAD_FRAMES = 4
         this.ANCHO_FRAME = 64
         this.VELOCIDAD_ANIMACION = 0.1
-
+        
         // Configurar la imagen del gatito
         this.imagen = new PIXI.AnimatedSprite(this.animaciones.sentado)
         this.imagen.anchor.set(0.5, 0.9)
@@ -191,8 +193,12 @@ export class GatiNPC {
         this.contenedorTradeo.addChild(this.spriteObjetoTiene)
         
         this.contenedorTradeo.visible = false
-        
-        this.contenedorVisual.addChild(this.contenedorTradeo)
+
+        if (this.capaGlobos) {
+            this.capaGlobos.addChild(this.contenedorTradeo)
+        } else {
+            this.contenedorVisual.addChild(this.contenedorTradeo)
+        }
     }
 
     actualizarGloboIntercambios() {
@@ -228,7 +234,16 @@ export class GatiNPC {
     actualizarPosicionVisual() {
         if (!this.contenedorTradeo) return
         const nombreEstado = this.mefAnimacion.estadoActual?.constructor.name
-        this.contenedorTradeo.y = GatiNPC.ALTURAS_VISUALES[nombreEstado] ?? -50
+        const alturaOffset = GatiNPC.ALTURAS_VISUALES[nombreEstado] ?? -50
+
+        if (this.capaGlobos) {
+            // capaGlobos es hermano de este.contenedor dentro de mundoContenedor,
+            // así que comparten el mismo espacio de coordenadas: alcanza con sumar el offset
+            this.contenedorTradeo.x = this.contenedor.x
+            this.contenedorTradeo.y = this.contenedor.y + alturaOffset
+        } else {
+            this.contenedorTradeo.y = alturaOffset
+        }
     }
     
     jugadorVaAIntercambiar() {
@@ -243,8 +258,8 @@ export class GatiNPC {
     actualizarObjetos() {
         [this.idObjetoQueTiene, this.idObjetoQuePide] = [this.idObjetoQuePide, this.idObjetoQueTiene]
         // Actualizar el tradeo para mostrar los nuevos objetos
-        if (this.contenedorTradeo) {
-            this.contenedorVisual.removeChild(this.contenedorTradeo)
+        if (this.contenedorTradeo && this.contenedorTradeo.parent) {
+            this.contenedorTradeo.parent.removeChild(this.contenedorTradeo)
         }
         this.mostrarGloboIntercambios(this.idObjetoQueTiene, this.idObjetoQuePide)
     }
@@ -372,6 +387,14 @@ export class GatiNPC {
             animActual instanceof Animacion.Pestañeando) {
             return
         }
+
+        // En intercambio solo sentamos la animación; empezarADetenerse() cambia el comportamiento a espera
+        // y provoca un bucle espera↔intercambio que dispara el maullido muchas veces por frame.
+        if (this.mefComportamiento.estadoActual instanceof Comportamiento.Intercambio) {
+            this.mefAnimacion.cambiarEstado('sentandose')
+            return
+        }
+
         this.empezarADetenerse()
     }
 
