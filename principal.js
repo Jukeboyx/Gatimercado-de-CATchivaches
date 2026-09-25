@@ -5,7 +5,7 @@ import { Jugador } from './jugador/index.js';
 import { GatiNPC } from './gatinpc/index.js';
 import { HUD } from './interfaz/hud.js';
 import { ESCALA_UI, diseño } from './interfaz/diseno.js';
-import { mezclar, cortarGrilla, SistemaTrucos, TrucoShiro, TrucoAfro, TrucoDebug, SistemaDebug, OpcionMostrarGrilla, OpcionEditarCeldas, OpcionNoclip, OpcionPausa, OpcionGuardarCeldas } from './herramientas-funciones.js';
+import { mezclar, cortarGrilla, SistemaTrucos, TrucoShiro, TrucoAfro, TrucoDebug, TrucoPolenta, SistemaDebug, OpcionMostrarGrilla, OpcionEditarCeldas, OpcionNoclip, OpcionPausa, OpcionGuardarCeldas } from './herramientas-funciones.js';
 import { Accesorios } from './gatinpc/accesorios.js';
 import { catálogoObstáculos, generarPosicionRandom, verificarSuperposicion, Obstáculo } from './obstaculos.js';
 import { SistemaGrilla } from './sistema-grilla.js'; 
@@ -627,6 +627,7 @@ export class Juego {
         this.sistemaTrucos.registrarTruco('shiro', new TrucoShiro(this.jugador))
         this.sistemaTrucos.registrarTruco('afro', new TrucoAfro(this.jugador))
         this.sistemaTrucos.registrarTruco('dbg', new TrucoDebug(this.sistemaDebug))
+        this.sistemaTrucos.registrarTruco('polenta', new TrucoPolenta(this.hud.centrador))
 
         window.addEventListener('keydown', (evento) => {
             this.sistemaTrucos.procesarTecla(evento.key)

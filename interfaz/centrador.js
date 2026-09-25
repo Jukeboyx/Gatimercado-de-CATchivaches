@@ -34,6 +34,19 @@ export class Centrador {
 
         this.posicionar()
         this.marcarBloqueo(true) // arranca en modo fijado, igual que SistemaCamara.bloqueada
+
+        this.ocultarBotonCamaraLibre() // oculto hasta que se active el truco 'polenta'
+    }
+
+    // Truco 'polenta': mientras no esté activado, el botón ni se ve ni se puede tocar
+    ocultarBotonCamaraLibre() {
+        this.contenedor.visible = false
+        this.contenedor.eventMode = 'none'
+    }
+
+    revelarBotonCamaraLibre() {
+        this.contenedor.visible = true
+        this.contenedor.eventMode = 'static'
     }
 
     posicionar() {

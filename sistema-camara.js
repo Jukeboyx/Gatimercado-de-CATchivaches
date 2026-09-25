@@ -11,7 +11,7 @@ export class SistemaCamara {
         // --- Edge scroll ---
         this.PROPORCION_MARGEN = 0.25 // la zona de borde ocupa un cuarto del lado más chico de la pantalla
         this.margenBorde = this._calcularMargenBorde()
-        this.velocidadBorde = 10    // px por frame, a máxima velocidad justo en el borde
+        this.velocidadBorde = 20    // px por frame, a máxima velocidad justo en el borde
 
         // --- Bloqueo: por defecto la cámara queda fijada al jugador y el edge scroll no hace nada.
         // El botón del HUD alterna esto con alternarBloqueo().

@@ -106,31 +106,7 @@ export class GatiNPC {
         this.contenedor.hitArea = new PIXI.Circle(0, 0, 50)
         this.contenedor.interactiveChildren = false
 
-        this.contenedor.on('pointertap', (e) => {
-            e.stopPropagation()
-            
-            if (this.mefComportamiento.estadoActual instanceof Comportamiento.Durmiendo) {
-                if (Math.random() < 0.5) {
-                    this.mefComportamiento.cambiarEstado('espera')
-                } else {
-                    this.mefComportamiento.cambiarEstado('enojado')
-                }
-                return
-            }
-            
-            if (this.mefComportamiento.estadoActual instanceof Comportamiento.Enojado) return
-
-            if (this.alSeleccionar) this.alSeleccionar()
-
-            if (this.jugador) {
-                this.jugador.irHacia(
-                    { x: this.contenedor.x, y: this.contenedor.y },
-                    this.DISTANCIA_FRENO,
-                    this
-                )
-            }
-
-        })
+        this.contenedor.on('pointertap', (e) => this.manejarClicEnGato(e))
 
         this.mefComportamiento = new MEF(this, {
             merodeo: new Comportamiento.Merodeo(this),
@@ -153,6 +129,32 @@ export class GatiNPC {
         this.mefComportamiento.cambiarEstado('merodeo')
     }
 
+    // Lógica de interacción compartida: se usa tanto al tocar al gatito como al tocar su globo de diálogo
+    manejarClicEnGato(e) {
+        e.stopPropagation()
+
+        if (this.mefComportamiento.estadoActual instanceof Comportamiento.Durmiendo) {
+            if (Math.random() < 0.5) {
+                this.mefComportamiento.cambiarEstado('espera')
+            } else {
+                this.mefComportamiento.cambiarEstado('enojado')
+            }
+            return
+        }
+
+        if (this.mefComportamiento.estadoActual instanceof Comportamiento.Enojado) return
+
+        if (this.alSeleccionar) this.alSeleccionar()
+
+        if (this.jugador) {
+            this.jugador.irHacia(
+                { x: this.contenedor.x, y: this.contenedor.y },
+                this.DISTANCIA_FRENO,
+                this
+            )
+        }
+    }
+
     mostrarGloboIntercambios(idObjetoTiene, idObjetoPide) {
         const objetoTiene = catálogoObjetos[idObjetoTiene]
         const objetoPide = catálogoObjetos[idObjetoPide]
@@ -166,6 +168,13 @@ export class GatiNPC {
         this.fondoTradeo.anchor.set(0.5, 1.2)
         this.fondoTradeo.tint = '#BFBFBF'
         this.contenedorTradeo.addChild(this.fondoTradeo)
+
+        // Hacer que el globo también sea clickeable (antes solo se podía tocar al gatito).
+        // Se usa el mismo Sprite (fondoTradeo) para que Pixi calcule el hit-test según su
+        // propia textura/anchor, sin necesitar un hitArea manual.
+        this.fondoTradeo.eventMode = 'static'
+        this.fondoTradeo.cursor = 'pointer'
+        this.fondoTradeo.on('pointertap', (e) => this.manejarClicEnGato(e))
         
         // Objeto que el NPC pide (izquierda)
         this.spriteObjetoPide = objetoPide.crearSprite()

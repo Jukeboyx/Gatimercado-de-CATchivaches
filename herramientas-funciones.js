@@ -133,6 +133,22 @@ export class TrucoAfro extends Truco {
     }
 }
 
+// Truco para revelar/ocultar el botón de cámara libre del HUD
+export class TrucoPolenta extends Truco {
+    constructor(centrador) {
+        super('¡Cámara libre desbloqueada!')
+        this.centrador = centrador
+    }
+
+    activar() {
+        this.centrador.revelarBotonCamaraLibre()
+    }
+
+    desactivar() {
+        this.centrador.ocultarBotonCamaraLibre()
+    }
+}
+
 // Truco para activar/desactivar el modo debug
 export class TrucoDebug extends Truco {
     constructor(sistemaDebug) {

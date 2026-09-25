@@ -43,6 +43,10 @@ export class Caminando extends Estado {
         if (distancia <= this.destino.distanciaFreno) {
             this.dueño.estelaJugador.clear()
             this.dueño.empezarADetenerse()
+
+            if (entidad.alIniciarIntercambio) {
+                entidad.alIniciarIntercambio(entidad)
+            }
             return
         }
 
