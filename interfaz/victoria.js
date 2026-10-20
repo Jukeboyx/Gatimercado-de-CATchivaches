@@ -1,4 +1,3 @@
-import { Container } from 'pixi.js';
 import * as PIXI from '../pixi.js';
 
 export class PantallaVictoria {
@@ -61,7 +60,7 @@ export class PantallaVictoria {
         this.contenedor.addChild(imagenVictoria);
         
         //FONDO TOP
-        this.contenedorPodio = new Container()
+        this.contenedorPodio = new PIXI.Container()
         this.contenedorPodio.x = this.ancho / 2;
         this.contenedorPodio.y = this.alto / 2;
         this.contenedorPodio.zIndex = 1000
